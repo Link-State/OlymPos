@@ -5,11 +5,12 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from flask_jwt_extended import *
 from models import Admins
+from models import StoreInfo
 
-def adminLogin(id="", pwd="") :
+def adminLogin(id="", pwd="", store_uid=-1) :
     uid = Admins.findUID(id=id)
     
-    # 유저 아이디로 고유아이디가 검색되지 않을 때,
+    # 유저 아이디로 고유번호가 검색되지 않을 때,
     if uid == -1 :
         return {"result" : "Invalid", "code" : "002"}
 
@@ -17,14 +18,20 @@ def adminLogin(id="", pwd="") :
 
     # 유저 아이디, 비밀번호가 맞지 않을 때,
     if user["user_id"] != id or user["user_pwd"] != pwd :
-        return {"result" : "Invalid", "code" : "001"}
-    
-    # 이미 로그인 상태일 때,
-    if user["isLogin"] == 1 :
         return {"result" : "Invalid", "code" : "003"}
     
+    store = StoreInfo.getStore(store_uid)
+
+    # 매장이 검색되지 않을 때,
+    if "isLogin" not in store :
+        return {"result" : "Invalid", "code" : "004"}
+
+    # 매장이 이미 로그인 상태일 때,
+    if store["isLogin"] == 1 :
+        return {"result" : "Invalid", "code" : "005"}
+    
     # 로그인 상태로 변경
-    Admins.setIsLogin(uid=uid, islogin=1)
+    StoreInfo.setIsLogin(uid=store_uid, islogin=1)
 
     return {
         "result" : "Success",

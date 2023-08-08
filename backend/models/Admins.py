@@ -20,11 +20,11 @@ def findUID(id="") :
     return result[0]["unique_admin"]
 
 def getUser(uid=-1) :
-    # uid, id, pwd, name, phone num, email, islogin
-    # 프론트엔드로 output시 pwd, islogin 정보는 지워서 output
+    # uid, id, pwd, name, phone num, email
+    # 프론트엔드로 output시 pwd정보는 지워서 output
     result = None
     sql = f"""
-    SELECT unique_admin, user_id, user_pwd, phone_number, email, isLogin
+    SELECT unique_admin, user_id, user_pwd, phone_number, email
     FROM Admins
     WHERE user_id = {uid};
     """
@@ -49,17 +49,6 @@ def setPhoneNum(uid=-1, num="") :
     return
 
 def setEmail(uid=-1, email="") :
-    
-    return
-
-def setIsLogin(uid=-1, islogin=0) :
-    sql = f"""
-    UPDATE Admins
-    SET isLogin = 1
-    WHERE unique_admin = {uid};
-    """
-
-    mysql.execute(SQL=sql)
     
     return
 

@@ -1,9 +1,23 @@
 import sys
 import os
+import pymysql
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from main import connection, command
+from config import API
+
+connection = pymysql.connect(
+        host=API.host,
+        user=API.mysql_username,
+        password=API.mysql_pwd,
+        database=API.database,
+        port=API.mysql_port,
+        use_unicode=True,
+        charset="utf8",
+        cursorclass=pymysql.cursors.DictCursor
+    )
+
+command = connection.cursor()
 
 #테이블 삭제
 command.execute("DROP TABLE IF EXISTS Selected_option;")
@@ -17,8 +31,8 @@ command.execute("DROP TABLE IF EXISTS Store_info;")
 command.execute("DROP TABLE IF EXISTS Admins;")
 
 # 테이블 생성
-command.execute("CREATE TABLE Admins (unique_admin INT, user_id VARCHAR(32) NOT NULL, user_pwd VARCHAR(32) NOT NULL, name VARCHAR(128) NOT NULL, phone_number VARCHAR(11) NOT NULL, email VARCHAR(128) NOT NULL, isLogin INT);")
-command.execute("CREATE TABLE Store_info (unique_store_info INT, unique_admin INT NOT NULL, store_name VARCHAR(64) NOT NULL, store_owner VARCHAR(128) NOT NULL, store_address VARCHAR(64) NOT NULL, store_tel_number VARCHAR(11) NOT NULL, table_count INT NOT NULL);")
+command.execute("CREATE TABLE Admins (unique_admin INT, user_id VARCHAR(32) NOT NULL, user_pwd VARCHAR(32) NOT NULL, name VARCHAR(128) NOT NULL, phone_number VARCHAR(11) NOT NULL, email VARCHAR(128) NOT NULL);")
+command.execute("CREATE TABLE Store_info (unique_store_info INT, unique_admin INT NOT NULL, store_name VARCHAR(64) NOT NULL, store_owner VARCHAR(128) NOT NULL, store_address VARCHAR(64) NOT NULL, store_tel_number VARCHAR(11) NOT NULL, table_count INT NOT NULL, isLogin INT);")
 command.execute("CREATE TABLE Table_list (unique_store_info INT, table_number INT, table_state INT NOT NULL, isLogin INT);")
 command.execute("CREATE TABLE Product_group (unique_product_group INT, unique_store_info INT NOT NULL, group_name VARCHAR(64) NOT NULL);")
 command.execute("CREATE TABLE Product (unique_product INT, unique_store_info INT NOT NULL, unique_product_group INT NOT NULL, product_name VARCHAR(64) NOT NULL, price INT NOT NULL, image LONGTEXT, description LONGTEXT, amount INT NOT NULL);")
@@ -70,25 +84,23 @@ command.execute("ALTER TABLE Selected_option ADD FOREIGN KEY (unique_product_sub
 
 
 # 테스트 입력
-"""
-command.execute("INSERT INTO Admins VALUES(0, 'link_state', 'asdf1234', 'kor_people', '01012345678', 'link@asd.qwe', 0);")
-command.execute("INSERT INTO Store_info VALUES(1, 0, '날아라 닭다리', '먹신', '냠냠민국 쩝쩝시 치킨로 12-97', '0331234567');")
+
+command.execute("INSERT INTO Admins VALUES(0, 'link_state', 'asdf1234', 'kor_people', '01012345678', 'link@asd.qwe');")
+command.execute("INSERT INTO Store_info VALUES(1, 0, '날아라 닭다리', '먹신', '냠냠민국 쩝쩝시 치킨로 12-97', '0331234567', 5, 0);")
 command.execute("INSERT INTO Table_list VALUES(1, 2, 0, 0);")
 command.execute("INSERT INTO Product_group VALUES(3, 1, '순살');")
-command.execute("INSERT INTO Product VALUES(4, 3, '월계수찜닭', 10000, '', '', -1);")
-command.execute("INSERT INTO Product_option VALUES(5, 4, '닭털당면', 0, 1);")
-command.execute("INSERT INTO Product_option VALUES(6, 4, '소발굽만두 5개 추가', 5000, 0);")
+command.execute("INSERT INTO Product VALUES(4, 1, 3, '월계수찜닭', 10000, '', '', -1);")
+command.execute("INSERT INTO Product_option VALUES(5, 1, 4, '닭털당면', 0, 1);")
+command.execute("INSERT INTO Product_option VALUES(6, 1, 4, '소발굽만두 5개 추가', 5000, 0);")
 command.execute("INSERT INTO Product_suboption VALUES(7, 5, '많이', 1000, -1);")
 command.execute("INSERT INTO Product_suboption VALUES(8, 5, '적게', 500, -1);")
 command.execute("INSERT INTO Order_list VALUES(9, 1, 4, 2, 1, 0, '2023-07-28 20:22:12');")
 command.execute("INSERT INTO Selected_option VALUES(10, 9, 5, 7);")
 command.execute("INSERT INTO Selected_option VALUES(11, 9, 6, NULL);")
-"""
+
 
 connection.commit()
-
-
-# connection.close()
+connection.close()
 
 # termux 시작 시, 자동실행
 #  http://john-home.iptime.org:8085/xe/index.php?mid=board_ZoED57&document_srl=12398

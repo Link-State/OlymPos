@@ -12,14 +12,19 @@ class AdminLogin(Resource) :
     def post(self) :
         id = ""
         pwd = ""
+        store_uid = ""
         user_data = request.get_json()
 
-        if "id" in user_data and "pwd" in user_data :
-            id = user_data["id"]
-            pwd = user_data["pwd"]
+        if "id" not in user_data or "pwd" not in user_data or "store_uid" not in user_data :
+            return jsonify({"result" : "Invalid", "code" : "001"})
         
+        id = user_data["id"]
+        pwd = user_data["pwd"]
+        store_uid = user_data["store_uid"]
+        result = account.adminLogin(id=id, pwd=pwd, store_uid=store_uid)
+
         # 세션에 토큰 저장
-        return jsonify(account.adminLogin(id=id, pwd=pwd))
+        return jsonify(result)
     
 class UserLogin(Resource) :
     def post(self) :
