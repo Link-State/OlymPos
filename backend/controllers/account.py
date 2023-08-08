@@ -7,24 +7,41 @@ from flask_jwt_extended import *
 from models import Admins
 
 def adminLogin(id="", pwd="") :
-    uid = Admins.findUID()
+    uid = Admins.findUID(id)
     user = Admins.getUser(uid)
 
-    if (user["id"] == id and user["pwd"] == pwd) :
-        return {"result" : "Success",
-            "access_token" : create_access_token(identity=id, expires_delta=False)
-        }
-    else :
-        return {"result" : "Invalid"}
+    if "user_id" not in user or "user_pwd" not in user :
+        return {"result" : "Invalid", "code" : "002"}
+
+    if user["user_id"] != id or user["user_pwd"] != pwd :
+        return {"result" : "Invalid", "code" : "001"}
+        
+    return {
+        "result" : "Success",
+        "access_token" : create_access_token(identity=id, expires_delta=False),
+        "code" : "000"
+    }
 
 def userLogin(id="", pwd="", tableNum=-1) :
-    user = Admins.getUser()
-    if (user["id"] == id and user["pwd"] == pwd) :
-        return {"result" : "Success",
-            "access_token" : create_access_token(identity=id, expires_delta=False)
-        }
-    else :
-        return {"result" : "Invalid"}
+    uid = Admins.findUID(id)
+    user = Admins.getUser(uid)
+
+    # (관리자 계정이 존재하는지 확인할 것.)
+    # 관리자 계정이 로그인 상태인지 확인할 것.
+    # 해당 테이블이 존재하는지 확인할 것.
+    # 해당 테이블 번호가 이미 로그인 상태인지 확인할 것.
+
+    if "user_id" not in user or "user_pwd" not in user :
+        return {"result" : "Invalid", "code" : "002"}
+
+    if user["user_id"] != id or user["user_pwd"] != pwd :
+        return {"result" : "Invalid", "code" : "001"}
+        
+    return {
+        "result" : "Success",
+        "access_token" : create_access_token(identity=id, expires_delta=False),
+        "code" : "000"
+    }
 
 def adminLogout(id="", pwd="", tableNum=-1) :
     if (id == "asdf" and pwd == "1234") :

@@ -10,16 +10,16 @@ from controllers import account
 
 class AdminLogin(Resource) :
     def post(self) :
-        user_data = request.get_json()
         id = ""
         pwd = ""
+        user_data = request.get_json()
 
         if "id" in user_data and "pwd" in user_data :
             id = user_data["id"]
             pwd = user_data["pwd"]
         
         # 세션에 토큰 저장
-        return jsonify(account.adminLogin(id, pwd))
+        return jsonify(account.adminLogin(id=id, pwd=pwd))
     
 class UserLogin(Resource) :
     def post(self) :
