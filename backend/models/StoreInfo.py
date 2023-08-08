@@ -28,7 +28,11 @@ def setOwner(uid=-1, owner="") :
 def setAddress(uid=-1, address="") :
     return
 
-def setTelNum(uid=-1, num="") :
+def setTelNum(uid=-1, tel="") :
+    return
+
+def setTableCount(uid=-1, num=-1) :
+    # Table List에 1부터 num까지 순차적으로 생성
     return
 
 def add(**kwargs) :

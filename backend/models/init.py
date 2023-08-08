@@ -18,11 +18,11 @@ command.execute("DROP TABLE IF EXISTS Admins;")
 
 # 테이블 생성
 command.execute("CREATE TABLE Admins (unique_admin INT, user_id VARCHAR(32) NOT NULL, user_pwd VARCHAR(32) NOT NULL, name VARCHAR(128) NOT NULL, phone_number VARCHAR(11) NOT NULL, email VARCHAR(128) NOT NULL, isLogin INT);")
-command.execute("CREATE TABLE Store_info (unique_store_info INT, unique_admin INT NOT NULL, store_name VARCHAR(64) NOT NULL, store_owner VARCHAR(128) NOT NULL, store_address VARCHAR(64) NOT NULL, store_tel_number VARCHAR(11) NOT NULL);")
+command.execute("CREATE TABLE Store_info (unique_store_info INT, unique_admin INT NOT NULL, store_name VARCHAR(64) NOT NULL, store_owner VARCHAR(128) NOT NULL, store_address VARCHAR(64) NOT NULL, store_tel_number VARCHAR(11) NOT NULL, table_count INT NOT NULL);")
 command.execute("CREATE TABLE Table_list (unique_store_info INT, table_number INT, table_state INT NOT NULL, isLogin INT);")
 command.execute("CREATE TABLE Product_group (unique_product_group INT, unique_store_info INT NOT NULL, group_name VARCHAR(64) NOT NULL);")
-command.execute("CREATE TABLE Product (unique_product INT, unique_product_group INT NOT NULL, product_name VARCHAR(64) NOT NULL, price INT NOT NULL, image LONGTEXT, description LONGTEXT, amount INT NOT NULL);")
-command.execute("CREATE TABLE Product_option (unique_product_option INT, unique_product INT NOT NULL, option_name VARCHAR(64) NOT NULL, price INT NOT NULL, suboption_offer INT NOT NULL);")
+command.execute("CREATE TABLE Product (unique_product INT, unique_store_info INT NOT NULL, unique_product_group INT NOT NULL, product_name VARCHAR(64) NOT NULL, price INT NOT NULL, image LONGTEXT, description LONGTEXT, amount INT NOT NULL);")
+command.execute("CREATE TABLE Product_option (unique_product_option INT, unique_store_info INT NOT NULL, unique_product INT NOT NULL, option_name VARCHAR(64) NOT NULL, price INT NOT NULL, suboption_offer INT NOT NULL);")
 command.execute("CREATE TABLE Product_suboption (unique_product_suboption INT, unique_product_option INT NOT NULL, suboption_name VARCHAR(64) NOT NULL, price INT NOT NULL, amount INT NOT NULL);")
 command.execute("CREATE TABLE Order_list (unique_order INT, unique_store_info INT NOT NULL, unique_product INT NOT NULL, table_number INT NOT NULL, amount INT NOT NULL, order_state INT NOT NULL, order_date DATETIME NOT NULL);")
 command.execute("CREATE TABLE Selected_option (unique_selected_option INT, unique_order INT NOT NULL, unique_product_option INT NOT NULL, unique_product_suboption INT);")
@@ -43,11 +43,13 @@ command.execute("ALTER TABLE Product_group ADD FOREIGN KEY (unique_store_info) R
 
 command.execute("ALTER TABLE Product ADD PRIMARY KEY (unique_product);")
 command.execute("ALTER TABLE Product ADD FOREIGN KEY (unique_product_group) REFERENCES Product_group(unique_product_group) ON UPDATE CASCADE ON DELETE CASCADE;")
+command.execute("ALTER TABLE Product ADD FOREIGN KEY (unique_store_info) REFERENCES Store_info(unique_store_info) ON UPDATE CASCADE ON DELETE CASCADE;")
 command.execute("ALTER TABLE Product ADD CONSTRAINT price_conflict_at_Product CHECK (0 <= price);")
 command.execute("ALTER TABLE Product ADD CONSTRAINT amount_conflict_at_Product CHECK (-1 <= amount);")
 
 command.execute("ALTER TABLE Product_option ADD PRIMARY KEY (unique_product_option);")
 command.execute("ALTER TABLE Product_option ADD FOREIGN KEY (unique_product) REFERENCES Product(unique_product) ON UPDATE CASCADE ON DELETE CASCADE;")
+command.execute("ALTER TABLE Product_option ADD FOREIGN KEY (unique_store_info) REFERENCES Store_info(unique_store_info) ON UPDATE CASCADE ON DELETE CASCADE;")
 command.execute("ALTER TABLE Product_option ADD CONSTRAINT price__conflict__at__Product_option CHECK (0 <= price);")
 
 command.execute("ALTER TABLE Product_suboption ADD PRIMARY KEY (unique_product_suboption);")

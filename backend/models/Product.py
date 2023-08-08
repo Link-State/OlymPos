@@ -12,6 +12,9 @@ def getProducts(store_uid=-1) :
 def getProduct(uid=-1) :
     return
 
+def setStore(uid=-1, id=-1) :
+    return
+
 def setGroupID(uid=-1, id=-1) :
     return
 

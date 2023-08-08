@@ -12,6 +12,9 @@ def getOptions(product_uid=-1) :
 def getOption(uid=-1) :
     return
 
+def setStore(uid=-1, id=-1) :
+    return
+
 def setProduct(uid=-1, product_id=-1) :
     return
 

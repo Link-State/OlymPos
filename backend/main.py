@@ -22,6 +22,8 @@ api.add_resource(account.AdminLogout, '/admin-logout')
 api.add_resource(account.UserLogin, '/user-login')
 api.add_resource(account.UserLogout, '/user-logout')
 api.add_resource(account.Signup, '/signup')
+api.add_resource(account.Delete_account, '/delete-account')
+api.add_resource(account.Change_account_info, '/change-account-info')
 
 if __name__ == '__main__' :
     # host를 127.0.0.1로 바꿔도 작동이 될까?

@@ -8,65 +8,29 @@ from main import connection, command
 def findUID(id="") :
     return
 
-def getUser(uid=-1, id="") :
+def getUser(uid=-1) :
     # uid, id, pwd, name, phone num, email, islogin
     # 프론트엔드로 output시 pwd, islogin 정보는 지워서 output
-    if 0 <= uid :
-        pass
-    elif id != "" :
-        pass
-    else :
-        return
     
     return
 
-def setPWD(uid=-1, id="", pwd="") :
-    if 0 <= uid :
-        pass
-    elif id != "" :
-        pass
-    else :
-        return
+def setPWD(uid=-1, pwd="") :
     
     return
 
-def setName(uid=-1, id="", name="") :
-    if 0 <= uid :
-        pass
-    elif id != "" :
-        pass
-    else :
-        return
+def setName(uid=-1, name="") :
     
     return
 
-def setPhoneNum(uid=-1, id="", num="") :
-    if 0 <= uid :
-        pass
-    elif id != "" :
-        pass
-    else :
-        return
+def setPhoneNum(uid=-1, num="") :
     
     return
 
-def setEmail(uid=-1, id="", email="") :
-    if 0 <= uid :
-        pass
-    elif id != "" :
-        pass
-    else :
-        return
+def setEmail(uid=-1, email="") :
     
     return
 
-def setIsLogin(uid=-1, id="", islogin=0) :
-    if 0 <= uid :
-        pass
-    elif id != "" :
-        pass
-    else :
-        return
+def setIsLogin(uid=-1, islogin=0) :
     
     return
 
@@ -74,12 +38,6 @@ def add(**kwargs) :
     # id, pwd, name, phone num, email
     return
 
-def remove(uid=-1, id="") :
-    if 0 <= uid :
-        pass
-    elif id != "" :
-        pass
-    else :
-        return
+def remove(uid=-1) :
     
     return
