@@ -19,7 +19,7 @@ class AdminLogin(Resource) :
             pwd = user_data["pwd"]
         
         # 세션에 토큰 저장
-        return jsonify(account.login(id, pwd))
+        return jsonify(account.adminLogin(id, pwd))
     
 class UserLogin(Resource) :
     def post(self) :
