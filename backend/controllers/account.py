@@ -7,18 +7,25 @@ from flask_jwt_extended import *
 from models import Admins
 
 def adminLogin(id="", pwd="") :
-    uid = Admins.findUID(id)
+    uid = Admins.findUID(id=id)
     
     # 유저 아이디로 고유아이디가 검색되지 않을 때,
     if uid == -1 :
         return {"result" : "Invalid", "code" : "002"}
 
-    user = Admins.getUser(uid)
+    user = Admins.getUser(uid=uid)
 
     # 유저 아이디, 비밀번호가 맞지 않을 때,
     if user["user_id"] != id or user["user_pwd"] != pwd :
         return {"result" : "Invalid", "code" : "001"}
     
+    # 이미 로그인 상태일 때,
+    if user["isLogin"] == 1 :
+        return {"result" : "Invalid", "code" : "003"}
+    
+    # 로그인 상태로 변경
+    Admins.setIsLogin(uid=uid, islogin=1)
+
     return {
         "result" : "Success",
         "access_token" : create_access_token(identity=id, expires_delta=False),

@@ -53,6 +53,13 @@ def setEmail(uid=-1, email="") :
     return
 
 def setIsLogin(uid=-1, islogin=0) :
+    sql = f"""
+    UPDATE Admins
+    SET isLogin = 1
+    WHERE unique_admin = {uid};
+    """
+
+    mysql.execute(SQL=sql)
     
     return
 
