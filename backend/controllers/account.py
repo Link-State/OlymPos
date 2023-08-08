@@ -8,14 +8,17 @@ from models import Admins
 
 def adminLogin(id="", pwd="") :
     uid = Admins.findUID(id)
-    user = Admins.getUser(uid)
-
-    if "user_id" not in user or "user_pwd" not in user :
+    
+    # 유저 아이디로 고유아이디가 검색되지 않을 때,
+    if uid == -1 :
         return {"result" : "Invalid", "code" : "002"}
 
+    user = Admins.getUser(uid)
+
+    # 유저 아이디, 비밀번호가 맞지 않을 때,
     if user["user_id"] != id or user["user_pwd"] != pwd :
         return {"result" : "Invalid", "code" : "001"}
-        
+    
     return {
         "result" : "Success",
         "access_token" : create_access_token(identity=id, expires_delta=False),
