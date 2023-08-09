@@ -24,12 +24,11 @@ def adminLogin(id="", pwd="", store_uid=-1) :
     store = StoreInfo.getStore(store_uid)
 
     # 매장이 검색되지 않을 때,
-    # 로직 변경할 것.
-    if "isLogin" not in store :
+    if len(store) <= 0 :
         return {"result" : "Invalid", "code" : "004"}
 
     # 매장이 이미 로그인 상태일 때,
-    if store["isLogin"] == 1 :
+    if "isLogin" in store and store["isLogin"] == 1 :
         return {"result" : "Invalid", "code" : "005"}
     
     # 로그인 상태로 변경
