@@ -31,16 +31,20 @@ class UserLogin(Resource) :
         user_data = request.get_json()
         id = ""
         pwd = ""
+        store_uid = ""
         tableNum = -1
 
-        if "id" in user_data and "pwd" in user_data :
-            id = user_data["id"]
-            pwd = user_data["pwd"]
-        if "tableNum" in user_data :
-            tableNum = user_data["tableNum"]
+        # 필수 값이 누락 됐을 때,
+        if "id" not in user_data or "pwd" not in user_data or "store_uid" not in user_data or "table_num" not in user_data :
+            return jsonify({"result" : "Invalid", "code" : "001"})
+        
+        id = user_data["id"]
+        pwd = user_data["pwd"]
+        store_uid = user_data["store_uid"]
+        tableNum = user_data["table_num"]
         
         # 세션에 토큰 저장
-        return jsonify(account.login(id, pwd, tableNum))
+        return jsonify(account.userLogin(id=id, pwd=pwd, store_uid=store_uid, tableNum=tableNum))
 
 class AdminLogout(Resource) :
     @jwt_required()
