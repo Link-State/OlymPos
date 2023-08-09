@@ -66,7 +66,7 @@ def userLogin(id="", pwd="", store_uid=-1, tableNum=-1) :
         return {"result" : "Invalid", "code" : "006"}
 
     # 해당 테이블 번호가 이미 로그인 상태인지 확인할 것.
-    if table["isLogin"] == 1 :
+    if "isLogin" in table and table["isLogin"] == 1 :
         return {"result" : "Invalid", "code" : "005"}
     
     # 테이블 로그인 상태로 변경
