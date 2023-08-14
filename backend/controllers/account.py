@@ -95,4 +95,5 @@ def signup() :
     return
 
 def delete_account() :
+    # isAvailable = 1
     return
