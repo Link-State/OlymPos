@@ -31,7 +31,7 @@ command.execute("DROP TABLE IF EXISTS Store_info;")
 command.execute("DROP TABLE IF EXISTS Admins;")
 
 # 테이블 생성
-command.execute("CREATE TABLE Admins (unique_admin INT, user_id VARCHAR(32) NOT NULL, user_pwd VARCHAR(32) NOT NULL, name VARCHAR(128) NOT NULL, phone_number VARCHAR(16) NOT NULL, email VARCHAR(128) NOT NULL);")
+command.execute("CREATE TABLE Admins (unique_admin INT, user_id VARCHAR(32) NOT NULL, user_pwd VARCHAR(32) NOT NULL, name VARCHAR(128) NOT NULL, phone_number VARCHAR(16) NOT NULL, email VARCHAR(128) NOT NULL, available INT NOT NULL);")
 command.execute("CREATE TABLE Store_info (unique_store_info INT, unique_admin INT NOT NULL, store_name VARCHAR(64) NOT NULL, store_owner VARCHAR(128) NOT NULL, store_address VARCHAR(64) NOT NULL, store_tel_number VARCHAR(16) NOT NULL, table_count INT NOT NULL, isLogin INT);")
 command.execute("CREATE TABLE Table_list (unique_store_info INT, table_number INT, table_state INT NOT NULL, isLogin INT);")
 command.execute("CREATE TABLE Product_group (unique_product_group INT, unique_store_info INT NOT NULL, group_name VARCHAR(64) NOT NULL);")
