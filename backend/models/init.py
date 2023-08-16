@@ -100,6 +100,8 @@ command.execute("INSERT INTO Product_option VALUES(5, 1, 4, '닭털당면', 0, 1
 command.execute("INSERT INTO Product_option VALUES(6, 1, 4, '소발굽만두 5개 추가', 5000, 0);")
 command.execute("INSERT INTO Product_suboption VALUES(7, 5, '많이', 1000, -1);")
 command.execute("INSERT INTO Product_suboption VALUES(8, 5, '적게', 500, -1);")
+command.execute("INSERT INTO Product_Option_relations VALUES(4, 5);")
+command.execute("INSERT INTO Product_Option_relations VALUES(4, 6);")
 command.execute("INSERT INTO Order_list VALUES(9, 1, 4, 2, 1, 0, '2023-07-28 20:22:12');")
 command.execute("INSERT INTO Selected_option VALUES(10, 9, 5, 7);")
 command.execute("INSERT INTO Selected_option VALUES(11, 9, 6, NULL);")
