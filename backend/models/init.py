@@ -42,7 +42,7 @@ command.execute("""CREATE TABLE Admins (
                 name VARCHAR(128) NOT NULL,
                 phone_number VARCHAR(16) NOT NULL,
                 email VARCHAR(128) NOT NULL,
-                isAvailable INT NOT NULL
+                disable_date DATETIME
                 );""")
 
 ## 매장 스키마
@@ -55,7 +55,7 @@ command.execute("""CREATE TABLE Store_info (
                 store_tel_number VARCHAR(16) NOT NULL,
                 table_count INT NOT NULL,
                 isLogin LONGTEXT NOT NULL,
-                isAvailable INT NOT NULL
+                disable_date DATETIME
                 );""")
 
 ## 테이블 스키마
@@ -63,14 +63,16 @@ command.execute("""CREATE TABLE Table_list (
                 unique_store_info INT,
                 table_number INT,
                 table_state INT NOT NULL,
-                isLogin LONGTEXT NOT NULL
+                isLogin LONGTEXT NOT NULL,
+                disable_date DATETIME
                 );""")
 
 ## 상품 카테고리 스키마
 command.execute("""CREATE TABLE Product_group (
                 unique_product_group INT,
                 unique_store_info INT NOT NULL,
-                group_name VARCHAR(64) NOT NULL
+                group_name VARCHAR(64) NOT NULL,
+                disable_date DATETIME
                 );""")
 
 ## 상품 스키마
@@ -82,17 +84,18 @@ command.execute("""CREATE TABLE Product (
                 price INT NOT NULL,
                 image LONGTEXT,
                 description LONGTEXT,
-                amount INT NOT NULL
+                amount INT NOT NULL,
+                disable_date DATETIME
                 );""")
 
 ## 상품 옵션 스키마
 command.execute("""CREATE TABLE Product_option (
                 unique_product_option INT,
                 unique_store_info INT NOT NULL,
-                unique_product INT NOT NULL,
                 option_name VARCHAR(64) NOT NULL,
                 price INT NOT NULL,
-                suboption_offer INT NOT NULL
+                suboption_offer INT NOT NULL,
+                disable_date DATETIME
                 );""")
 
 ## 상품-옵션 관계 스키마
@@ -107,7 +110,8 @@ command.execute("""CREATE TABLE Product_suboption (
                 unique_product_option INT NOT NULL,
                 suboption_name VARCHAR(64) NOT NULL,
                 price INT NOT NULL,
-                amount INT NOT NULL
+                amount INT NOT NULL,
+                disable_date DATETIME
                 );""")
 
 ## 주문 내역 스키마
@@ -228,14 +232,6 @@ command.execute("""ALTER TABLE Product
 ### 상품 옵션 기본키
 command.execute("""ALTER TABLE Product_option
                 ADD PRIMARY KEY (unique_product_option)
-                ;""")
-
-### 상품 옵션 외래키
-command.execute("""ALTER TABLE Product_option
-                ADD FOREIGN KEY (unique_product)
-                REFERENCES Product(unique_product)
-                ON UPDATE CASCADE
-                ON DELETE CASCADE
                 ;""")
 
 ### 상품 옵션 외래키
@@ -374,7 +370,8 @@ command.execute("""INSERT INTO Admins VALUES(
                 'asdf1234',
                 'kor_people',
                 '01012345678',
-                'link@asd.qwe'
+                'link@asd.qwe',
+                NULL
                 );""")
 
 ## 매장
@@ -386,7 +383,8 @@ command.execute("""INSERT INTO Store_info VALUES(
                 '냠냠민국 쩝쩝시 치킨로 12-97',
                 '0331234567',
                 5,
-                0
+                0,
+                NULL
                 );""")
 
 ## 테이블
@@ -394,14 +392,16 @@ command.execute("""INSERT INTO Table_list VALUES(
                 1,
                 2,
                 0,
-                0
+                0,
+                NULL
                 );""")
 
 ## 상품 카테고리
 command.execute("""INSERT INTO Product_group VALUES(
                 3,
                 1,
-                '순살'
+                '순살',
+                NULL
                 );""")
 
 ## 상품
@@ -413,27 +413,28 @@ command.execute("""INSERT INTO Product VALUES(
                 10000,
                 '',
                 '',
-                -1
+                -1,
+                NULL
                 );""")
 
 ## 옵션1
 command.execute("""INSERT INTO Product_option VALUES(
                 5,
                 1,
-                4,
                 '닭털당면',
                 0,
-                1
+                1,
+                NULL
                 );""")
 
 ## 옵션2
 command.execute("""INSERT INTO Product_option VALUES(
                 6,
                 1,
-                4,
                 '소발굽만두 5개 추가',
                 5000,
-                0
+                0,
+                NULL
                 );""")
 
 ## 서브옵션1
@@ -442,7 +443,8 @@ command.execute("""INSERT INTO Product_suboption VALUES(
                 5,
                 '많이',
                 1000,
-                -1
+                -1,
+                NULL
                 );""")
 
 ## 서브옵션2
@@ -451,7 +453,8 @@ command.execute("""INSERT INTO Product_suboption VALUES(
                 5,
                 '적게',
                 500,
-                -1
+                -1,
+                NULL
                 );""")
 
 ## 상품-옵션 관계1
