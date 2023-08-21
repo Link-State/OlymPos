@@ -49,10 +49,14 @@ class UserLogin(Resource) :
 class AdminLogout(Resource) :
     @jwt_required()
     def post(self) :
-        #identity = user_id
         identity = get_jwt_identity()
+
+        # 토큰이 없을 경우
         if identity is None :
-            return "Invalid"
+            return {"result" : "Invalid", "code" : "101"}
+        
+        return jsonify(account.adminLogout(id=identity))
+        
         
 class UserLogout(Resource) :
     @jwt_required()

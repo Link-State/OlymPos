@@ -78,11 +78,14 @@ def userLogin(id="", pwd="", store_uid=-1, tableNum=-1) :
         "code" : "000"
     }
 
-def adminLogout(id="", pwd="", tableNum=-1) :
-    if (id == "asdf" and pwd == "1234") :
-        return {"result" : "Success"}
-    else :
-        return {"result" : "Invalid"}
+def adminLogout(id="") :
+    uid = Admins.findUID(id)
+
+    # 유저 아이디로 고유번호가 검색되지 않을 때,
+    if uid == -1 :
+        return {"result" : "Invalid", "code" : "200"}
+    
+    return {"result" : "Success", "code" : "001"}
 
 def userLogout(id="", pwd="", tableNum=-1) :
 
