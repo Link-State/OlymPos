@@ -67,13 +67,21 @@ class AdminLogout(Resource) :
             return "Invalid"
         
 class UserLogout(Resource) :
-    @jwt_required()
     def post(self) :
-        #identity = user_id
-        identity = get_jwt_identity()
-        if identity is None :
-            return "Invalid"
+        user_data = request.get_json()
+        ssaid = ""
+        store_uid = -1
+        table = -1
+
+        # 필수 값이 누락 됐을 때,
+        if "SSAID" not in user_data or "store_uid" not in user_data or "table" not in user_data :
+            return jsonify({"result" : "Invalid", "code" : "100"})
         
+        ssaid = user_data["SSAID"]
+        store_uid = user_data["store_uid"]
+        table = user_data["table"]
+
+        return jsonify(account.userLogout(ssaid=ssaid, store_uid=store_uid, tableNum=table))
 
 class Signup(Resource) :
     def post(self) :

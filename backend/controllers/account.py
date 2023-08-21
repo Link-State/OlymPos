@@ -97,12 +97,31 @@ def adminLogout(id="", pwd="", tableNum=-1) :
     else :
         return {"result" : "Invalid"}
 
-def userLogout(id="", pwd="", tableNum=-1) :
+def userLogout(ssaid="", store_uid=-1, tableNum=-1) :
+    store = StoreInfo.getStore(store_uid)
+    
+    # 매장이 검색되지 않을 때,
+    if len(store) <= 0 :
+        return {"result" : "Invalid", "code" : "202"}
 
-    if (id == "asdf" and pwd == "1234") :
-        return {"result" : "Success"}
-    else :
-        return {"result" : "Invalid"}
+    table = TableList.getTable(store_uid=store_uid, tableNum=tableNum)
+
+    # 테이블이 검색되지 않을 때,
+    if len(table) <= 0 :
+        return {"result" : "Invalid", "code" : "203"}
+
+    # 로그인 상태가 아닐 때,
+    if "isLogin" in table and table["isLogin"] == '' :
+        return {"result" : "Invalid", "code" : "205"}
+    
+    # SSAID가 맞지 않을 때,
+    if table["isLogin"] != ssaid :
+        return {"result" : "Invalid", "code" : "204"}
+    
+    # 로그아웃
+    TableList.setIsLogin(store_uid=store_uid, tableNum=tableNum, islogin='')
+    
+    return {"result" : "Success", "code" : "001"}
 
 def signup() :
     return

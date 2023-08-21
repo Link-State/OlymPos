@@ -55,17 +55,6 @@ def setTableCount(uid=-1, num=-1) :
     # Table List에 1부터 num까지 순차적으로 생성
     return
 
-def setIsLogin(uid=-1, islogin=0) :
-    sql = f"""
-    UPDATE Store_info
-    SET isLogin = {islogin}
-    WHERE unique_store_info = {uid};
-    """
-
-    mysql.execute(SQL=sql)
-    
-    return
-
 def add(**kwargs) :
     # admin uid, name, owner, address, tel num
     return
