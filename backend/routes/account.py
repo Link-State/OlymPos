@@ -16,7 +16,7 @@ class AdminLogin(Resource) :
         user_data = request.get_json()
 
         if "id" not in user_data or "pwd" not in user_data or "store_uid" not in user_data :
-            return jsonify({"result" : "Invalid", "code" : "001"})
+            return jsonify({"result" : "Invalid", "code" : "100"})
         
         id = user_data["id"]
         pwd = user_data["pwd"]
