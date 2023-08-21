@@ -3,11 +3,23 @@ import os
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from main import connection, command
+from models import mysql
 
-# 해당 매장의 모든 상품 목록 반환
-def getProducts(store_uid=-1) :
-    return
+def getProducts(store_uid=-1, include_disable=False) :
+    select = ''
+    where = " and disable_date is NULL"
+
+    if include_disable :
+        select = ", disable_date"
+        where = ''
+    
+    sql = f"""
+    SELECT unique_product, unique_store_info, unique_product_group, product_name, price, image, description, amount{select}
+    FROM Product
+    WHERE unique_store_info = {store_uid}{where};
+    """
+
+    return mysql.execute(SQL=sql, fetch=True)
 
 def getProduct(uid=-1) :
     return

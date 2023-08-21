@@ -54,7 +54,6 @@ command.execute("""CREATE TABLE Store_info (
                 store_address VARCHAR(256) NOT NULL,
                 store_tel_number VARCHAR(16) NOT NULL,
                 table_count INT NOT NULL,
-                isLogin LONGTEXT NOT NULL,
                 disable_date DATETIME
                 );""")
 
@@ -369,7 +368,7 @@ command.execute("""INSERT INTO Admins VALUES(
                 'link_state',
                 'asdf1234',
                 'kor_people',
-                '01012345678',
+                '010-1234-5678',
                 'link@asd.qwe',
                 NULL
                 );""")
@@ -381,9 +380,8 @@ command.execute("""INSERT INTO Store_info VALUES(
                 '날아라 닭다리',
                 '먹신',
                 '냠냠민국 쩝쩝시 치킨로 12-97',
-                '0331234567',
+                '033-123-4567',
                 5,
-                0,
                 NULL
                 );""")
 
@@ -392,7 +390,7 @@ command.execute("""INSERT INTO Table_list VALUES(
                 1,
                 2,
                 0,
-                0,
+                '',
                 NULL
                 );""")
 

@@ -29,10 +29,10 @@ def setTableNum(store_uid=-1, tableNum=-1) :
 def setState(store_uid=-1, tableNum=-1, state=-1) :
     return
 
-def setIsLogin(store_uid=-1, tableNum=-1, islogin=0) :
+def setIsLogin(store_uid=-1, tableNum=-1, islogin='') :
     sql = f"""
     UPDATE Table_list
-    SET isLogin = {islogin}
+    SET isLogin = '{islogin}'
     WHERE unique_store_info = {store_uid} and table_number = {tableNum};
     """
 
