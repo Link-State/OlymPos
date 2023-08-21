@@ -31,20 +31,32 @@ class UserLogin(Resource) :
         user_data = request.get_json()
         id = ""
         pwd = ""
-        store_uid = ""
-        tableNum = -1
 
         # 필수 값이 누락 됐을 때,
-        if "id" not in user_data or "pwd" not in user_data or "store_uid" not in user_data or "table_num" not in user_data :
-            return jsonify({"result" : "Invalid", "code" : "001"})
+        if "id" not in user_data or "pwd" not in user_data :
+            return jsonify({"result" : "Invalid", "code" : "100"})
         
         id = user_data["id"]
         pwd = user_data["pwd"]
-        store_uid = user_data["store_uid"]
-        tableNum = user_data["table_num"]
         
-        # 세션에 토큰 저장
-        return jsonify(account.userLogin(id=id, pwd=pwd, store_uid=store_uid, tableNum=tableNum))
+        return jsonify(account.userLogin(id=id, pwd=pwd))
+
+class TableLogin(Resource) :
+    def post(self) :
+        user_data = request.get_json()
+        ssaid = ""
+        store_uid = -1
+        table_num = -1
+
+        # 필수 값이 누락 됐을 때,
+        if "SSAID" not in user_data or "store_uid" not in user_data or "table" not in user_data :
+            return jsonify({"result" : "Invalid", "code" : "100"})
+        
+        ssaid = user_data["SSAID"]
+        store_uid = user_data["store_uid"]
+        table_num = user_data["table"]
+
+        return jsonify(account.tableLogin(ssaid=ssaid, store_uid=store_uid, tableNum=table_num))
 
 class AdminLogout(Resource) :
     @jwt_required()
@@ -59,13 +71,21 @@ class AdminLogout(Resource) :
         
         
 class UserLogout(Resource) :
-    @jwt_required()
     def post(self) :
-        #identity = user_id
-        identity = get_jwt_identity()
-        if identity is None :
-            return "Invalid"
+        user_data = request.get_json()
+        ssaid = ""
+        store_uid = -1
+        table = -1
+
+        # 필수 값이 누락 됐을 때,
+        if "SSAID" not in user_data or "store_uid" not in user_data or "table" not in user_data :
+            return jsonify({"result" : "Invalid", "code" : "100"})
         
+        ssaid = user_data["SSAID"]
+        store_uid = user_data["store_uid"]
+        table = user_data["table"]
+
+        return jsonify(account.userLogout(ssaid=ssaid, store_uid=store_uid, tableNum=table))
 
 class Signup(Resource) :
     def post(self) :
