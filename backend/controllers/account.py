@@ -13,27 +13,20 @@ def adminLogin(id="", pwd="", store_uid=-1) :
     
     # 유저 아이디로 고유번호가 검색되지 않을 때,
     if uid == -1 :
-        return {"result" : "Invalid", "code" : "002"}
+        return {"result" : "Invalid", "code" : "200"}
 
     user = Admins.getUser(uid=uid)
 
     # 유저 아이디, 비밀번호가 맞지 않을 때,
     if user["user_id"] != id or user["user_pwd"] != pwd :
-        return {"result" : "Invalid", "code" : "003"}
+        return {"result" : "Invalid", "code" : "201"}
     
     store = StoreInfo.getStore(store_uid)
-
+    
     # 매장이 검색되지 않을 때,
     if len(store) <= 0 :
-        return {"result" : "Invalid", "code" : "004"}
-
-    # 매장이 이미 로그인 상태일 때,
-    if "isLogin" in store and store["isLogin"] == 1 :
-        return {"result" : "Invalid", "code" : "005"}
+        return {"result" : "Invalid", "code" : "202"}
     
-    # 로그인 상태로 변경
-    StoreInfo.setIsLogin(uid=store_uid, islogin=1)
-
     return {
         "result" : "Success",
         "access_token" : create_access_token(identity=id, expires_delta=False),

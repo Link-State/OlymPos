@@ -12,7 +12,7 @@ def getStores(admin_id=-1) :
 def getStore(uid=-1) :
     # uid, admin uid, name, owner, address, tel num
     sql = f"""
-    SELECT unique_store_info, unique_admin, store_name, store_owner, store_address, store_tel_number, table_count, isLogin
+    SELECT unique_store_info, unique_admin, store_name, store_owner, store_address, store_tel_number, table_count
     FROM Store_info
     WHERE unique_store_info = {uid};
     """
@@ -40,22 +40,11 @@ def setTelNum(uid=-1, tel="") :
     return
 
 def setTableCount(uid=-1, num=-1) :
-    # Table List에 1부터 num까지 순차적으로 생성
-    return
-
-def setIsLogin(uid=-1, islogin=0) :
-    sql = f"""
-    UPDATE Store_info
-    SET isLogin = {islogin}
-    WHERE unique_store_info = {uid};
-    """
-
-    mysql.execute(SQL=sql)
-    
     return
 
 def add(**kwargs) :
     # admin uid, name, owner, address, tel num
+    # Table List에 1부터 num까지 순차적으로 생성
     return
 
 def remove(uid=-1) :

@@ -20,8 +20,6 @@ def findUID(id="") :
     return result[0]["unique_admin"]
 
 def getUser(uid=-1) :
-    # uid, id, pwd, name, phone num, email
-    # 프론트엔드로 output시 pwd정보는 지워서 output
     result = None
     sql = f"""
     SELECT unique_admin, user_id, user_pwd, phone_number, email
