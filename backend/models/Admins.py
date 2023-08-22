@@ -50,8 +50,12 @@ def setEmail(uid=-1, email="") :
     
     return
 
-def add(**kwargs) :
-    # id, pwd, name, phone num, email
+def add(member) :
+    sql = f"""INSERT INTO Admins (user_id, user_pwd, name, phone_number, email, disable_date)
+    VALUES({member["id"]}, {member["pwd"]}, {member["name"]}, {member["phone"]}, {member["email"]}, NULL);"""
+
+    mysql.execute(SQL=sql)
+    
     return
 
 def remove(uid=-1) :

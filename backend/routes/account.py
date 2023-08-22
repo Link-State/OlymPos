@@ -84,12 +84,15 @@ class UserLogout(Resource) :
         ssaid = user_data["SSAID"]
         store_uid = user_data["store_uid"]
         table = user_data["table"]
-
+        
         return jsonify(account.userLogout(ssaid=ssaid, store_uid=store_uid, tableNum=table))
+
 
 class Signup(Resource) :
     def post(self) :
-        return "signup"
+        user_data = request.get_json()
+
+        return jsonify(account.signup(member=user_data))
 
 
 class Delete_account(Resource) :
