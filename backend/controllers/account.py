@@ -17,6 +17,10 @@ def adminLogin(id="", pwd="") :
         return {"result" : "Invalid", "code" : "200"}
 
     user = Admins.getUser(uid=uid)
+    
+    # 탈퇴한 유저일 때,
+    if user["disable_date"] != None :
+        return {"result" : "Invalid", "code" : "102"}
 
     # 유저 아이디, 비밀번호가 맞지 않을 때,
     if user["user_id"] != id or user["user_pwd"] != pwd :
