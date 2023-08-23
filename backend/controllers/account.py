@@ -176,6 +176,12 @@ def delete_account(id='') :
     # 유저 아이디로 고유번호가 검색되지 않을 때,
     if uid == -1 :
         return {"result" : "Invalid", "code" : "200"}
+    
+    user = Admins.getUser(uid=uid)
+
+    # 이미 탈퇴한 유저일 때,
+    if user["disable_date"] != None :
+        return {"result" : "Invalid", "code" : "102"}
 
     Admins.remove(uid=uid)
 
