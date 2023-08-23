@@ -129,6 +129,13 @@ def signup(member={}) :
     
     return {"result" : "Success", "code" : "002"}
 
-def delete_account() :
-    # isAvailable = 1
-    return
+def delete_account(id='') :
+    uid = Admins.findUID(id=id)
+
+    # 유저 아이디로 고유번호가 검색되지 않을 때,
+    if uid == -1 :
+        return {"result" : "Invalid", "code" : "200"}
+
+    Admins.remove(uid=uid)
+
+    return {"result" : "Success", "code" : "004"}
