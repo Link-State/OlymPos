@@ -119,18 +119,26 @@ def userLogout(ssaid="", store_uid=-1, tableNum=-1) :
 def signup(member={}) :
     
     # 필수 값이 누락 됐을 때,
-    if "id" not in member or "pwd" not in member or "name" not in member or "phone" not in member or "email" not in member :
+    if "user_id" not in member or "user_pwd" not in member or "name" not in member or "phone" not in member or "email" not in member :
         return {"result" : "Invalid", "code" : "100"}
+
+    uid = Admins.findUID(id=member["user_id"])
+
+    # 존재하지 않는 아이디일 때,
+    if uid == -1 :
+        # DB에 회원 추가
+        Admins.add(member)
+
+        return {"result" : "Success", "code" : "002"}
     
-    # 이미 존재하는 아이디일때,
-    uid = Admins.findUID(id=member["id"])
-    if uid != -1 :
-        return {"result" : "Invalid", "code" : "206"}
+    user = Admins.getUser(uid=uid)
+
+    # 탈퇴한 유저일 때,
+    if user["disable_date"] != None :
+        return {"result" : "Invalid", "code" : "102"}
     
-    # DB에 회원 추가
-    Admins.add(member)
-    
-    return {"result" : "Success", "code" : "002"}
+    # 이미 존재하는 아이디일 때,
+    return {"result" : "Invalid", "code" : "206"}
 
 def delete_account(id='') :
     uid = Admins.findUID(id=id)
