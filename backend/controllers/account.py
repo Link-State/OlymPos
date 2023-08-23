@@ -118,12 +118,20 @@ def userLogout(ssaid="", store_uid=-1, tableNum=-1) :
     # 매장이 검색되지 않을 때,
     if len(store) <= 0 :
         return {"result" : "Invalid", "code" : "202"}
-
+    
+    # 삭제된 매장일 때,
+    if store["disable_date"] != None :
+        return {"result" : "Invalid", "code" : "102"}
+    
     table = TableList.getTable(store_uid=store_uid, tableNum=tableNum)
-
+    
     # 테이블이 검색되지 않을 때,
     if len(table) <= 0 :
         return {"result" : "Invalid", "code" : "203"}
+    
+    # 삭제된 매장일 때,
+    if table["disable_date"] != None :
+        return {"result" : "Invalid", "code" : "102"}
 
     # 로그인 상태가 아닐 때,
     if "isLogin" in table and table["isLogin"] == '' :
