@@ -31,11 +31,11 @@ class UserLogin(Resource) :
         pwd = ""
 
         # 필수 값이 누락 됐을 때,
-        if "id" not in user_data or "pwd" not in user_data :
+        if "user_id" not in user_data or "user_pwd" not in user_data :
             return jsonify({"result" : "Invalid", "code" : "100"})
         
-        id = user_data["id"]
-        pwd = user_data["pwd"]
+        id = user_data["user_id"]
+        pwd = user_data["user_pwd"]
         
         return jsonify(account.userLogin(id=id, pwd=pwd))
 
