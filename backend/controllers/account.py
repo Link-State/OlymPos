@@ -104,6 +104,12 @@ def adminLogout(id="") :
     if uid == -1 :
         return {"result" : "Invalid", "code" : "200"}
     
+    user = Admins.getUser(uid=uid)
+
+    # 탈퇴한 유저일 때,
+    if user["disable_date"] != None :
+        return {"result" : "Invalid", "code" : "102"}
+    
     return {"result" : "Success", "code" : "001"}
 
 def userLogout(ssaid="", store_uid=-1, tableNum=-1) :
