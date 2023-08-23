@@ -96,8 +96,15 @@ class Signup(Resource) :
 
 
 class Delete_account(Resource) :
+    @jwt_required()
     def post(self) :
-        return "delete account"
+        identity = get_jwt_identity()
+
+        # 토큰이 없을 경우
+        if identity is None :
+            return {"result" : "Invalid", "code" : "101"}
+        
+        return jsonify(account.delete_account(id=identity))
 
 
 class Change_account_info(Resource) :

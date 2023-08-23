@@ -1,5 +1,6 @@
 import sys
 import os
+import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
@@ -59,5 +60,13 @@ def add(member) :
     return
 
 def remove(uid=-1) :
+    now = datetime.datetime.now()
+
+    sql = f"""
+    UPDATE Admins
+    SET disable_date = '{now}'
+    WHERE unique_admin = {uid};
+    """
+    mysql.execute(SQL=sql)
     
     return
