@@ -25,7 +25,7 @@ def getUser(uid=-1) :
     sql = f"""
     SELECT unique_admin, user_id, user_pwd, phone_number, email
     FROM Admins
-    WHERE user_id = {uid};
+    WHERE unique_admin = {uid};
     """
 
     result = mysql.execute(SQL=sql, fetch=True)

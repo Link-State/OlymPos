@@ -22,10 +22,13 @@ def adminLogin(id="", pwd="") :
     if user["user_id"] != id or user["user_pwd"] != pwd :
         return {"result" : "Invalid", "code" : "201"}
     
+    stores = StoreInfo.getStores(admin_uid=uid)
+
     return {
         "result" : "Success",
         "access_token" : create_access_token(identity=id, expires_delta=False),
-        "code" : "000"
+        "code" : "000",
+        "stores" : stores
     }
 
 def userLogin(id="", pwd="") :
