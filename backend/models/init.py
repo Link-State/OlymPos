@@ -138,17 +138,18 @@ command.execute("""CREATE TABLE Selected_option (
 ## 관리자
 ### 관리자 기본키
 command.execute("""ALTER TABLE Admins
-                ADD PRIMARY KEY (unique_admin)
+                MODIFY unique_admin INT PRIMARY KEY AUTO_INCREMENT
                 ;""")
 
 ### 관리자 고유성
 command.execute("""ALTER TABLE Admins
-                ADD UNIQUE (user_id);""")
+                MODIFY user_id VARCHAR(32) UNIQUE
+                ;""")
 
 ## 매장
 ### 매장 기본키
 command.execute("""ALTER TABLE Store_info
-                ADD PRIMARY KEY (unique_store_info)
+                MODIFY unique_store_info INT PRIMARY KEY AUTO_INCREMENT
                 ;""")
 
 ### 매장 외래키
@@ -183,7 +184,7 @@ command.execute("""ALTER TABLE Table_list
 ## 상품 카테고리
 ### 상품 카테고리 기본키
 command.execute("""ALTER TABLE Product_group
-                ADD PRIMARY KEY (unique_product_group)
+                MODIFY unique_product_group INT PRIMARY KEY AUTO_INCREMENT
                 ;""")
 
 ### 상품 카테고리 외래키
@@ -197,7 +198,7 @@ command.execute("""ALTER TABLE Product_group
 ## 상품
 ### 상품 기본키
 command.execute("""ALTER TABLE Product
-                ADD PRIMARY KEY (unique_product)
+                MODIFY unique_product INT PRIMARY KEY AUTO_INCREMENT
                 ;""")
 
 ### 상품 외래키
@@ -230,7 +231,7 @@ command.execute("""ALTER TABLE Product
 
 ### 상품 옵션 기본키
 command.execute("""ALTER TABLE Product_option
-                ADD PRIMARY KEY (unique_product_option)
+                MODIFY unique_product_option INT PRIMARY KEY AUTO_INCREMENT
                 ;""")
 
 ### 상품 옵션 외래키
@@ -272,7 +273,7 @@ command.execute("""ALTER TABLE Product_Option_relations
 ## 상품 서브옵션
 ### 상품 서브옵션 기본키
 command.execute("""ALTER TABLE Product_suboption
-                ADD PRIMARY KEY (unique_product_suboption)
+                MODIFY unique_product_suboption INT PRIMARY KEY AUTO_INCREMENT
                 ;""")
 
 ### 상품 서브옵션 외래키
@@ -298,7 +299,7 @@ command.execute("""ALTER TABLE Product_suboption
 ## 주문 내역
 ### 주문 내역 기본키
 command.execute("""ALTER TABLE Order_list
-                ADD PRIMARY KEY (unique_order)
+                MODIFY unique_order INT PRIMARY KEY AUTO_INCREMENT
                 ;""")
 
 ### 주문 내역 외래키
@@ -332,7 +333,7 @@ command.execute("""ALTER TABLE Order_list
 ## 선택 옵션
 ### 선택 옵션 기본키
 command.execute("""ALTER TABLE Selected_option
-                ADD PRIMARY KEY (unique_selected_option)
+                MODIFY unique_selected_option INT PRIMARY KEY AUTO_INCREMENT
                 ;""")
 
 ### 선택 옵션 외래키
@@ -375,8 +376,8 @@ command.execute("""INSERT INTO Admins VALUES(
 
 ## 매장
 command.execute("""INSERT INTO Store_info VALUES(
-                1,
                 0,
+                1,
                 '날아라 닭다리',
                 '먹신',
                 '냠냠민국 쩝쩝시 치킨로 12-97',
@@ -388,7 +389,7 @@ command.execute("""INSERT INTO Store_info VALUES(
 ## 테이블
 command.execute("""INSERT INTO Table_list VALUES(
                 1,
-                2,
+                1,
                 0,
                 '',
                 NULL
@@ -396,7 +397,7 @@ command.execute("""INSERT INTO Table_list VALUES(
 
 ## 상품 카테고리
 command.execute("""INSERT INTO Product_group VALUES(
-                3,
+                0,
                 1,
                 '순살',
                 NULL
@@ -404,9 +405,9 @@ command.execute("""INSERT INTO Product_group VALUES(
 
 ## 상품
 command.execute("""INSERT INTO Product VALUES(
-                4,
+                0,
                 1,
-                3,
+                1,
                 '월계수찜닭',
                 10000,
                 '',
@@ -417,7 +418,7 @@ command.execute("""INSERT INTO Product VALUES(
 
 ## 옵션1
 command.execute("""INSERT INTO Product_option VALUES(
-                5,
+                0,
                 1,
                 '닭털당면',
                 0,
@@ -427,7 +428,7 @@ command.execute("""INSERT INTO Product_option VALUES(
 
 ## 옵션2
 command.execute("""INSERT INTO Product_option VALUES(
-                6,
+                0,
                 1,
                 '소발굽만두 5개 추가',
                 5000,
@@ -437,8 +438,8 @@ command.execute("""INSERT INTO Product_option VALUES(
 
 ## 서브옵션1
 command.execute("""INSERT INTO Product_suboption VALUES(
-                7,
-                5,
+                0,
+                1,
                 '많이',
                 1000,
                 -1,
@@ -447,8 +448,8 @@ command.execute("""INSERT INTO Product_suboption VALUES(
 
 ## 서브옵션2
 command.execute("""INSERT INTO Product_suboption VALUES(
-                8,
-                5,
+                0,
+                1,
                 '적게',
                 500,
                 -1,
@@ -457,40 +458,40 @@ command.execute("""INSERT INTO Product_suboption VALUES(
 
 ## 상품-옵션 관계1
 command.execute("""INSERT INTO Product_Option_relations VALUES(
-                4,
-                5
+                1,
+                1
                 );""")
 
 ## 상품-옵션 관계2
 command.execute("""INSERT INTO Product_Option_relations VALUES(
-                4,
-                6
+                1,
+                2
                 );""")
 
 ## 주문 내역
 command.execute("""INSERT INTO Order_list VALUES(
-                9,
+                0,
                 1,
-                4,
+                1,
+                1,
                 2,
-                1,
                 0,
                 '2023-07-28 20:22:12'
                 );""")
 
 ## 선택 옵션
 command.execute("""INSERT INTO Selected_option VALUES(
-                10,
-                9,
-                5,
-                7
+                0,
+                1,
+                1,
+                2
                 );""")
 
 ## 선택 옵션
 command.execute("""INSERT INTO Selected_option VALUES(
-                11,
-                9,
-                6,
+                0,
+                1,
+                2,
                 NULL
                 );""")
 
