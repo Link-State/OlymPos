@@ -9,7 +9,7 @@ from models import StoreInfo
 from models import TableList
 from models import Product
 
-def adminLogin(id="", pwd="", store_uid=-1) :
+def adminLogin(id="", pwd="") :
     uid = Admins.findUID(id=id)
     
     # 유저 아이디로 고유번호가 검색되지 않을 때,
@@ -21,12 +21,6 @@ def adminLogin(id="", pwd="", store_uid=-1) :
     # 유저 아이디, 비밀번호가 맞지 않을 때,
     if user["user_id"] != id or user["user_pwd"] != pwd :
         return {"result" : "Invalid", "code" : "201"}
-    
-    store = StoreInfo.getStore(store_uid)
-    
-    # 매장이 검색되지 않을 때,
-    if len(store) <= 0 :
-        return {"result" : "Invalid", "code" : "202"}
     
     return {
         "result" : "Success",
