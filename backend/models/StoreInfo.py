@@ -66,7 +66,6 @@ def setTelNum(uid=-1, tel="") :
     return
 
 def setTableCount(uid=-1, num=-1) :
-    # Table List에 1부터 num까지 순차적으로 생성
     return
 
 def setIsLogin(uid=-1, islogin=0) :
