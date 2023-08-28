@@ -80,4 +80,4 @@ def addStore(inputStoreInfo={}) :
     for table in range(1, inputStoreInfo["count"]+1) :
         TableList.add(store_uid=store_uid, tableNum=table)
 
-    return {"result" : "Success", "code" : "005", "uid" : store_uid}
+    return {"result" : "Success", "code" : "006", "uid" : store_uid}
