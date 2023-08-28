@@ -4,6 +4,7 @@ import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
+from config import *
 from models import mysql
 
 def findUID(id="") :
@@ -76,9 +77,9 @@ def setEmail(uid=-1, email="") :
 
     return
 
-def add(member) :
+def add(userData) :
     sql = f"""INSERT INTO Admins (user_id, user_pwd, name, phone_number, email, disable_date)
-    VALUES('{member["user_id"]}', '{member["user_pwd"]}', '{member["name"]}', '{member["phone"]}', '{member["email"]}', NULL);"""
+    VALUES('{userData["user_id"]}', '{userData["user_pwd"]}', '{userData["name"]}', '{userData["phone"]}', '{userData["email"]}', NULL);"""
 
     mysql.execute(SQL=sql)
     

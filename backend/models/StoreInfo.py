@@ -80,9 +80,9 @@ def setIsLogin(uid=-1, islogin=0) :
     
     return
 
-def add(store={}) :
+def add(userData) :
     sql = f"""INSERT INTO Store_info (unique_admin, store_name, store_owner, store_address, store_tel_number, table_count, disable_date)
-    VALUES('{store["user_uid"]}', '{store["name"]}', '{store["owner"]}', '{store["address"]}', '{store["tel_num"]}', '{store["count"]}', NULL);"""
+    VALUES('{userData["unique_admin"]}', '{userData["name"]}', '{userData["owner"]}', '{userData["address"]}', '{userData["tel_num"]}', '{userData["count"]}', NULL);"""
 
     mysql.execute(SQL=sql)
 

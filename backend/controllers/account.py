@@ -10,6 +10,38 @@ from models import StoreInfo
 from models import TableList
 from models import Product
 
+def checkField(data) :
+    keyword = []
+
+    if "user_id" in data :
+        if len(data["id"]) < MinLength.user_id or len(data["id"]) > MaxLength.user_id :
+            keyword.append("userID")
+
+    if "after_pwd" in data :
+        if len(data["pwd"]) < MinLength.user_pwd or len(data["pwd"]) > MaxLength.user_pwd :
+            keyword.append("userPWD")
+    
+    if "user_pwd" in data :
+        if len(data["pwd"]) < MinLength.user_pwd or len(data["pwd"]) > MaxLength.user_pwd :
+            keyword.append("userPWD")
+
+    if "name" in data :
+        if len(data["name"]) < MinLength.user_name or len(data["name"]) > MaxLength.user_name :
+            keyword.append("userName")
+
+    if "phone" in data :
+        if len(data["phone"]) < MinLength.phone_number or len(data["phone"]) > MaxLength.phone_number :
+            keyword.append("phoneNumber")
+
+    if "email" in data :
+        memberLength = len(data["email"])
+        alphaIdx = data["email"].find('@')
+        dotIdx = data["email"].find('.')
+        if memberLength < MinLength.email or memberLength > MaxLength.email or alphaIdx <= 1 or dotIdx <= 3 or dotIdx - alphaIdx <= 1 or dotIdx+1 == memberLength :
+            keyword.append("email")
+        
+    return keyword
+
 def get_account(id=-1) :
     uid = Admins.findUID(id=id)
     
@@ -160,29 +192,34 @@ def userLogout(ssaid="", store_uid=-1, tableNum=-1) :
     
     return {"result" : "Success", "code" : "001"}
 
-def signup(member={}) :
+def signup(inputUserData={}) :
     
     # 필수 값이 누락 됐을 때,
-    if "user_id" not in member or "user_pwd" not in member or "name" not in member or "phone" not in member or "email" not in member :
+    if "user_id" not in inputUserData or "user_pwd" not in inputUserData or "name" not in inputUserData or "phone" not in inputUserData or "email" not in inputUserData :
         return {"result" : "Invalid", "code" : "100"}
 
-    uid = Admins.findUID(id=member["user_id"])
+    uid = Admins.findUID(id=inputUserData["user_id"])
 
-    # 존재하지 않는 아이디일 때,
-    if uid == -1 :
-        # DB에 회원 추가
-        Admins.add(member)
-
-        return {"result" : "Success", "code" : "002"}
-    
-    user = Admins.getUser(uid=uid)
-
-    # 탈퇴한 유저일 때,
-    if user["disable_date"] != None :
-        return {"result" : "Invalid", "code" : "102"}
-    
     # 이미 존재하는 아이디일 때,
-    return {"result" : "Invalid", "code" : "206"}
+    if uid != -1 :
+        user = Admins.getUser(uid=uid)
+
+        # 탈퇴한 유저라면,
+        if user["disable_date"] != None :
+            return {"result" : "Invalid", "code" : "102"}
+        
+        return {"result" : "Invalid", "code" : "206"}
+        
+    keyword = checkField(inputUserData)
+
+    # 입력 필드 확인
+    if len(keyword) > 0 :
+        return {"result" : "Invalid", "code" : "207", "keyword" : keyword}
+
+    # DB에 회원 추가
+    Admins.add(inputUserData)
+
+    return {"result" : "Success", "code" : "002"}
 
 def delete_account(id='') :
     uid = Admins.findUID(id=id)
@@ -201,8 +238,8 @@ def delete_account(id='') :
 
     return {"result" : "Success", "code" : "004"}
 
-def change_account(member={}) :
-    uid = Admins.findUID(id=member["user_id"])
+def change_account(inputUserData={}) :
+    uid = Admins.findUID(id=inputUserData["user_id"])
 
     # 유저 아이디로 고유번호가 검색되지 않을 때,
     if uid == -1 :
@@ -214,34 +251,11 @@ def change_account(member={}) :
     if user["disable_date"] != None :
         return {"result" : "Invalid", "code" : "102"}
     
-    keyword = []
+    # 비밀번호 변경 시 기존 비밀번호 일치 확인
+    if "before_pwd" in inputUserData and "after_pwd" in inputUserData and inputUserData["before_pwd"] != user["user_pwd"] :
+        return {"result" : "Invalid", "code" : "201"}
 
-    # 형식 체크
-    ## 비밀번호 검사
-    if "before_pwd" in member and "after_pwd" in member :
-        if member["before_pwd"] != user["user_pwd"] :
-            return {"result" : "Invalid", "code" : "201"}
-        if len(member["after_pwd"]) > Length.user_pwd :
-            keyword.append("user_pwd")
-
-    ## 이름 검사
-    if "name" in member :
-        if len(member["name"]) > Length.user_name :
-            keyword.append("user_name")
-
-    ## 전화번호 검사
-    if "phone" in member :
-        if len(member["phone"]) > Length.phone_number :
-            # 문자열 길이, 하이픈 등 조건 검사
-            keyword.append("phone_number")
-
-    ## 이메일 검사
-    if "email" in member :
-        memberLength = len(member["email"])
-        alphaIdx = member["email"].find('@')
-        dotIdx = member["email"].find('.')
-        if memberLength > Length.email or alphaIdx <= 1 or dotIdx <= 3 or dotIdx - alphaIdx <= 1 or dotIdx+1 == memberLength :
-            keyword.append("email")
+    keyword = checkField(inputUserData)
 
     # 양식이 맞지 않은 정보가 존재할 때,
     if len(keyword) > 0 :
@@ -249,19 +263,19 @@ def change_account(member={}) :
     
     # 정보 수정
     ## 비밀번호 수정
-    if "before_pwd" in member and "after_pwd" in member :
-        Admins.setPWD(uid=uid, pwd=member["after_pwd"])
+    if "before_pwd" in inputUserData and "after_pwd" in inputUserData :
+        Admins.setPWD(uid=uid, pwd=inputUserData["after_pwd"])
 
     ## 이름 수정
-    if "name" in member :
-        Admins.setName(uid=uid, name=member["name"])
+    if "name" in inputUserData :
+        Admins.setName(uid=uid, name=inputUserData["name"])
 
     ## 전화번호 수정
-    if "phone" in member :
-        Admins.setPhoneNum(uid=uid, num=member["phone"])
+    if "phone" in inputUserData :
+        Admins.setPhoneNum(uid=uid, num=inputUserData["phone"])
 
     ## 이메일 수정
-    if "email" in member :
-        Admins.setEmail(uid=uid, email=member["email"])
+    if "email" in inputUserData :
+        Admins.setEmail(uid=uid, email=inputUserData["email"])
 
     return {"result" : "Success", "code" : "003", "keyword" : keyword}

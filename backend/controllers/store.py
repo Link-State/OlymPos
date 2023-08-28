@@ -10,6 +10,27 @@ from models import StoreInfo
 from models import TableList
 from models import Product
 
+def checkField(data) :
+    keyword = []
+
+    if "name" in data :
+        if len(data["name"]) < MinLength.store_name and len(data["name"]) > MaxLength.store_name :
+            keyword.append("name")
+
+    if "owner" in data :
+        if len(data["owner"]) < MinLength.store_owner and len(data["owner"]) > MaxLength.store_owner :
+            keyword.append("owner")
+
+    if "address" in data :
+        if len(data["address"]) < MinLength.store_address and len(data["address"]) > MaxLength.store_address :
+            keyword.append("address")
+
+    if "tel_num" in data :
+        if len(data["tel_num"]) < MinLength.store_tel_number and len(data["tel_num"]) > MaxLength.store_tel_number :
+            keyword.append("tel_num")
+
+    return keyword
+
 def addStore(inputStoreInfo={}) :
     # 필수 값이 누락됐을 때,
     fields = ["user_id", "name", "owner", "address", "tel_num", "count"]
@@ -35,29 +56,12 @@ def addStore(inputStoreInfo={}) :
         
         return {"result" : "Invalid", "code" : "300"}
     
-
-    keyword = []
-
-    # 매장 이름 검사
-    if len(inputStoreInfo["name"]) > Length.store_name :
-        keyword.append("name")
-
-    # 매장 소유주 이름 검사
-    if len(inputStoreInfo["owner"]) > Length.store_owner :
-        keyword.append("owner")
-
-    # 매장 주소 검사
-    if len(inputStoreInfo["address"]) > Length.store_address :
-        keyword.append("address")
-
-    # 매장 전화번호 검사
-    if len(inputStoreInfo["tel_num"]) > Length.store_tel_number :
-        keyword.append("tel_num")
+    keyword = checkField(inputStoreInfo)
 
     if len(keyword) > 0 :
-        return {"result" : "Invalid", "code" : "301"}
+        return {"result" : "Invalid", "code" : "301", "keyword" : keyword}
     
-    inputStoreInfo["user_uid"] = uid
+    inputStoreInfo["unique_admin"] = uid
 
     # DB에 매장 추가
     StoreInfo.add(inputStoreInfo)
