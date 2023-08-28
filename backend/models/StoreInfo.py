@@ -4,7 +4,21 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from models import mysql
+from models import TableList
 
+def findStore(uid=-1, name="") :
+    sql = f"""
+    SELECT unique_store_info
+    FROM Store_info
+    WHERE unique_admin = {uid} and store_name = '{name}';
+    """
+
+    result = mysql.execute(SQL=sql, fetch=True)
+    
+    if len(result) != 1 :
+        return -1
+
+    return result[0]["unique_store_info"]
 
 def getStores(admin_uid=-1, include_disable=False) :
     select = ''
@@ -66,9 +80,12 @@ def setIsLogin(uid=-1, islogin=0) :
     
     return
 
-def add(**kwargs) :
-    # admin uid, name, owner, address, tel num
-    # Table List에 1부터 num까지 순차적으로 생성
+def add(store={}) :
+    sql = f"""INSERT INTO Store_info (unique_admin, store_name, store_owner, store_address, store_tel_number, table_count, disable_date)
+    VALUES('{store["user_uid"]}', '{store["name"]}', '{store["owner"]}', '{store["address"]}', '{store["tel_num"]}', '{store["count"]}', NULL);"""
+
+    mysql.execute(SQL=sql)
+
     return
 
 def remove(uid=-1) :
