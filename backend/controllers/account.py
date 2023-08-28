@@ -53,7 +53,7 @@ def get_account(id=-1) :
 
     user["user_pwd"] = "BLINDED"
 
-    return user
+    return {"result" : "Success", "code" : "005", "user" : user}
 
 def adminLogin(id="", pwd="") :
     uid = Admins.findUID(id=id)
