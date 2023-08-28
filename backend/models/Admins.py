@@ -36,19 +36,44 @@ def getUser(uid=-1) :
     return result[0]
 
 def setPWD(uid=-1, pwd="") :
+    sql = f"""
+    UPDATE Admins
+    SET user_pwd = '{pwd}'
+    WHERE unique_admin = {uid};
+    """
+    mysql.execute(SQL=sql)
     
     return
 
 def setName(uid=-1, name="") :
-    
+    sql = f"""
+    UPDATE Admins
+    SET name = '{name}'
+    WHERE unique_admin = {uid};
+    """
+    mysql.execute(SQL=sql)
+
     return
 
 def setPhoneNum(uid=-1, num="") :
-    
+    sql = f"""
+    UPDATE Admins
+    SET phone_number = '{num}'
+    WHERE unique_admin = {uid};
+    """
+    mysql.execute(SQL=sql)
+
     return
 
 def setEmail(uid=-1, email="") :
-    
+    sql = f"""
+    UPDATE Admins
+    SET email = '{email}'
+    WHERE unique_admin = {uid};
+    """
+
+    mysql.execute(SQL=sql)
+
     return
 
 def add(member) :

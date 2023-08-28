@@ -63,7 +63,7 @@ class AdminLogout(Resource) :
 
         # 토큰이 없을 경우
         if identity is None :
-            return {"result" : "Invalid", "code" : "101"}
+            return jsonify({"result" : "Invalid", "code" : "101"})
         
         return jsonify(account.adminLogout(id=identity))
         
@@ -100,12 +100,22 @@ class Delete_account(Resource) :
 
         # 토큰이 없을 경우
         if identity is None :
-            return {"result" : "Invalid", "code" : "101"}
+            return jsonify({"result" : "Invalid", "code" : "101"})
         
         return jsonify(account.delete_account(id=identity))
 
 
 class Change_account_info(Resource) :
+    @jwt_required()
     def post(self) :
-        return "change_account_info"
+        identity = get_jwt_identity()
+
+        # 토큰이 없을 경우
+        if identity is None :
+            return jsonify({"result" : "Invalid", "code" : "101"})
+
+        user_data = request.get_json()
+        user_data["user_id"] = identity
+
+        return jsonify(account.change_account(member=user_data))
 
