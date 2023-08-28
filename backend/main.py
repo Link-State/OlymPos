@@ -4,6 +4,13 @@ from flask_jwt_extended import *
 from config import API
 from routes import account
 
+# flask
+# pyJWT
+# flask_restful
+# flask_jwt_extended
+# pymysql
+# cryptography
+
 connection = None
 command = None
 
