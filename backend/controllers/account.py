@@ -10,6 +10,19 @@ from models import StoreInfo
 from models import TableList
 from models import Product
 
+def get_account(id=-1) :
+    uid = Admins.findUID(id=id)
+    
+    # 유저 아이디로 고유번호가 검색되지 않을 때,
+    if uid == -1 :
+        return {"result" : "Invalid", "code" : "200"}
+
+    user = Admins.getUser(uid=uid)
+
+    user["user_pwd"] = "BLINDED"
+
+    return user
+
 def adminLogin(id="", pwd="") :
     uid = Admins.findUID(id=id)
     

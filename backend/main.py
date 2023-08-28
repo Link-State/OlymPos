@@ -24,6 +24,7 @@ api.add_resource(account.UserLogout, '/user-logout')
 api.add_resource(account.Signup, '/signup')
 api.add_resource(account.Delete_account, '/delete-account')
 api.add_resource(account.Change_account_info, '/change-account-info')
+api.add_resource(account.Get_account_info, '/get-account-info')
 
 if __name__ == '__main__' :
     app.run(debug=True, port=API.flask_port)

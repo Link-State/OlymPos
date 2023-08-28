@@ -119,3 +119,13 @@ class Change_account_info(Resource) :
 
         return jsonify(account.change_account(member=user_data))
 
+class Get_account_info(Resource) :
+    @jwt_required()
+    def post(self) :
+        identity = get_jwt_identity()
+
+        # 토큰이 없을 경우
+        if identity is None :
+            return jsonify({"result" : "Invalid", "code" : "101"})
+        
+        return jsonify(account.get_account(id=identity))
