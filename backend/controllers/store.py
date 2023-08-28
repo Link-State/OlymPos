@@ -14,20 +14,24 @@ def checkField(data) :
     keyword = []
 
     if "name" in data :
-        if len(data["name"]) < MinLength.store_name and len(data["name"]) > MaxLength.store_name :
+        if len(data["name"]) < MinLength.store_name or len(data["name"]) > MaxLength.store_name :
             keyword.append("name")
 
     if "owner" in data :
-        if len(data["owner"]) < MinLength.store_owner and len(data["owner"]) > MaxLength.store_owner :
+        if len(data["owner"]) < MinLength.store_owner or len(data["owner"]) > MaxLength.store_owner :
             keyword.append("owner")
 
     if "address" in data :
-        if len(data["address"]) < MinLength.store_address and len(data["address"]) > MaxLength.store_address :
+        if len(data["address"]) < MinLength.store_address or len(data["address"]) > MaxLength.store_address :
             keyword.append("address")
 
     if "tel_num" in data :
-        if len(data["tel_num"]) < MinLength.store_tel_number and len(data["tel_num"]) > MaxLength.store_tel_number :
+        if len(data["tel_num"]) < MinLength.store_tel_number or len(data["tel_num"]) > MaxLength.store_tel_number :
             keyword.append("tel_num")
+    
+    if "count" in data :
+        if data["count"] < 1 :
+            keyword.append("count")
 
     return keyword
 
