@@ -498,8 +498,3 @@ command.execute("""INSERT INTO Selected_option VALUES(
 
 connection.commit()
 connection.close()
-
-# termux 시작 시, 자동실행
-#  http://john-home.iptime.org:8085/xe/index.php?mid=board_ZoED57&document_srl=12398
-# ubuntu 시작 시, 자동실행
-# https://klkl0.tistory.com/127
