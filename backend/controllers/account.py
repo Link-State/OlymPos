@@ -16,23 +16,23 @@ def checkField(data) :
 
     if "user_id" in data :
         if len(data["user_id"]) < MinLength.user_id or len(data["user_id"]) > MaxLength.user_id :
-            keyword.append("userID")
+            keyword.append("user_id")
 
     if "after_pwd" in data :
         if len(data["after_pwd"]) < MinLength.user_pwd or len(data["after_pwd"]) > MaxLength.user_pwd :
-            keyword.append("userPWD")
+            keyword.append("after_pwd")
     
     if "user_pwd" in data :
         if len(data["user_pwd"]) < MinLength.user_pwd or len(data["user_pwd"]) > MaxLength.user_pwd :
-            keyword.append("userPWD")
+            keyword.append("user_pwd")
 
     if "name" in data :
         if len(data["name"]) < MinLength.user_name or len(data["name"]) > MaxLength.user_name :
-            keyword.append("userName")
+            keyword.append("name")
 
     if "phone" in data :
         if len(data["phone"]) < MinLength.phone_number or len(data["phone"]) > MaxLength.phone_number :
-            keyword.append("phoneNumber")
+            keyword.append("phone")
 
     if "email" in data :
         memberLength = len(data["email"])
