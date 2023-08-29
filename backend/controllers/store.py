@@ -4,6 +4,7 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from config import *
+from statusCode import *
 from flask_jwt_extended import *
 from models import Admins
 from models import StoreInfo
@@ -40,13 +41,13 @@ def addStore(inputStoreInfo={}) :
     fields = ["user_id", "name", "owner", "address", "tel_num", "count"]
     for field in fields :
         if field not in inputStoreInfo :
-            return {"result" : "Invalid", "code" : "100"}
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
 
     uid = Admins.findUID(id=inputStoreInfo["user_id"])
 
     # 유저 아이디로 고유번호가 검색되지 않을 때,
     if uid == -1 :
-        return {"result" : "Invalid", "code" : "200"}
+        return {"result" : "Invalid", "code" : Code.NotExistID}
 
     store_uid = StoreInfo.findStore(uid=uid, name=inputStoreInfo["name"])
 
@@ -56,14 +57,14 @@ def addStore(inputStoreInfo={}) :
         
         # 삭제된 매장일 때,
         if store["disable_date"] != None :
-            return {"result" : "Invalid", "code" : "102"}
+            return {"result" : "Invalid", "code" : Code.DeletedData}
         
-        return {"result" : "Invalid", "code" : "300"}
+        return {"result" : "Invalid", "code" : Code.AlreadyExistStore}
     
     keyword = checkField(inputStoreInfo)
 
     if len(keyword) > 0 :
-        return {"result" : "Invalid", "code" : "301", "keyword" : keyword}
+        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
     
     inputStoreInfo["unique_admin"] = uid
 
@@ -72,12 +73,8 @@ def addStore(inputStoreInfo={}) :
 
     store_uid = StoreInfo.findStore(uid=uid, name=inputStoreInfo["name"])
 
-    # 매장 추가가 안됐을 때,
-    if store_uid == -1 :
-        return {"result" : "Invalid", "code" : "103"}
-
     # 테이블을 1부터 순차적으로 추가
     for table in range(1, inputStoreInfo["count"]+1) :
         TableList.add(store_uid=store_uid, tableNum=table)
 
-    return {"result" : "Success", "code" : "006", "uid" : store_uid}
+    return {"result" : "Success", "code" : Code.Success, "uid" : store_uid}

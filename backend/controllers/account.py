@@ -4,6 +4,7 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from config import *
+from statusCode import *
 from flask_jwt_extended import *
 from models import Admins
 from models import StoreInfo
@@ -47,37 +48,37 @@ def get_account(id=-1) :
     
     # 유저 아이디로 고유번호가 검색되지 않을 때,
     if uid == -1 :
-        return {"result" : "Invalid", "code" : "200"}
+        return {"result" : "Invalid", "code" : Code.NotExistID}
 
     user = Admins.getUser(uid=uid)
 
     user["user_pwd"] = "BLINDED"
 
-    return {"result" : "Success", "code" : "005", "user" : user}
+    return {"result" : "Success", "code" : Code.Success, "user" : user}
 
 def adminLogin(id="", pwd="") :
     uid = Admins.findUID(id=id)
     
     # 유저 아이디로 고유번호가 검색되지 않을 때,
     if uid == -1 :
-        return {"result" : "Invalid", "code" : "200"}
+        return {"result" : "Invalid", "code" : Code.NotExistID}
 
     user = Admins.getUser(uid=uid)
     
     # 탈퇴한 유저일 때,
     if user["disable_date"] != None :
-        return {"result" : "Invalid", "code" : "102"}
+        return {"result" : "Invalid", "code" : Code.DeletedData}
 
     # 유저 아이디, 비밀번호가 맞지 않을 때,
     if user["user_id"] != id or user["user_pwd"] != pwd :
-        return {"result" : "Invalid", "code" : "201"}
+        return {"result" : "Invalid", "code" : Code.WrongPWD}
     
     stores = StoreInfo.getStores(admin_uid=uid)
 
     return {
         "result" : "Success",
         "access_token" : create_access_token(identity=id, expires_delta=False),
-        "code" : "000",
+        "code" : Code.Success,
         "stores" : stores
     }
 
@@ -86,24 +87,24 @@ def userLogin(id="", pwd="") :
 
     # 유저 아이디로 고유번호가 검색되지 않을 때,
     if uid == -1 :
-        return {"result" : "Invalid", "code" : "200"}
+        return {"result" : "Invalid", "code" : Code.NotExistID}
 
     user = Admins.getUser(uid=uid)
     
     # 탈퇴한 유저일 때,
     if user["disable_date"] != None :
-        return {"result" : "Invalid", "code" : "102"}
+        return {"result" : "Invalid", "code" : Code.DeletedData}
     
     # 유저 아이디, 비밀번호가 맞지 않을 때,
     if user["user_id"] != id or user["user_pwd"] != pwd :
-        return {"result" : "Invalid", "code" : "201"}
+        return {"result" : "Invalid", "code" : Code.WrongPWD}
     
     # 매장 목록 검색
     stores = StoreInfo.getStores(admin_uid=uid)
 
     return {
         "result" : "Success",
-        "code" : "000",
+        "code" : Code.Success,
         "stores" : stores
     }
 
@@ -112,25 +113,25 @@ def tableLogin(ssaid="", store_uid=-1, tableNum = -1) :
     
     # 매장이 검색되지 않을 때,
     if len(store) <= 0 :
-        return {"result" : "Invalid", "code" : "202"}
+        return {"result" : "Invalid", "code" : Code.NotExistStore}
     
     # 삭제된 매장일 때,
     if store["disable_date"] != None :
-        return {"result" : "Invalid", "code" : "102"}
+        return {"result" : "Invalid", "code" : Code.DeletedData}
 
     table = TableList.getTable(store_uid=store_uid, tableNum=tableNum)
 
     # 테이블이 검색되지 않을 때,
     if len(table) <= 0 :
-        return {"result" : "Invalid", "code" : "203"}
+        return {"result" : "Invalid", "code" : Code.NotExistTable}
     
     # 삭제된 테이블일 때,
     if table["disable_date"] != None :
-        return {"result" : "Invalid", "code" : "102"}
+        return {"result" : "Invalid", "code" : Code.DeletedData}
 
     # 해당 테이블 번호가 이미 로그인 상태인지 확인할 것.
     if "isLogin" in table and table["isLogin"] != '' :
-        return {"result" : "Invalid", "code" : "204"}
+        return {"result" : "Invalid", "code" : Code.AlreadyLogin}
     
     # 테이블 로그인 상태로 변경
     TableList.setIsLogin(store_uid=store_uid, tableNum=tableNum, islogin=ssaid)
@@ -139,7 +140,7 @@ def tableLogin(ssaid="", store_uid=-1, tableNum = -1) :
 
     return {
         "result" : "Success",
-        "code" : "000",
+        "code" : Code.Success,
         "products" : products
     }
 
@@ -148,55 +149,55 @@ def adminLogout(id="") :
 
     # 유저 아이디로 고유번호가 검색되지 않을 때,
     if uid == -1 :
-        return {"result" : "Invalid", "code" : "200"}
+        return {"result" : "Invalid", "code" : Code.NotExistID}
     
     user = Admins.getUser(uid=uid)
 
     # 탈퇴한 유저일 때,
     if user["disable_date"] != None :
-        return {"result" : "Invalid", "code" : "102"}
+        return {"result" : "Invalid", "code" : Code.DeletedData}
     
-    return {"result" : "Success", "code" : "001"}
+    return {"result" : "Success", "code" : Code.Success}
 
 def userLogout(ssaid="", store_uid=-1, tableNum=-1) :
     store = StoreInfo.getStore(store_uid)
     
     # 매장이 검색되지 않을 때,
     if len(store) <= 0 :
-        return {"result" : "Invalid", "code" : "202"}
+        return {"result" : "Invalid", "code" : Code.NotExistStore}
     
     # 삭제된 매장일 때,
     if store["disable_date"] != None :
-        return {"result" : "Invalid", "code" : "102"}
+        return {"result" : "Invalid", "code" : Code.DeletedData}
     
     table = TableList.getTable(store_uid=store_uid, tableNum=tableNum)
     
     # 테이블이 검색되지 않을 때,
     if len(table) <= 0 :
-        return {"result" : "Invalid", "code" : "203"}
+        return {"result" : "Invalid", "code" : Code.NotExistTable}
     
     # 삭제된 매장일 때,
     if table["disable_date"] != None :
-        return {"result" : "Invalid", "code" : "102"}
+        return {"result" : "Invalid", "code" : Code.DeletedData}
 
     # 로그인 상태가 아닐 때,
     if "isLogin" in table and table["isLogin"] == '' :
-        return {"result" : "Invalid", "code" : "205"}
+        return {"result" : "Invalid", "code" : Code.NotLoginState}
     
     # SSAID가 맞지 않을 때,
     if table["isLogin"] != ssaid :
-        return {"result" : "Invalid", "code" : "204"}
+        return {"result" : "Invalid", "code" : Code.AlreadyLogin}
     
     # 로그아웃
     TableList.setIsLogin(store_uid=store_uid, tableNum=tableNum, islogin='')
     
-    return {"result" : "Success", "code" : "001"}
+    return {"result" : "Success", "code" : Code.Success}
 
 def signup(inputUserData={}) :
     
     # 필수 값이 누락 됐을 때,
     if "user_id" not in inputUserData or "user_pwd" not in inputUserData or "name" not in inputUserData or "phone" not in inputUserData or "email" not in inputUserData :
-        return {"result" : "Invalid", "code" : "100"}
+        return {"result" : "Invalid", "code" : Code.MissingRequireField}
 
     uid = Admins.findUID(id=inputUserData["user_id"])
 
@@ -206,60 +207,60 @@ def signup(inputUserData={}) :
 
         # 탈퇴한 유저라면,
         if user["disable_date"] != None :
-            return {"result" : "Invalid", "code" : "102"}
+            return {"result" : "Invalid", "code" : Code.DeletedData}
         
-        return {"result" : "Invalid", "code" : "206"}
+        return {"result" : "Invalid", "code" : Code.AlreadyExistID}
         
     keyword = checkField(inputUserData)
 
     # 입력 필드 확인
     if len(keyword) > 0 :
-        return {"result" : "Invalid", "code" : "207", "keyword" : keyword}
+        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
 
     # DB에 회원 추가
     Admins.add(inputUserData)
 
-    return {"result" : "Success", "code" : "002"}
+    return {"result" : "Success", "code" : Code.Success}
 
 def delete_account(id='') :
     uid = Admins.findUID(id=id)
 
     # 유저 아이디로 고유번호가 검색되지 않을 때,
     if uid == -1 :
-        return {"result" : "Invalid", "code" : "200"}
+        return {"result" : "Invalid", "code" : Code.NotExistID}
     
     user = Admins.getUser(uid=uid)
 
     # 이미 탈퇴한 유저일 때,
     if user["disable_date"] != None :
-        return {"result" : "Invalid", "code" : "102"}
+        return {"result" : "Invalid", "code" : Code.DeletedData}
 
     Admins.remove(uid=uid)
 
-    return {"result" : "Success", "code" : "004"}
+    return {"result" : "Success", "code" : Code.Success}
 
 def change_account(inputUserData={}) :
     uid = Admins.findUID(id=inputUserData["user_id"])
 
     # 유저 아이디로 고유번호가 검색되지 않을 때,
     if uid == -1 :
-        return {"result" : "Invalid", "code" : "200"}
+        return {"result" : "Invalid", "code" : Code.NotExistID}
     
     user = Admins.getUser(uid=uid)
 
     # 이미 탈퇴한 유저일 때,
     if user["disable_date"] != None :
-        return {"result" : "Invalid", "code" : "102"}
+        return {"result" : "Invalid", "code" : Code.DeletedData}
     
     # 비밀번호 변경 시 기존 비밀번호 일치 확인
     if "before_pwd" in inputUserData and "after_pwd" in inputUserData and inputUserData["before_pwd"] != user["user_pwd"] :
-        return {"result" : "Invalid", "code" : "201"}
+        return {"result" : "Invalid", "code" : Code.WrongPWD}
 
     keyword = checkField(inputUserData)
 
     # 양식이 맞지 않은 정보가 존재할 때,
     if len(keyword) > 0 :
-        return {"result" : "Invalid", "code" : "207", "keyword" : keyword}
+        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
     
     # 정보 수정
     ## 비밀번호 수정
@@ -278,4 +279,4 @@ def change_account(inputUserData={}) :
     if "email" in inputUserData :
         Admins.setEmail(uid=uid, email=inputUserData["email"])
 
-    return {"result" : "Success", "code" : "003", "keyword" : keyword}
+    return {"result" : "Success", "code" : Code.Success, "keyword" : keyword}

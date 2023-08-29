@@ -3,6 +3,7 @@ import os
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
+from statusCode import *
 from flask import request, jsonify, session
 from flask_jwt_extended import *
 from flask_restful import Resource
@@ -15,7 +16,7 @@ class AdminLogin(Resource) :
         pwd = ""
 
         if "user_id" not in user_data or "user_pwd" not in user_data :
-            return jsonify({"result" : "Invalid", "code" : "100"})
+            return jsonify({"result" : "Invalid", "code" : Code.MissingRequireField})
         
         id = user_data["user_id"]
         pwd = user_data["user_pwd"]
@@ -32,7 +33,7 @@ class UserLogin(Resource) :
 
         # 필수 값이 누락 됐을 때,
         if "user_id" not in user_data or "user_pwd" not in user_data :
-            return jsonify({"result" : "Invalid", "code" : "100"})
+            return jsonify({"result" : "Invalid", "code" : Code.MissingRequireField})
         
         id = user_data["user_id"]
         pwd = user_data["user_pwd"]
@@ -48,7 +49,7 @@ class TableLogin(Resource) :
 
         # 필수 값이 누락 됐을 때,
         if "SSAID" not in user_data or "store_uid" not in user_data or "table" not in user_data :
-            return jsonify({"result" : "Invalid", "code" : "100"})
+            return jsonify({"result" : "Invalid", "code" : Code.MissingRequireField})
         
         ssaid = user_data["SSAID"]
         store_uid = user_data["store_uid"]
@@ -63,7 +64,7 @@ class AdminLogout(Resource) :
 
         # 토큰이 없을 경우
         if identity is None :
-            return jsonify({"result" : "Invalid", "code" : "101"})
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
         
         return jsonify(account.adminLogout(id=identity))
         
@@ -77,7 +78,7 @@ class UserLogout(Resource) :
 
         # 필수 값이 누락 됐을 때,
         if "SSAID" not in user_data or "store_uid" not in user_data or "table" not in user_data :
-            return jsonify({"result" : "Invalid", "code" : "100"})
+            return jsonify({"result" : "Invalid", "code" : Code.MissingRequireField})
         
         ssaid = user_data["SSAID"]
         store_uid = user_data["store_uid"]
@@ -100,7 +101,7 @@ class Delete_account(Resource) :
 
         # 토큰이 없을 경우
         if identity is None :
-            return jsonify({"result" : "Invalid", "code" : "101"})
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
         
         return jsonify(account.delete_account(id=identity))
 
@@ -112,7 +113,7 @@ class Change_account_info(Resource) :
 
         # 토큰이 없을 경우
         if identity is None :
-            return jsonify({"result" : "Invalid", "code" : "101"})
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
 
         user_data = request.get_json()
         user_data["user_id"] = identity
@@ -126,6 +127,6 @@ class Get_account_info(Resource) :
 
         # 토큰이 없을 경우
         if identity is None :
-            return jsonify({"result" : "Invalid", "code" : "101"})
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
         
         return jsonify(account.get_account(id=identity))
