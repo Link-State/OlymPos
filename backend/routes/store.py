@@ -9,7 +9,7 @@ from flask_jwt_extended import *
 from flask_restful import Resource
 from controllers import store
 
-class AddStore(Resource) :
+class Add_store(Resource) :
     @jwt_required()
     def post(self) :
         identity = get_jwt_identity()
@@ -22,3 +22,27 @@ class AddStore(Resource) :
         user_data["user_id"] = identity
 
         return jsonify(store.addStore(inputStoreInfo=user_data))
+
+
+class Change_store_info(Resource) :
+    @jwt_required()
+    def post(self) :
+        return
+
+
+class Delete_store(Resource) :
+    @jwt_required()
+    def post(self) :
+        return
+
+
+class Get_store_list(Resource) :
+    @jwt_required()
+    def post(self) :
+        return
+
+
+class Get_store_info(Resource) :
+    @jwt_required()
+    def post(self) :
+        return

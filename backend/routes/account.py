@@ -24,7 +24,8 @@ class AdminLogin(Resource) :
 
         # 세션에 토큰 저장
         return jsonify(result)
-    
+
+
 class UserLogin(Resource) :
     def post(self) :
         user_data = request.get_json()
@@ -39,6 +40,7 @@ class UserLogin(Resource) :
         pwd = user_data["user_pwd"]
         
         return jsonify(account.userLogin(id=id, pwd=pwd))
+
 
 class TableLogin(Resource) :
     def post(self) :
@@ -57,6 +59,7 @@ class TableLogin(Resource) :
 
         return jsonify(account.tableLogin(ssaid=ssaid, store_uid=store_uid, tableNum=table_num))
 
+
 class AdminLogout(Resource) :
     @jwt_required()
     def post(self) :
@@ -67,8 +70,8 @@ class AdminLogout(Resource) :
             return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
         
         return jsonify(account.adminLogout(id=identity))
-        
-        
+
+
 class UserLogout(Resource) :
     def post(self) :
         user_data = request.get_json()
@@ -119,6 +122,7 @@ class Change_account_info(Resource) :
         user_data["user_id"] = identity
 
         return jsonify(account.change_account(member=user_data))
+
 
 class Get_account_info(Resource) :
     @jwt_required()

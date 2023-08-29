@@ -34,7 +34,11 @@ api.add_resource(account.Delete_account, '/delete-account')
 api.add_resource(account.Change_account_info, '/change-account-info')
 api.add_resource(account.Get_account_info, '/get-account-info')
 
-api.add_resource(store.AddStore, '/add-store')
+api.add_resource(store.Add_store, '/add-store')
+api.add_resource(store.Change_store_info, '/change-store_info')
+api.add_resource(store.Delete_store, '/delete-store')
+api.add_resource(store.Get_store_list, '/get-store-list')
+api.add_resource(store.Get_store_info, '/get-store-info')
 
 if __name__ == '__main__' :
     app.run(debug=True, port=API.flask_port)
