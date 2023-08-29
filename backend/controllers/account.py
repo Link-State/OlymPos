@@ -15,15 +15,15 @@ def checkField(data) :
     keyword = []
 
     if "user_id" in data :
-        if len(data["id"]) < MinLength.user_id or len(data["id"]) > MaxLength.user_id :
+        if len(data["user_id"]) < MinLength.user_id or len(data["user_id"]) > MaxLength.user_id :
             keyword.append("userID")
 
     if "after_pwd" in data :
-        if len(data["pwd"]) < MinLength.user_pwd or len(data["pwd"]) > MaxLength.user_pwd :
+        if len(data["after_pwd"]) < MinLength.user_pwd or len(data["after_pwd"]) > MaxLength.user_pwd :
             keyword.append("userPWD")
     
     if "user_pwd" in data :
-        if len(data["pwd"]) < MinLength.user_pwd or len(data["pwd"]) > MaxLength.user_pwd :
+        if len(data["user_pwd"]) < MinLength.user_pwd or len(data["user_pwd"]) > MaxLength.user_pwd :
             keyword.append("userPWD")
 
     if "name" in data :
