@@ -6,6 +6,7 @@ class Code() :
     DeletedData = 202
     WrongPWD = 203
     WrongDataForm = 204
+    NotEquals = 205
 
     NotExistID = 300
     NotExistStore = 301

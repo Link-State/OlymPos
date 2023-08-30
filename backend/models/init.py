@@ -16,6 +16,7 @@ connection = pymysql.connect(
         charset="utf8",
         cursorclass=pymysql.cursors.DictCursor
     )
+print("connect mysql")
 
 command = connection.cursor()
 
@@ -30,6 +31,7 @@ command.execute("DROP TABLE IF EXISTS Product_group;")
 command.execute("DROP TABLE IF EXISTS Table_list;")
 command.execute("DROP TABLE IF EXISTS Store_info;")
 command.execute("DROP TABLE IF EXISTS Admins;")
+print("Clear Table")
 
 
 
@@ -375,25 +377,27 @@ command.execute("""INSERT INTO Admins VALUES(
                 );""")
 
 ## 매장
-command.execute("""INSERT INTO Store_info VALUES(
+tables = 5
+command.execute(f"""INSERT INTO Store_info VALUES(
                 0,
                 1,
                 '날아라 닭다리',
                 '먹신',
                 '냠냠민국 쩝쩝시 치킨로 12-97',
                 '033-123-4567',
-                5,
+                {tables},
                 NULL
                 );""")
 
 ## 테이블
-command.execute("""INSERT INTO Table_list VALUES(
-                1,
-                1,
-                0,
-                '',
-                NULL
-                );""")
+for t in range(1, tables+1) :
+    command.execute(f"""INSERT INTO Table_list VALUES(
+                    1,
+                    {t},
+                    0,
+                    '',
+                    NULL
+                    );""")
 
 ## 상품 카테고리
 command.execute("""INSERT INTO Product_group VALUES(

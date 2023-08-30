@@ -1,17 +1,25 @@
 import sys
 import os
+import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from models import mysql
 
 def getTables(store_uid=-1) :
-    # store uid, table num, state, isLogin
-    return
+    sql = f"""
+    SELECT unique_store_info, table_number, table_state, isLogin, disable_date
+    FROM Table_list
+    WHERE unique_store_info = {store_uid};
+    """
+
+    result = mysql.execute(SQL=sql, fetch=True)
+
+    return result
 
 def getTable(store_uid=-1, tableNum=-1) :
     sql = f"""
-    SELECT unique_store_info, table_number, table_state, isLogin
+    SELECT unique_store_info, table_number, table_state, isLogin, disable_date
     FROM Table_list
     WHERE unique_store_info = {store_uid} and table_number = {tableNum};
     """
@@ -40,9 +48,33 @@ def setIsLogin(store_uid=-1, tableNum=-1, islogin='') :
     
     return
 
-def add(**kwargs) :
-    # require : store uid, table num
+def add(userData) :
+    sql = f"""INSERT INTO Table_list (unique_store_info, table_number, table_state, isLogin, disable_date)
+    VALUES('{userData["store_uid"]}', '{userData["table"]}', 0, '', NULL);"""
+
+    mysql.execute(SQL=sql)
+
     return
 
 def remove(store_uid=-1, tableNum=-1) :
+    now = datetime.datetime.now()
+
+    sql = f"""
+    UPDATE Table_list
+    SET disable_date = '{now}'
+    WHERE unique_store_info = {store_uid} and table_number = {tableNum};
+    """
+
+    mysql.execute(SQL=sql)
+    return
+
+def restore(store_uid=-1, tableNum=-1) :
+    sql = f"""
+    UPDATE Table_list
+    SET disable_date = NULL
+    WHERE unique_store_info = {store_uid} and table_number = {tableNum};
+    """
+
+    mysql.execute(SQL=sql)
+    
     return

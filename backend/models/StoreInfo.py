@@ -1,5 +1,6 @@
 import sys
 import os
+import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
@@ -54,18 +55,53 @@ def setAdminUID(uid=-1, admin_uid=-1) :
     return
 
 def setName(uid=-1, name="") :
+    sql = f"""
+    UPDATE Store_info
+    SET store_name = '{name}'
+    WHERE unique_store_info = {uid};
+    """
+    mysql.execute(SQL=sql)
+    
     return
 
 def setOwner(uid=-1, owner="") :
+    sql = f"""
+    UPDATE Store_info
+    SET store_owner = '{owner}'
+    WHERE unique_store_info = {uid};
+    """
+    mysql.execute(SQL=sql)
+    
     return
 
 def setAddress(uid=-1, address="") :
+    sql = f"""
+    UPDATE Store_info
+    SET store_address = '{address}'
+    WHERE unique_store_info = {uid};
+    """
+    mysql.execute(SQL=sql)
+    
     return
 
 def setTelNum(uid=-1, tel="") :
+    sql = f"""
+    UPDATE Store_info
+    SET store_tel_number = '{tel}'
+    WHERE unique_store_info = {uid};
+    """
+    mysql.execute(SQL=sql)
+    
     return
 
 def setTableCount(uid=-1, num=-1) :
+    sql = f"""
+    UPDATE Store_info
+    SET table_count = '{num}'
+    WHERE unique_store_info = {uid};
+    """
+    mysql.execute(SQL=sql)
+    
     return
 
 def setIsLogin(uid=-1, islogin=0) :
