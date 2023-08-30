@@ -15,6 +15,7 @@ class AdminLogin(Resource) :
         id = ""
         pwd = ""
 
+        # 필수 값이 누락 됐을 때,
         if "user_id" not in user_data or "user_pwd" not in user_data :
             return jsonify({"result" : "Invalid", "code" : Code.MissingRequireField})
         

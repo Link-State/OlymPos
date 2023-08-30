@@ -102,11 +102,7 @@ def userLogin(id="", pwd="") :
     # 매장 목록 검색
     stores = StoreInfo.getStores(admin_uid=uid)
 
-    return {
-        "result" : "Success",
-        "code" : Code.Success,
-        "stores" : stores
-    }
+    return {"result" : "Success", "code" : Code.Success, "stores" : stores}
 
 def tableLogin(ssaid="", store_uid=-1, tableNum = -1) :
     store = StoreInfo.getStore(store_uid)
@@ -138,11 +134,7 @@ def tableLogin(ssaid="", store_uid=-1, tableNum = -1) :
 
     products = Product.getProducts(store_uid=store_uid)
 
-    return {
-        "result" : "Success",
-        "code" : Code.Success,
-        "products" : products
-    }
+    return {"result" : "Success", "code" : Code.Success, "products" : products}
 
 def adminLogout(id="") :
     uid = Admins.findUID(id)
@@ -195,9 +187,12 @@ def userLogout(ssaid="", store_uid=-1, tableNum=-1) :
 
 def signup(inputUserData={}) :
     
+    fields = ["user_id", "user_pwd", "name", "phone", "email"]
+
     # 필수 값이 누락 됐을 때,
-    if "user_id" not in inputUserData or "user_pwd" not in inputUserData or "name" not in inputUserData or "phone" not in inputUserData or "email" not in inputUserData :
-        return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    for field in fields :
+        if field not in inputUserData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
 
     uid = Admins.findUID(id=inputUserData["user_id"])
 
