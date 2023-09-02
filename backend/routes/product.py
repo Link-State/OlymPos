@@ -12,74 +12,74 @@ from controllers import product
 class Add_group(Resource) :
     @jwt_required()
     def post(self) :
-        pass
+        return
 
 class Modify_group(Resource) :
     @jwt_required()
     def post(self) :
-        pass
+        return
 
 class Delete_group(Resource) :
     @jwt_required()
     def post(self) :
-        pass
+        return
 
 class Add_product(Resource) :
     @jwt_required()
     def post(self) :
-        pass
+        return
     
 class Modify_product(Resource) :
     @jwt_required()
     def post(self) :
-        pass
+        return
     
 class Delete_product(Resource) :
     @jwt_required()
     def post(self) :
-        pass
+        return
     
 class Add_option(Resource) :
     @jwt_required()
     def post(self) :
-        pass
+        return
     
 class Modify_option(Resource) :
     @jwt_required()
     def post(self) :
-        pass
+        return
     
 class Delete_option(Resource) :
     @jwt_required()
     def post(self) :
-        pass
+        return
     
 class Add_suboption(Resource) :
     @jwt_required()
     def post(self) :
-        pass
+        return
     
 class Modify_suboption(Resource) :
     @jwt_required()
     def post(self) :
-        pass
+        return
     
 class Delete_suboption(Resource) :
     @jwt_required()
     def post(self) :
-        pass
+        return
 
 class Get_group_list(Resource) :
     @jwt_required()
     def get(self) :
-        pass
+        return
 
 class Get_product_list(Resource) :
     @jwt_required()
     def get(self) :
-        pass
+        return
     
 class Get_option_list(Resource) :
     @jwt_required()
     def get(self) :
-        pass
+        return
