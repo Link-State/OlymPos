@@ -127,7 +127,7 @@ class Change_account_info(Resource) :
 
 class Get_account_info(Resource) :
     @jwt_required()
-    def post(self) :
+    def get(self) :
         identity = get_jwt_identity()
 
         # 토큰이 없을 경우
