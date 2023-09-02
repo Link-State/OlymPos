@@ -219,5 +219,25 @@ def get_my_stores(user_id='') :
     
     return {"result" : "Success", "code" : Code.Success, "stores" : stores}
 
-def get_store_info() :
-    return
+def get_store_info(inputStoreInfo={}) :
+    # 필수 값이 누락됐을 때,
+    if "store_uid" not in inputStoreInfo :
+        return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    store = StoreInfo.getStore(uid=inputStoreInfo["store_uid"])
+
+    # 매장이 존재하지 않는 경우,
+    if len(store) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistStore}
+    
+    uid = Admins.findUID(id=inputStoreInfo["user_id"])
+
+    # 해당 유저가 존재하지 않을 경우,
+    if uid == -1 :
+        return {"result" : "Invalid", "code" : Code.NotExistID}
+    
+    # 요청한 사람의 매장이 아닌 경우,
+    if uid != store["unique_admin"] :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+    
+    return {"result" : "Success", "code" : Code.Success, "store" : store}
