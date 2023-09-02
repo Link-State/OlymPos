@@ -56,6 +56,7 @@ command.execute("""CREATE TABLE Store_info (
                 store_address VARCHAR(256) NOT NULL,
                 store_tel_number VARCHAR(16) NOT NULL,
                 table_count INT NOT NULL,
+                last_modify_date DATETIME NOT NULL,
                 disable_date DATETIME
                 );""")
 
@@ -386,6 +387,7 @@ command.execute(f"""INSERT INTO Store_info VALUES(
                 '냠냠민국 쩝쩝시 치킨로 12-97',
                 '033-123-4567',
                 {tables},
+                '2023-09-02 17:55:00',
                 NULL
                 );""")
 

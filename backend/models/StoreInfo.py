@@ -30,7 +30,7 @@ def getStores(admin_uid=-1, include_disable=False) :
         where = ''
     
     sql = f"""
-    SELECT unique_store_info, unique_admin, store_name, store_owner, store_address, store_tel_number, table_count{select}
+    SELECT unique_store_info, unique_admin, store_name, store_owner, store_address, store_tel_number, table_count, last_modify_date{select}
     FROM Store_info
     WHERE unique_admin = {admin_uid}{where};
     """
@@ -39,7 +39,7 @@ def getStores(admin_uid=-1, include_disable=False) :
 
 def getStore(uid=-1) :
     sql = f"""
-    SELECT unique_store_info, unique_admin, store_name, store_owner, store_address, store_tel_number, table_count, disable_date
+    SELECT unique_store_info, unique_admin, store_name, store_owner, store_address, store_tel_number, table_count, last_modify_date, disable_date
     FROM Store_info
     WHERE unique_store_info = {uid};
     """
@@ -115,9 +115,20 @@ def setIsLogin(uid=-1, islogin=0) :
     
     return
 
+def setLastModifyDate(uid=-1, date=datetime.datetime.now()) :
+    sql = f"""
+    UPDATE Store_info
+    SET last_modify_date = {date}
+    WHERE unique_store_info = {uid};
+    """
+
+    mysql.execute(SQL=sql)
+    
+    return
+
 def add(userData) :
-    sql = f"""INSERT INTO Store_info (unique_admin, store_name, store_owner, store_address, store_tel_number, table_count, disable_date)
-    VALUES('{userData["unique_admin"]}', '{userData["name"]}', '{userData["owner"]}', '{userData["address"]}', '{userData["tel_num"]}', '{userData["count"]}', NULL);"""
+    sql = f"""INSERT INTO Store_info (unique_admin, store_name, store_owner, store_address, store_tel_number, table_count, last_modify_date, disable_date)
+    VALUES('{userData["unique_admin"]}', '{userData["name"]}', '{userData["owner"]}', '{userData["address"]}', '{userData["tel_num"]}', '{userData["count"]}', {datetime.datetime.now()}, NULL);"""
 
     mysql.execute(SQL=sql)
 

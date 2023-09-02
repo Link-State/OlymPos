@@ -145,6 +145,8 @@ def change_store_info(inputStoreInfo={}) :
             for i in range(request + 1, current + 1) :
                 TableList.setIsLogin(store_uid=store_uid, tableNum=i, islogin='')
                 TableList.remove(store_uid=store_uid, tableNum=i)
+    
+    StoreInfo.setLastModifyDate(uid=store_uid)
 
     return {"result" : "Success", "code" : Code.Success}
     
