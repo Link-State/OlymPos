@@ -135,4 +135,13 @@ def add(userData) :
     return
 
 def remove(uid=-1) :
+    now = datetime.datetime.now()
+
+    sql = f"""
+    UPDATE Store_info
+    SET disable_date = '{now}'
+    WHERE unique_store_info = {uid};
+    """
+    mysql.execute(SQL=sql)
+    
     return

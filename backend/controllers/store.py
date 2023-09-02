@@ -9,7 +9,13 @@ from flask_jwt_extended import *
 from models import Admins
 from models import StoreInfo
 from models import TableList
+from models import ProductGroup
 from models import Product
+from models import ProductOption
+from models import ProductOptionRelations
+from models import ProductSuboption
+from models import OrderList
+from models import SelectedOption
 
 def checkField(data) :
     keyword = []
@@ -150,8 +156,56 @@ def change_store_info(inputStoreInfo={}) :
 
     return {"result" : "Success", "code" : Code.Success}
     
-def delete_store() :
-    return
+def delete_store(inputStoreInfo={}) :
+    # 필수 값이 누락됐을 때,
+    if "store_uid" not in inputStoreInfo :
+        return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    store = StoreInfo.getStore(uid=inputStoreInfo["store_uid"])
+
+    # 매장이 존재하지 않는 경우,
+    if len(store) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistStore}
+    
+    uid = Admins.findUID(id=inputStoreInfo["user_id"])
+
+    # 해당 유저가 존재하지 않을 경우,
+    if uid == -1 :
+        return {"result" : "Invalid", "code" : Code.NotExistID}
+    
+    # 요청한 사람의 매장이 아닌 경우,
+    if uid != store["unique_admin"] :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+    
+    # 매장 삭제
+    StoreInfo.remove(uid=inputStoreInfo["store_uid"])
+
+    # 테이블 삭제
+    for i in range(1, store["table_count"]+1) :
+        TableList.remove(store_uid=inputStoreInfo["store_uid"], tableNum=i)
+
+    # 상품 그룹 삭제
+    ## 매장 고유번호로 그룹 찾을 것.
+
+    # 상품 삭제
+    ## 매장 고유번호로 상품 찾을 것.
+
+    # 상품 옵션 삭제
+    ## 매장 고유번호로 옵션 찾을 것.
+
+    # 상품-옵션 관계 삭제
+    ## 상품 고유번호로 관계 삭제할 것.
+
+    # 상품 서브옵션 삭제
+    ## 옵션 고유번호로 서브옵션 찾을 것.
+
+    # 주문 삭제
+    ## 매장 고유번호로 주문서 찾을 것.
+
+    # 선택된 옵션 삭제
+    ## 주문서 고유번호로 선택된옵션 찾을 것.
+
+    return {"result" : "Success", "code" : Code.Success}
 
 def get_store_list() :
     return
