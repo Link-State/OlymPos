@@ -4,6 +4,7 @@ from flask_jwt_extended import *
 from config import API
 from routes import account
 from routes import store
+from routes import product
 
 # flask
 # pyJWT
@@ -39,6 +40,22 @@ api.add_resource(store.Change_store_info, '/change-store-info')
 api.add_resource(store.Delete_store, '/delete-store')
 api.add_resource(store.Get_my_stores, '/get-my-stores')
 api.add_resource(store.Get_store_info, '/get-store-info')
+
+api.add_resource(product.Add_group, '/add-product-group')
+api.add_resource(product.Modify_group, '/modify-product-group')
+api.add_resource(product.Delete_group, '/delete-product-group')
+api.add_resource(product.Add_product, '/add-product')
+api.add_resource(product.Modify_product, '/modify-product')
+api.add_resource(product.Delete_product, '/delete-product')
+api.add_resource(product.Add_option, '/add-product-option')
+api.add_resource(product.Modify_option, '/modify-product-option')
+api.add_resource(product.Delete_option, '/delete-product-option')
+api.add_resource(product.Add_suboption, '/add-product-suboption')
+api.add_resource(product.Modify_suboption, '/modify-product-suboption')
+api.add_resource(product.Delete_suboption, '/delete-product-suboption')
+api.add_resource(product.Get_group_list, '/get-group-list')
+api.add_resource(product.Get_product_list, '/get-product-list')
+api.add_resource(product.Get_option_list, '/get-option-list')
 
 if __name__ == '__main__' :
     app.run(debug=True, port=API.flask_port)
