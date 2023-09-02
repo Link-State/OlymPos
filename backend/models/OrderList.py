@@ -4,7 +4,8 @@ import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from main import connection, command
+from config import *
+from models import mysql
 
 # 해당 매장의 주문 목록 반환
 def getOrders(store_id=-1) :

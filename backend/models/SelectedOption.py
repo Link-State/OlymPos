@@ -3,7 +3,8 @@ import os
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from main import connection, command
+from config import *
+from models import mysql
 
 # 해당 주문의 모든 옵션 목록을 반환
 def getOptions(order_id=-1) :

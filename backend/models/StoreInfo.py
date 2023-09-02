@@ -127,8 +127,9 @@ def setLastModifyDate(uid=-1, date=datetime.datetime.now()) :
     return
 
 def add(userData) :
+    now = datetime.datetime.now()
     sql = f"""INSERT INTO Store_info (unique_admin, store_name, store_owner, store_address, store_tel_number, table_count, last_modify_date, disable_date)
-    VALUES('{userData["unique_admin"]}', '{userData["name"]}', '{userData["owner"]}', '{userData["address"]}', '{userData["tel_num"]}', '{userData["count"]}', {datetime.datetime.now()}, NULL);"""
+    VALUES('{userData["unique_admin"]}', '{userData["name"]}', '{userData["owner"]}', '{userData["address"]}', '{userData["tel_num"]}', '{userData["count"]}', '{now}', NULL);"""
 
     mysql.execute(SQL=sql)
 

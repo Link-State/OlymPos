@@ -207,8 +207,17 @@ def delete_store(inputStoreInfo={}) :
 
     return {"result" : "Success", "code" : Code.Success}
 
-def get_store_list() :
-    return
+def get_my_stores(user_id='') :
+    uid = Admins.findUID(id=user_id)
+
+    # 해당 유저가 존재하지 않을 경우,
+    if uid == -1 :
+        return {"result" : "Invalid", "code" : Code.NotExistID}
+    
+    # 보유 매장 불러오기
+    stores = StoreInfo.getStores(admin_uid=uid)
+    
+    return {"result" : "Success", "code" : Code.Success, "stores" : stores}
 
 def get_store_info() :
     return

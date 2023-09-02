@@ -54,10 +54,16 @@ class Delete_store(Resource) :
         return jsonify(store.delete_store(user_data))
 
 
-class Get_store_list(Resource) :
+class Get_my_stores(Resource) :
     @jwt_required()
-    def post(self) :
-        return
+    def get(self) :
+        identity = get_jwt_identity()
+
+        # 토큰이 없을 경우
+        if identity is None :
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
+
+        return jsonify(store.get_my_stores(identity))
 
 
 class Get_store_info(Resource) :
