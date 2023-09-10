@@ -17,8 +17,56 @@ from models import ProductSuboption
 from models import OrderList
 from models import SelectedOption
 
-def add_group() :
-    return
+def checkField(data) :
+    keyword = []
+
+    if "group_name" in data :
+        if len(data["group_name"]) < MinLength.group_name or len(data["group_name"]) > MaxLength.group_name :
+            keyword.append("group_name")
+
+    return keyword
+
+def add_group(userInputData={}) :
+
+    fields = ["store_uid", "group_name"]
+
+    # 필수 필드가 누락됐을 때,
+    for field in fields :
+        if field not in userInputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    store = StoreInfo.getStore(uid=userInputData["store_uid"])
+
+    # 해당 매장이 존재하지 않을 때,
+    if len(store) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistStore}
+    
+    uid = Admins.findUID(id=userInputData["user_id"])
+
+    # 유저가 존재하지 않을 때,
+    if uid == -1 :
+        return {"result" : "Invalid", "code" : Code.NotExistID}
+
+    # 해당 매장이 요청자 소유가 아닐 때,
+    if store["unique_admin"] != uid :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+    
+    group_uid = ProductGroup.findGroup(store_uid=userInputData["store_uid"], name=userInputData["group_name"])
+    
+    # 해당 이름의 그룹이 이미 존재할 때,
+    if group_uid != -1 :
+        return {"result" : "Invalid", "code" : Code.AlreadyExistGroup}
+    
+    keyword = checkField(userInputData)
+
+    # 데이터 형식이 맞지 않을 때,
+    if len(keyword) > 0 :
+        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
+    
+    # 카테고리 생성
+    group_uid = ProductGroup.add(userInputData)
+    
+    return {"result" : "Success", "code" : Code.Success, "uid" : group_uid}
 
 def modify_group() :
     return

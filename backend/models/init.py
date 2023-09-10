@@ -368,7 +368,7 @@ command.execute("""ALTER TABLE Selected_option
 # 테스트 입력
 ## 관리자 계정
 command.execute("""INSERT INTO Admins VALUES(
-                0,
+                1,
                 'link_state',
                 'asdf1234',
                 'kor_people',
@@ -376,11 +376,20 @@ command.execute("""INSERT INTO Admins VALUES(
                 'link@asd.qwe',
                 NULL
                 );""")
+command.execute("""INSERT INTO Admins VALUES(
+                2,
+                'distance_vector',
+                'qwer1234',
+                'rainy',
+                '010-9999-9999',
+                'vector@asd.qwe',
+                NULL
+                );""")
 
 ## 매장
 tables = 5
 command.execute(f"""INSERT INTO Store_info VALUES(
-                0,
+                1,
                 1,
                 '날아라 닭다리',
                 '먹신',
@@ -390,11 +399,30 @@ command.execute(f"""INSERT INTO Store_info VALUES(
                 '2023-09-02 17:55:00',
                 NULL
                 );""")
+command.execute(f"""INSERT INTO Store_info VALUES(
+                2,
+                2,
+                '달려라 뿔소',
+                '칡소',
+                '쩌법민국 우물우물시 음메로 16-90',
+                '051-222-3333',
+                {tables-2},
+                '2023-09-02 19:58:01',
+                NULL
+                );""")
 
 ## 테이블
 for t in range(1, tables+1) :
     command.execute(f"""INSERT INTO Table_list VALUES(
                     1,
+                    {t},
+                    0,
+                    '',
+                    NULL
+                    );""")
+for t in range(1, tables-2+1) :
+    command.execute(f"""INSERT INTO Table_list VALUES(
+                    2,
                     {t},
                     0,
                     '',

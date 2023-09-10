@@ -13,6 +13,7 @@ class Code() :
     NotExistTable = 302
     AlreadyExistID = 303
     AlreadyExistStore = 304
+    AlreadyExistGroup = 305
 
     AlreadyLogin = 400
     NotLoginState = 401
