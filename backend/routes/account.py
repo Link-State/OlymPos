@@ -95,7 +95,7 @@ class Signup(Resource) :
     def post(self) :
         user_data = request.get_json()
 
-        return jsonify(account.signup(member=user_data))
+        return jsonify(account.signup(inputUserData=user_data))
 
 
 class Delete_account(Resource) :
@@ -122,7 +122,7 @@ class Change_account_info(Resource) :
         user_data = request.get_json()
         user_data["user_id"] = identity
 
-        return jsonify(account.change_account(member=user_data))
+        return jsonify(account.change_account(inputUserData=user_data))
 
 
 class Get_account_info(Resource) :
