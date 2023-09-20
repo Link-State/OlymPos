@@ -15,6 +15,11 @@ def getTables(store_uid=-1) :
 
     result = mysql.execute(SQL=sql, fetch=True)
 
+    # 각 매장에 대한 날짜 포맷팅
+    for st in result :
+        date = st["disable_date"].isoformat(sep=' ', timespec="seconds")
+        st["disable_date"] = '-'.join(date.split(':'))
+
     return result
 
 def getTable(store_uid=-1, tableNum=-1) :
@@ -26,8 +31,13 @@ def getTable(store_uid=-1, tableNum=-1) :
 
     result = mysql.execute(SQL=sql, fetch=True)
     
+    # 해당 테이블 없음
     if len(result) != 1 :
         return dict()
+
+    # 날짜 포맷
+    date = result[0]["last_modify_date"].isoformat(sep=' ', timespec="seconds")
+    result[0]["last_modify_date"] = '-'.join(date.split(':'))
 
     return result[0]
 

@@ -16,6 +16,7 @@ def findUID(id="") :
 
     result = mysql.execute(SQL=sql, fetch=True)
 
+    # 해당 아이디의 유저를 찾을 수 없음
     if len(result) != 1 :
         return -1
 
@@ -31,6 +32,7 @@ def getUser(uid=-1) :
 
     result = mysql.execute(SQL=sql, fetch=True)
 
+    # 해당 유저 찾을 수 없음
     if len(result) != 1 :
         return dict()
     

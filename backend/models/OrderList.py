@@ -26,7 +26,7 @@ def setAmount(uid=-1, amount=-1) :
 def setState(uid=-1, state=0) :
     return
 
-def setDate(uid=-1, date=datetime.datetime.today()) :
+def setDate(uid=-1, date=datetime.datetime.now()) :
     return
 
 def add(**kwargs) :

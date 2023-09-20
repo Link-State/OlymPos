@@ -16,6 +16,7 @@ def findStore(uid=-1, name="") :
 
     result = mysql.execute(SQL=sql, fetch=True)
     
+    # 해당 아이디와 이름의 매장이 없음
     if len(result) != 1 :
         return -1
 
@@ -35,7 +36,14 @@ def getStores(admin_uid=-1, include_disable=False) :
     WHERE unique_admin = {admin_uid}{where};
     """
 
-    return mysql.execute(SQL=sql, fetch=True)
+    result = mysql.execute(SQL=sql, fetch=True)
+
+    # 각 매장에 대한 날짜 포맷팅
+    for st in result :
+        date = st["last_modify_date"].isoformat(sep=' ', timespec="seconds")
+        st["last_modify_date"] = '-'.join(date.split(':'))
+
+    return result
 
 def getStore(uid=-1) :
     sql = f"""
@@ -46,8 +54,13 @@ def getStore(uid=-1) :
 
     result = mysql.execute(SQL=sql, fetch=True)
     
+    # 매장 정보 없음
     if len(result) != 1 :
         return dict()
+    
+    # 날짜 포맷
+    date = result[0]["last_modify_date"].isoformat(sep=' ', timespec="seconds")
+    result[0]["last_modify_date"] = '-'.join(date.split(':'))
 
     return result[0]
 
@@ -118,7 +131,7 @@ def setIsLogin(uid=-1, islogin=0) :
 def setLastModifyDate(uid=-1, date=datetime.datetime.now()) :
     sql = f"""
     UPDATE Store_info
-    SET last_modify_date = {date}
+    SET last_modify_date = '{date}'
     WHERE unique_store_info = {uid};
     """
 
