@@ -42,6 +42,9 @@ def getStores(admin_uid=-1, include_disable=False) :
     for st in result :
         date = st["last_modify_date"].isoformat(sep=' ', timespec="seconds")
         st["last_modify_date"] = '-'.join(date.split(':'))
+        if st["disable_date"] != None :
+            date = st["disable_date"].isoformat(sep=' ', timespec="seconds")
+            st["disable_date"] = '-'.join(date.split(':'))
 
     return result
 
@@ -61,6 +64,10 @@ def getStore(uid=-1) :
     # 날짜 포맷
     date = result[0]["last_modify_date"].isoformat(sep=' ', timespec="seconds")
     result[0]["last_modify_date"] = '-'.join(date.split(':'))
+
+    if result[0]["disable_date"] != None :
+        date = result[0]["disable_date"].isoformat(sep=' ', timespec="seconds")
+        result[0]["disable_date"] = '-'.join(date.split(':'))
 
     return result[0]
 

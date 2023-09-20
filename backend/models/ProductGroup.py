@@ -38,17 +38,43 @@ def getGroups(store_uid=-1, include_disable=False) :
 
     result = mysql.execute(SQL=sql, fetch=True)
 
-    for group in result :
-        date = group["disable_date"].isoformat(sep=' ', timespec="seconds")
-        group["disable_date"] = "-".join(date.split(":"))
+    if include_disable :
+        for group in result :
+            if group["disable_date"] != None :
+                date = group["disable_date"].isoformat(sep=' ', timespec="seconds")
+                group["disable_date"] = "-".join(date.split(":"))
 
     return result
 
 def getGroup(uid=-1) :
     # unique_product_group, unique_store_info, group_name, disable_date
-    return
+    sql = f"""
+    SELECT unique_product_group, unique_store_info, group_name, disable_date
+    FROM Product_group
+    WHERE unique_product_group = {uid};
+    """
+
+    result = mysql.execute(SQL=sql, fetch=True)
+
+    if len(result) != 1 :
+        return dict()
+    
+    # 날짜 포맷
+    if result[0]["disable_date"] != None :
+        date = result[0]["disable_date"].isoformat(sep=' ', timespec="seconds")
+        result[0]["disable_date"] = '-'.join(date.split(':'))
+
+    return result[0]
 
 def setName(uid=-1, name="") :
+    sql = f"""
+    UPDATE Product_group
+    SET group_name = '{name}'
+    WHERE unique_product_group = {uid};
+    """
+    
+    mysql.execute(SQL=sql)
+
     return
 
 def add(userData) :

@@ -85,7 +85,7 @@ def modify_group(userInputData) :
     group = ProductGroup.getGroup(uid=userInputData["group_uid"])
 
     # 해당 그룹이 존재하지 않을 때,
-    if group == -1 :
+    if len(group) <= 0 :
         return {"result" : "Invalid", "code" : Code.NotExistGroup}
     
     groups = ProductGroup.getGroups(store_uid=group["unique_store_info"])
@@ -103,10 +103,10 @@ def modify_group(userInputData) :
     
     # 그룹 정보 수정
     group_uid = userInputData["group_uid"]
-    if "name" in userInputData :
+    if "group_name" in userInputData :
         ProductGroup.setName(uid=group_uid, name=userInputData["group_name"])
 
-    return {"result" : "Invalid", "code" : Code.Success}
+    return {"result" : "Success", "code" : Code.Success}
 
 def delete_group() :
     return

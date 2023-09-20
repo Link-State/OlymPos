@@ -57,7 +57,5 @@ api.add_resource(product.Get_group_list, '/get-group-list')
 api.add_resource(product.Get_product_list, '/get-product-list')
 api.add_resource(product.Get_option_list, '/get-option-list')
 
-api.add_resource()
-
 if __name__ == '__main__' :
     app.run(debug=True, port=API.flask_port)
