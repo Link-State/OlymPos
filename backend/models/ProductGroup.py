@@ -1,5 +1,6 @@
 import sys
 import os
+import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
@@ -21,11 +22,33 @@ def findGroup(store_uid=-1, name='') :
 
     return result[0]["unique_product_group"]
 
-def getGroups(store_id=-1) :
-    # uid, name
+def getGroups(store_uid=-1, include_disable=False) :
+    select = ''
+    where = " and disable_date is NULL"
+
+    if include_disable :
+        select = ", disable_date"
+        where = ''
+
+    sql = f"""
+    SELECT unique_product_group, unique_store_info, group_name{select}
+    FROM Product_group
+    WHERE unique_store_info = {store_uid}{where};
+    """
+
+    result = mysql.execute(SQL=sql, fetch=True)
+
+    for group in result :
+        date = group["disable_date"].isoformat(sep=' ', timespec="seconds")
+        group["disable_date"] = "-".join(date.split(":"))
+
+    return result
+
+def getGroup(uid=-1) :
+    # unique_product_group, unique_store_info, group_name, disable_date
     return
 
-def setGroup(uid=-1, name="") :
+def setName(uid=-1, name="") :
     return
 
 def add(userData) :

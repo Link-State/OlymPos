@@ -68,8 +68,45 @@ def add_group(userInputData={}) :
     
     return {"result" : "Success", "code" : Code.Success, "uid" : group_uid}
 
-def modify_group() :
-    return
+def modify_group(userInputData) :
+    fields = ["group_uid", "group_name"]
+
+    # 필수 필드가 누락 됐을 때,
+    for field in fields :
+        if field not in userInputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    uid = Admins.findUID(id=userInputData["user_id"])
+
+    # 유저가 존재하지 않을 때,
+    if uid == -1 :
+        return {"result" : "Invalid", "code" : Code.NotExistID}
+    
+    group = ProductGroup.getGroup(uid=userInputData["group_uid"])
+
+    # 해당 그룹이 존재하지 않을 때,
+    if group == -1 :
+        return {"result" : "Invalid", "code" : Code.NotExistGroup}
+    
+    groups = ProductGroup.getGroups(store_uid=group["unique_store_info"])
+
+    # 해당 이름을 가진 그룹이 이미 존재할 때,
+    for g in groups :
+        if g["group_name"] == userInputData["group_name"] :
+            return {"result" : "Invalid", "code" : Code.AlreadyExistGroup}
+
+    keyword = checkField(userInputData)
+
+    # 데이터 형식이 맞지 않을 때,
+    if len(keyword) > 0 :
+        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
+    
+    # 그룹 정보 수정
+    group_uid = userInputData["group_uid"]
+    if "name" in userInputData :
+        ProductGroup.setName(uid=group_uid, name=userInputData["group_name"])
+
+    return {"result" : "Invalid", "code" : Code.Success}
 
 def delete_group() :
     return
