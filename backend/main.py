@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import *
+from flask_cors import CORS
 from config import API
 from routes import account
 from routes import store
@@ -10,6 +11,7 @@ from routes import product
 # pyJWT
 # flask_restful
 # flask_jwt_extended
+# flask_cors
 # pymysql
 # cryptography
 
@@ -56,6 +58,8 @@ api.add_resource(product.Delete_suboption, '/delete-product-suboption')
 api.add_resource(product.Get_group_list, '/get-group-list')
 api.add_resource(product.Get_product_list, '/get-product-list')
 api.add_resource(product.Get_option_list, '/get-option-list')
+
+cors = CORS(app, resources={r'*' : {'origins' : '*'}})
 
 if __name__ == '__main__' :
     app.run(debug=True, port=API.flask_port)
