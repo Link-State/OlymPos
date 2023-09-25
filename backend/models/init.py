@@ -29,6 +29,7 @@ command.execute("DROP TABLE IF EXISTS Product_option;")
 command.execute("DROP TABLE IF EXISTS Product;")
 command.execute("DROP TABLE IF EXISTS Product_group;")
 command.execute("DROP TABLE IF EXISTS Table_list;")
+command.execute("DROP TABLE IF EXISTS Version;")
 command.execute("DROP TABLE IF EXISTS Store_info;")
 command.execute("DROP TABLE IF EXISTS Admins;")
 print("Clear Table")
@@ -67,6 +68,16 @@ command.execute("""CREATE TABLE Table_list (
                 table_state INT NOT NULL,
                 isLogin LONGTEXT NOT NULL,
                 disable_date DATETIME
+                );""")
+
+## 버전 스키마
+command.execute("""CREATE TABLE Version (
+                unique_store_info INT,
+                table_list DECIMAL(17),
+                product_group DECIMAL(17),
+                product DECIMAL(17),
+                product_option DECIMAL(17),
+                product_suboption DECIMAL(17),
                 );""")
 
 ## 상품 카테고리 스키마
@@ -182,6 +193,21 @@ command.execute("""ALTER TABLE Table_list
 command.execute("""ALTER TABLE Table_list
                 ADD CONSTRAINT table_state__conflict__at__Table_list
                 CHECK (table_state IN (0, 1, 2, 3))
+                ;""")
+
+## 버전
+### 버전 기본키
+command.execute("""ALTER TABLE Version
+                ADD PRIMARY KEY (
+                unique_store_info)
+                ;""")
+
+### 버전 외래키
+command.execute("""ALTER TABLE Version
+                ADD FOREIGN KEY (unique_store_info)
+                REFERENCES Store_info(unique_store_info)
+                ON UPDATE CASCADE
+                ON DELETE CASCADE
                 ;""")
 
 ## 상품 카테고리
@@ -428,6 +454,16 @@ for t in range(1, tables-2+1) :
                     '',
                     NULL
                     );""")
+
+## 버전
+command.execute("""INSERT INTO Version VALUES(
+                1,
+                20230925112700000,
+                20230925112700000,
+                20230925112700000,
+                20230925112700000,
+                20230925112700000,
+                );""")
 
 ## 상품 카테고리
 command.execute("""INSERT INTO Product_group VALUES(

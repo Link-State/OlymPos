@@ -6,6 +6,7 @@ from config import API
 from routes import account
 from routes import store
 from routes import product
+from routes import version
 
 # flask
 # pyJWT
@@ -58,6 +59,8 @@ api.add_resource(product.Delete_suboption, '/delete-product-suboption')
 api.add_resource(product.Get_group_list, '/get-group-list')
 api.add_resource(product.Get_product_list, '/get-product-list')
 api.add_resource(product.Get_option_list, '/get-option-list')
+
+api.add_resource(version.Get_store_version, '/get-store-version')
 
 cors = CORS(app, resources={r'*' : {'origins' : '*'}})
 
