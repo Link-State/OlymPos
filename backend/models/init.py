@@ -77,7 +77,7 @@ command.execute("""CREATE TABLE Version (
                 product_group DECIMAL(17),
                 product DECIMAL(17),
                 product_option DECIMAL(17),
-                product_suboption DECIMAL(17),
+                product_suboption DECIMAL(17)
                 );""")
 
 ## 상품 카테고리 스키마
@@ -462,7 +462,7 @@ command.execute("""INSERT INTO Version VALUES(
                 20230925112700000,
                 20230925112700000,
                 20230925112700000,
-                20230925112700000,
+                20230925112700000
                 );""")
 
 ## 상품 카테고리
