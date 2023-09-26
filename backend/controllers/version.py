@@ -25,13 +25,12 @@ def get_version(userInputData={}) :
     
     store = StoreInfo.getStore(uid=userInputData["store_uid"])
 
-    # 해당 매장이 존재하지 않을 때,
+    # 매장이 존재하지 않을 때,
     if len(store) <= 0 :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
-    versions = Version.getVersion(store["unique_store_info"])
+    versions = Version.getVersion(store_uid=store["unique_store_info"])
 
-    # 해당 매장의 버전이 존재하지 않을 때,
     if len(versions) <= 0 :
         return {"result" : "Invalid", "code" : Code.NotExistVersion}
 

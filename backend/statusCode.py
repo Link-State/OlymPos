@@ -10,14 +10,14 @@ class Code() :
     WrongDataForm = 204
     NotEquals = 205
 
-    # 존재하지 않는 데이터
+    # 존재하지 않는 데이터에 관한 코드
     NotExistID = 300
     NotExistStore = 301
     NotExistTable = 302
     NotExistGroup = 304
     NotExistVersion = 310
 
-    # 이미 존재하는 데이터
+    # 이미 존재하는 데이터에 관한 코드
     AlreadyExistID = 400
     AlreadyExistStore = 401
     AlreadyExistGroup = 402
