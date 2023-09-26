@@ -16,6 +16,7 @@ from models import ProductOptionRelations
 from models import ProductSuboption
 from models import OrderList
 from models import SelectedOption
+from models import Version
 
 def checkField(data) :
     keyword = []
@@ -82,6 +83,9 @@ def addStore(inputStoreInfo={}) :
     # 테이블을 1부터 순차적으로 추가
     for table in range(1, inputStoreInfo["count"]+1) :
         TableList.add({"store_uid" : store_uid, "table":table})
+    
+    # 버전 추가
+    Version.add(uid=store_uid)
 
     return {"result" : "Success", "code" : Code.Success, "uid" : store_uid}
 
