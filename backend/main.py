@@ -36,6 +36,7 @@ api.add_resource(account.UserLogout, '/user-logout')
 api.add_resource(account.Signup, '/signup')
 api.add_resource(account.Delete_account, '/delete-account')
 api.add_resource(account.Change_account_info, '/change-account-info')
+api.add_resource(account.Get_exist_user, '/get-exist-user')
 api.add_resource(account.Get_account_info, '/get-account-info')
 
 api.add_resource(store.Add_store, '/add-store')

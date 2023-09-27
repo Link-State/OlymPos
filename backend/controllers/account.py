@@ -275,3 +275,18 @@ def change_account(inputUserData={}) :
         Admins.setEmail(uid=uid, email=inputUserData["email"])
 
     return {"result" : "Success", "code" : Code.Success, "keyword" : keyword}
+
+def get_isExist(userInputData={}) :
+
+    # 필수 필드가 누락 됐을 때,
+    if "user_id" not in userInputData :
+        return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    isExist = 0
+    uid = Admins.findUID(id=userInputData["user_id"])
+
+    # 해당 아이디를 가진 유저가 이미 존재할 떄,
+    if uid != -1 :
+        isExist = 1
+
+    return {"result" : "Success", "code" : Code.Success, "isExist" : isExist}

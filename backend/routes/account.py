@@ -125,6 +125,12 @@ class Change_account_info(Resource) :
         return jsonify(account.change_account(inputUserData=user_data))
 
 
+class Get_exist_user(Resource) :
+    def get(self) :
+        user_data = request.args.to_dict()
+        return jsonify(account.get_isExist(userInputData=user_data))
+
+
 class Get_account_info(Resource) :
     @jwt_required()
     def get(self) :
