@@ -17,8 +17,10 @@ class Product_order(Resource) :
         # 토큰이 없을 경우
         if identity is None :
             return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
+        
+        user_data = request.get_json()
 
-        return jsonify()
+        return jsonify(order.product_order(userInputData=user_data))
     
 class Change_order_state(Resource) :
     @jwt_required()
