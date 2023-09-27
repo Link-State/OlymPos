@@ -8,7 +8,7 @@ from models import mysql
 
 def getVersion(uid=-1) :
     sql = f"""
-    SELECT unique_store_info, table_list, product_group, product, product_option, product_suboption, disable_date
+    SELECT unique_store_info, table_list, product_group, product, product_option_relations, product_option, product_suboption, disable_date
     FROM Version
     WHERE unique_store_info = {uid};
     """
@@ -62,6 +62,18 @@ def setProduct(uid=-1, time=datetime.datetime.now().isoformat(sep='-', timespec=
     
     return
 
+def setProductOptionRelations(uid=-1, time=datetime.datetime.now().isoformat(sep='-', timespec="milliseconds")) :
+    time = time.replace(':', '').replace('-', '').replace('.', '')
+
+    sql = f"""
+    UPDATE Version
+    SET product_option_relations = {time}
+    WHERE unique_store_info = {uid};
+    """
+    mysql.execute(SQL=sql)
+    
+    return
+
 def setProductOption(uid=-1, time=datetime.datetime.now().isoformat(sep='-', timespec="milliseconds")) :
     time = time.replace(':', '').replace('-', '').replace('.', '')
 
@@ -89,8 +101,8 @@ def setProductSuboption(uid=-1, time=datetime.datetime.now().isoformat(sep='-', 
 def add(uid=-1, time=datetime.datetime.now().isoformat(sep='-', timespec="milliseconds")) :
     time = time.replace(':', '').replace('-', '').replace('.', '')
     
-    sql = f"""INSERT INTO Version (unique_store_info, table_list, product_group, product, product_option, product_suboption, disable_date)
-    VALUES('{uid}', '{time}', '{time}', '{time}', '{time}', '{time}', NULL);"""
+    sql = f"""INSERT INTO Version (unique_store_info, table_list, product_group, product, product_option_relations, product_option, product_suboption, disable_date)
+    VALUES('{uid}', '{time}', '{time}', '{time}', '{time}', '{time}', '{time}', NULL);"""
 
     mysql.execute(SQL=sql)
 

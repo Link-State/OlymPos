@@ -140,6 +140,7 @@ def change_store_info(inputStoreInfo={}) :
         # 현재 활성화된 테이블 갯수와 활성화할 테이블 갯수가 같지 않을 때, DB상 기록된 테이블 갯수 수정
         if request != current :
             StoreInfo.setTableCount(uid=store_uid, num=request)
+            Version.setTableList(uid=store_uid)
         
         # 활성화할 테이블 갯수가 현재 활성화된 테이블 갯수보다 클 경우,
         if request > current :

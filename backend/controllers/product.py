@@ -16,6 +16,7 @@ from models import ProductOptionRelations
 from models import ProductSuboption
 from models import OrderList
 from models import SelectedOption
+from models import Version
 
 def checkField(data) :
     keyword = []
@@ -65,6 +66,7 @@ def add_group(userInputData={}) :
     
     # 카테고리 생성
     group_uid = ProductGroup.add(userInputData)
+    Version.setProductGroup(uid=store["unique_store_info"])
     
     return {"result" : "Success", "code" : Code.Success, "uid" : group_uid}
 
@@ -100,11 +102,10 @@ def modify_group(userInputData) :
     # 데이터 형식이 맞지 않을 때,
     if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
-    
+
     # 그룹 정보 수정
-    group_uid = userInputData["group_uid"]
-    if "group_name" in userInputData :
-        ProductGroup.setName(uid=group_uid, name=userInputData["group_name"])
+    ProductGroup.setName(uid=userInputData["group_uid"], name=userInputData["group_name"])
+    Version.setProductGroup(uid=group["unique_store_info"])
 
     return {"result" : "Success", "code" : Code.Success}
 
