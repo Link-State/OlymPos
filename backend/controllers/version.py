@@ -29,7 +29,7 @@ def get_version(userInputData={}) :
     if len(store) <= 0 :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
-    versions = Version.getVersion(store_uid=store["unique_store_info"])
+    versions = Version.getVersion(uid=store["unique_store_info"])
 
     if len(versions) <= 0 :
         return {"result" : "Invalid", "code" : Code.NotExistVersion}
