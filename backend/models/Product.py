@@ -19,10 +19,37 @@ def getProducts(store_uid=-1, include_disable=False) :
     WHERE unique_store_info = {store_uid}{where};
     """
 
-    return mysql.execute(SQL=sql, fetch=True)
+    result = mysql.execute(SQL=sql, fetch=True)
+    
+    # 각 매장에 대한 날짜 포맷팅
+    for st in result :
+        if "disable_date" not in st :
+            break
+        if st["disable_date"] != None :
+            date = st["disable_date"].isoformat(sep=' ', timespec="seconds")
+            st["disable_date"] = '-'.join(date.split(':'))
+
+    return result
 
 def getProduct(uid=-1) :
-    return
+    sql = f"""
+    SELECT unique_product, unique_store_info, unique_product_group, product_name, price, image, description, amount, disable_date
+    FROM Product
+    WHERE unique_product = {uid};
+    """
+
+    result = mysql.execute(SQL=sql, fetch=True)
+
+    # 매장 정보 없음
+    if len(result) != 1 :
+        return dict()
+    
+    # 날짜 포맷
+    if result[0]["disable_date"] != None :
+        date = result[0]["disable_date"].isoformat(sep=' ', timespec="seconds")
+        result[0]["disable_date"] = '-'.join(date.split(':'))
+
+    return result
 
 def setStore(uid=-1, id=-1) :
     return

@@ -15,6 +15,9 @@ class Code() :
     NotExistStore = 301
     NotExistTable = 302
     NotExistGroup = 304
+    NotExistProduct = 306
+    NotExistProductOption = 307
+    NotExistProductSuboption = 307
     NotExistVersion = 310
 
     # 이미 존재하는 데이터에 관한 코드

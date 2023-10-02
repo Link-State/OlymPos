@@ -19,8 +19,9 @@ class Product_order(Resource) :
             return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
         
         user_data = request.get_json()
+        user_data["user_id"] = identity
 
-        return jsonify(order.product_order(userInputData=user_data))
+        return jsonify(order.product_order(inputData=user_data))
     
 class Change_order_state(Resource) :
     @jwt_required()
