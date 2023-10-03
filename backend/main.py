@@ -63,6 +63,10 @@ api.add_resource(product.Get_product_list, '/get-product-list')
 api.add_resource(product.Get_option_list, '/get-option-list')
 
 api.add_resource(order.Product_order, '/product-order')
+api.add_resource(order.Change_order_state, '/change-order-state')
+api.add_resource(order.Change_table_state, '/change-table-state')
+api.add_resource(order.Get_order_list, '/get-order-list')
+api.add_resource(order.Get_table_list, '/get-table-list')
 
 api.add_resource(version.Get_store_version, '/get-store-version')
 
