@@ -18,6 +18,8 @@ class Code() :
     NotExistProduct = 306
     NotExistProductOption = 307
     NotExistProductSuboption = 307
+    NotExistOrder = 308
+    NotExistState = 309
     NotExistVersion = 310
 
     # 이미 존재하는 데이터에 관한 코드
@@ -28,3 +30,14 @@ class Code() :
     # 로그인에 관한 코드
     AlreadyLogin = 500
     NotLoginState = 501
+
+class OrderState() :
+    Receipt = 0
+    Processing = 1
+    Cancel = 2
+    Complete = 3
+
+    def isExist(code) :
+        if type(code) is type(1) and code >= 0 and code <= 3 :
+            return True
+        return False

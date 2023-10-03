@@ -79,3 +79,26 @@ def product_order(inputData={}) :
     order_uid = OrderList.findOrder(store_uid=inputData["store_uid"], date=inputData["order_date"])
 
     return {"result" : "Success", "code" : Code.Success, "uid" : order_uid}
+
+def change_order_state(inputData={}) :
+    fields = ["order_uid", "state"]
+
+    # 필수 필드가 누락됐을 때,
+    for field in fields :
+        if field not in inputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    order = OrderList.getOrder(uid=inputData["order_uid"])
+
+    # 해당 주문 번호가 존재하지 않을 때,
+    if len(order) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistOrder}
+    
+    # 주문 상태 번호가 존재하지 않을 때,
+    if not OrderState.isExist(inputData["state"]) :
+        return {"result" : "Invalid", "code" : Code.NotExistState}
+    
+    # 주문 상태 수정
+    OrderList.setState(uid=inputData["order_uid"], state=inputData["state"])
+
+    return {"result" : "Success", "code" : Code.Success}

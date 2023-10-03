@@ -26,7 +26,15 @@ class Product_order(Resource) :
 class Change_order_state(Resource) :
     @jwt_required()
     def post(self) :
-        return
+        identity = get_jwt_identity()
+
+        if identity is None :
+            return jsonify({"return" : "Invalid", "code" : Code.MissingToken})
+        
+        user_data = request.get_json()
+        user_data["user_id"] = identity
+
+        return jsonify(order.change_order_state(inputData=user_data))
 
 class Change_table_state(Resource) :
     @jwt_required()
