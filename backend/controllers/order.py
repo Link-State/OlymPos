@@ -146,7 +146,26 @@ def get_order_list(inputData={}) :
     if len(store) <= 0 :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
 
-    # 주문 내역 불러옴
+    # 주문 목록 불러옴
     orders = OrderList.getOrders(store_uid=inputData["store_uid"])
 
     return {"result" : "Success", "code" : Code.Success, "orders" : orders}
+
+def get_table_list(inputData={}) :
+    fields = ["store_uid"]
+
+    # 필수 필드가 누락됐을 때,
+    for field in fields :
+        if field not in inputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    store = StoreInfo.getStore(uid=inputData["store_uid"])
+
+    # 해당 매장이 존재하지 않을 때,
+    if len(store) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistStore}
+
+    # 테이블 목록 불러옴
+    tables = TableList.getTables(store_uid=inputData["store_uid"])
+
+    return {"result" : "Success", "code" : Code.Success, "tables" : tables}

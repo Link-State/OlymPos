@@ -15,7 +15,7 @@ def getTables(store_uid=-1) :
 
     result = mysql.execute(SQL=sql, fetch=True)
 
-    # 각 매장에 대한 날짜 포맷팅
+    # 각 테이블에 대한 날짜 포맷팅
     for st in result :
         if st["disable_date"] != None :
             date = st["disable_date"].isoformat(sep=' ', timespec="seconds")

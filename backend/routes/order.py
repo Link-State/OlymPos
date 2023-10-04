@@ -65,4 +65,12 @@ class Get_order_list(Resource) :
 class Get_table_list(Resource) :
     @jwt_required()
     def get(self) :
-        return
+        identity = get_jwt_identity()
+
+        if identity is None :
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
+        
+        user_data = request.args.to_dict()
+        user_data["user_id"] = identity
+
+        return jsonify(order.get_table_list(inputData=user_data))
