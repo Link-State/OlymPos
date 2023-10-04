@@ -45,8 +45,9 @@ def setPrice(uid=-1, price=0) :
 def setIsOffer(uid=-1, isoffer=0) :
     return
 
-def add(**kwargs) :
+def add(userData) :
     # require : product id, name, price, isOffer
+    # 생성 후 UID 자동 반환 구문 만들기!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     return
 
 def remove(uid=-1) :

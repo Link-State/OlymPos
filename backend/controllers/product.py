@@ -24,6 +24,12 @@ def checkField(data) :
     if "group_name" in data :
         if len(data["group_name"]) < MinLength.group_name or len(data["group_name"]) > MaxLength.group_name :
             keyword.append("group_name")
+    if "product_name" in data :
+        if len(data["product_name"]) < MinLength.product_name or len(data["product_name"]) > MaxLength.group_name :
+            keyword.append("product_name")
+    if "option_name" in data :
+        if len(data["option_name"]) < MinLength.product_name or len(data["option_name"]) > MaxLength.group_name :
+            keyword.append("option_name")
 
     return keyword
 
@@ -147,8 +153,28 @@ def modify_product() :
 def delete_product() :
     return
 
-def add_option() :
-    return
+def add_option(inputData={}) :
+    fields = ["store_uid", "option_name", "price", "isoffer"]
+
+    # 필수 필드가 누락됐을 때,
+    for field in fields :
+        if field not in inputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    store = StoreInfo.getStore(uid=inputData["store_uid"])
+
+    # 해당 매장이 존재하지 않을 때,
+    if len(store) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistStore}
+    
+    keyword = checkField(inputData)
+    # 데이터 양식이 맞지 않을 때,
+    if len(keyword) <= 0 :
+        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
+
+    # 옵션 생성
+    uid = ProductOption.add(inputData)
+    return {"result" : "Success", "code" : Code.Success, "uid" : uid}
 
 def modify_option() :
     return
