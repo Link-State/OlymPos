@@ -41,7 +41,16 @@ class Modify_group(Resource) :
 class Delete_group(Resource) :
     @jwt_required()
     def post(self) :
-        return
+        identity = get_jwt_identity()
+        
+        # 토큰이 없을 경우
+        if identity is None :
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
+        
+        user_data = request.get_json()
+        user_data["user_id"] = identity
+
+        return jsonify(product.delete_group(inputData=user_data))
 
 class Add_product(Resource) :
     @jwt_required()

@@ -86,5 +86,13 @@ def add(userData) :
 
     return findGroup(store_uid=userData["store_uid"], name=userData["group_name"])
 
-def remove(uid=-1) :
+def remove(uid=-1, date=datetime.datetime.now()) :
+    sql = f"""
+    UPDATE Product_group
+    SET disable_date = '{date}'
+    WHERE unique_product_group = {uid};
+    """
+    
+    mysql.execute(SQL=sql)
+
     return

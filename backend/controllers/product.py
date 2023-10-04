@@ -109,8 +109,34 @@ def modify_group(userInputData) :
 
     return {"result" : "Success", "code" : Code.Success}
 
-def delete_group() :
-    return
+def delete_group(inputData={}) :
+    fields = ["group_uid"]
+
+    # 필수 필드가 누락됐을 때,
+    for field in fields :
+        if field not in inputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    group = ProductGroup.getGroup(uid=inputData["group_uid"])
+
+    # 해당 카테고리가 존재하지 않을 때,
+    if len(group) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistGroup}
+    
+    store = StoreInfo.getStore(uid=group["unique_store_info"])
+    user = Admins.getUser(uid=store["unique_admin"])
+
+    # 해당 매장의 소유주와 요청자의 id가 다를 때,
+    if inputData["user_id"] != user["user_id"] :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+    
+    # 해당 카테고리 삭제
+    ProductGroup.remove(uid=inputData["group_uid"])
+
+    # 버전 업데이트
+    Version.setProductGroup(uid=group["unique_store_info"])
+
+    return {"result" : "Success", "code" : Code.Success}
 
 def add_product() :
     return
