@@ -41,3 +41,14 @@ class OrderState() :
         if type(code) is type(1) and code >= 0 and code <= 3 :
             return True
         return False
+    
+class TableState() :
+    Empty = 0
+    Receipt = 1
+    Processing = 2
+    Complete = 3
+
+    def isExist(code) :
+        if type(code) is type(1) and code >= 0 and code <= 3 :
+            return True
+        return False

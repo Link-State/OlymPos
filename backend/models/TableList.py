@@ -47,6 +47,14 @@ def setTableNum(store_uid=-1, tableNum=-1) :
     return
 
 def setState(store_uid=-1, tableNum=-1, state=-1) :
+    sql = f"""
+    UPDATE Table_list
+    SET table_state = {state}
+    WHERE unique_store_info = {store_uid} and table_number = {tableNum};
+    """
+
+    mysql.execute(SQL=sql)
+
     return
 
 def setIsLogin(store_uid=-1, tableNum=-1, islogin='') :

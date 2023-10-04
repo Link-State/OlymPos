@@ -102,3 +102,32 @@ def change_order_state(inputData={}) :
     OrderList.setState(uid=inputData["order_uid"], state=inputData["state"])
 
     return {"result" : "Success", "code" : Code.Success}
+
+def change_table_state(inputData={}) :
+    fields = ["store_uid", "table", "state"]
+
+    # 필수 필드가 누락됐을 때,
+    for field in fields :
+        if field not in inputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    store = StoreInfo.getStore(uid=inputData["store_uid"])
+
+    # 해당 매장이 존재하지 않을 때,
+    if len(store) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistStore}
+    
+    table = TableList.getTable(store_uid=inputData["store_uid"], tableNum=inputData["table"])
+
+    # 해당 테이블 번호가 존재하지 않을때,
+    if len(table) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistTable}
+    
+    # 해당 상태가 존재하지 않을 때,
+    if not TableState.isExist(inputData["state"]) :
+        return {"result" : "Invalid", "code" : Code.NotExistState}
+    
+    # 테이블 상태 변경
+    TableList.setState(store_uid=inputData["store_uid"], tableNum=inputData["table"], state=inputData["state"])
+
+    return {"result" : "Success", "code" : Code.Success}
