@@ -42,7 +42,7 @@ class Change_table_state(Resource) :
         identity = get_jwt_identity()
 
         if identity is None :
-            return jsonify({"return" : "Invalid", "code" : Code.MissingToken})
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
         
         user_data = request.get_json()
         user_data["user_id"] = identity
@@ -52,7 +52,15 @@ class Change_table_state(Resource) :
 class Get_order_list(Resource) :
     @jwt_required()
     def get(self) :
-        return
+        identity = get_jwt_identity()
+
+        if identity is None :
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
+        
+        user_data = request.args.to_dict()
+        user_data["user_id"] = identity
+
+        return jsonify(order.get_order_list(inputData=user_data))
 
 class Get_table_list(Resource) :
     @jwt_required()

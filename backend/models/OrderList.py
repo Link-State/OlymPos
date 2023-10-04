@@ -23,8 +23,23 @@ def findOrder(store_uid=-1, date=datetime.datetime.now()) :
 
     return uids
 
-def getOrders(store_id=-1) :
-    return
+def getOrders(store_uid=-1) :
+
+    sql = f"""
+    SELECT unique_order, unique_store_info, unique_product, table_number, amount, order_state, order_date
+    FROM Order_list
+    WHERE unique_store_info = {store_uid};
+    """
+
+    result = mysql.execute(SQL=sql, fetch=True)
+
+    # 각 주문에 대한 날짜 포맷팅
+    for st in result :
+        if st["order_date"] != None :
+            date = st["order_date"].isoformat(sep=' ', timespec="seconds")
+            st["order_date"] = '-'.join(date.split(':'))
+    
+    return result
 
 def getOrder(uid=-1) :
 
