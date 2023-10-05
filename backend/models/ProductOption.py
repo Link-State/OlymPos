@@ -6,6 +6,20 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from config import *
 from models import mysql
 
+def findOption(store_uid=-1, name='', price=0, isoffer=0) :
+    sql = f"""
+    SELECT unique_product_option
+    FROM Product_option
+    WHERE unique_store_info = {store_uid} and option_name = '{name}' and price = {price} and suboption_offer = {isoffer};
+    """
+
+    result = mysql.execute(SQL=sql, fetch=True)
+
+    if len(result) != 1 :
+        return -1
+
+    return result[0]["unique_product_option"]
+
 # 해당 제품의 옵션 목록 반환
 def getOptions(product_uid=-1) :
     return
@@ -47,8 +61,14 @@ def setIsOffer(uid=-1, isoffer=0) :
 
 def add(userData) :
     # require : product id, name, price, isOffer
-    # 생성 후 UID 자동 반환 구문 만들기!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    return
+    # 생성 후 UID 자동 반환
+
+    sql = f"""INSERT INTO Product_option (unique_store_info, option_name, price, suboption_offer, disable_date)
+    VALUES('{userData["store_uid"]}', '{userData["option_name"]}', '{userData["price"]}', '{userData["isoffer"]}', NULL);"""
+
+    mysql.execute(SQL=sql)
+
+    return findOption(store_uid=userData["store_uid"], name=userData["option_name"], price=userData["price"], isoffer=userData["isoffer"])
 
 def remove(uid=-1) :
     return

@@ -70,7 +70,16 @@ class Delete_product(Resource) :
 class Add_option(Resource) :
     @jwt_required()
     def post(self) :
-        return
+        identity = get_jwt_identity()
+        
+        # 토큰이 없을 경우
+        if identity is None :
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
+        
+        user_data = request.get_json()
+        user_data["user_id"] = identity
+
+        return jsonify(product.add_option(inputData=user_data))
     
 class Modify_option(Resource) :
     @jwt_required()

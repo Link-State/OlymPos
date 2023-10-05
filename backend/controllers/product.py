@@ -167,7 +167,14 @@ def add_option(inputData={}) :
     if len(store) <= 0 :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
+    option_uid = ProductOption.findOption(store_uid=inputData["store_uid"], name=inputData["option_name"], price=inputData["price"], isoffer=inputData["isoffer"])
+    
+    # 해당 이름+가격+서브옵션유무의 옵션이 이미 존재할 때,
+    if option_uid == -1 :
+        return {"result" : "Invalid", "code" : Code.AlreadyExistOption}
+
     keyword = checkField(inputData)
+    
     # 데이터 양식이 맞지 않을 때,
     if len(keyword) <= 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
