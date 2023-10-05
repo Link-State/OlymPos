@@ -1,3 +1,6 @@
+import os
+import sys
+
 from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import *
@@ -16,6 +19,13 @@ from routes import version
 # flask_cors
 # pymysql
 # cryptography
+
+PATH = os.getcwd()
+IMAGE = PATH + "/image"
+
+# 이미지 폴더 생성
+if not os.path.exists(IMAGE) :
+    os.mkdir(IMAGE)
 
 connection = None
 command = None
