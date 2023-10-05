@@ -167,6 +167,12 @@ def add_option(inputData={}) :
     if len(store) <= 0 :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
+    user = Admins.getUser(uid=store["unique_admin"])
+
+    # 요청자와 소유자가 일치하지 않을 때,
+    if inputData["user_id"] != user["user_id"] :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+
     option_uid = ProductOption.findOption(store_uid=inputData["store_uid"], name=inputData["option_name"], price=inputData["price"], isoffer=inputData["isoffer"])
     
     # 해당 이름+가격+서브옵션유무의 옵션이 이미 존재할 때,
