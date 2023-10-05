@@ -1,5 +1,6 @@
 import sys
 import os
+import shutil
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
@@ -79,6 +80,13 @@ def addStore(inputStoreInfo={}) :
     StoreInfo.add(inputStoreInfo)
 
     store_uid = StoreInfo.findStore(uid=uid, name=inputStoreInfo["name"])
+
+    # 폴더 추가
+    store_image_path = Path.IMAGE + "/" + str(store_uid)
+    if not os.path.exists(store_image_path) :
+        shutil.rmtree(store_image_path)
+    os.mkdir(store_image_path)
+    os.mkdir(store_image_path + "/product")
 
     # 테이블을 1부터 순차적으로 추가
     for table in range(1, inputStoreInfo["count"]+1) :
