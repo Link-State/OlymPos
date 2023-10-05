@@ -7,6 +7,7 @@ from statusCode import *
 from flask import request, jsonify, session
 from flask_jwt_extended import *
 from flask_restful import Resource
+from werkzeug.utils import secure_filename
 from controllers import product
 
 class Add_group(Resource) :
@@ -55,6 +56,15 @@ class Delete_group(Resource) :
 class Add_product(Resource) :
     @jwt_required()
     def post(self) :
+        files = request.files
+
+        # 이미지가 전송이 안됐을 때,
+        if "image" not in files :
+            return
+        
+        image = files["image"]
+        image.save(secure_filename(image.filename))
+
         return
     
 class Modify_product(Resource) :
