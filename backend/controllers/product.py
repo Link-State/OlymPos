@@ -386,8 +386,35 @@ def modify_suboption(inputData={}) :
 
     return {"result" : "Success", "code" : Code.Success}
 
-def delete_suboption() :
-    return
+def delete_suboption(inputData={}) :
+    fields = ["suboption_uid"]
+
+    # 필수 필드가 누락됐을 때,
+    for field in fields :
+        if field not in inputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    suboption = ProductSuboption.getSubOption(uid=inputData["suboption_uid"])
+
+    # 서브옵션이 존재하지 않을 때,
+    if len(suboption) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistProductSuboption}
+    
+    option = ProductOption.getOption(uid=suboption["unique_product_option"])
+    store = StoreInfo.getStore(uid=option["unique_store_info"])
+    user = Admins.getUser(uid=store["unique_admin"])
+
+    # 요청자와 소유자가 일치하지 않을 때,
+    if inputData["user_id"] != user["user_id"] :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+    
+    # 서브옵션 삭제
+    ProductSuboption.remove(uid=inputData["suboption_uid"])
+
+    # 버전 업데이트
+    Version.setProductSuboption(uid=store["unique_store_info"])
+
+    return {"result" : "Success", "code" : Code.Success}
 
 def get_group_list() :
     return

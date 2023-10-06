@@ -1,5 +1,6 @@
 import sys
 import os
+import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
@@ -97,5 +98,13 @@ def add(userData) :
 
     return findSubOption(name=userData["suboption_name"], price=userData["price"], amount=userData["amount"])
 
-def remove(uid=-1) :
+def remove(uid=-1, date=datetime.datetime.now()) :
+    sql = f"""
+    UPDATE Product_suboption
+    SET disable_date = '{date}'
+    WHERE unique_product_suboption = {uid};
+    """
+    
+    mysql.execute(SQL=sql)
+
     return
