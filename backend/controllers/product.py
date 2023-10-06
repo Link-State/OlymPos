@@ -219,7 +219,11 @@ def modify_option(inputData={}) :
     if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
     
+    option_uid = ProductOption.findOption(name=inputData["option_name"], price=inputData["price"], isoffer=inputData["isoffer"])
+
     # 해당 이름+가격+서브옵션유무의 옵션이 이미 존재할 때,
+    if option_uid != -1 :
+        return {"result" : "Invalid", "code" : Code.AlreadyExistOption}
 
     # 옵션 수정
     if "option_name" in inputData :
