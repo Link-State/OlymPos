@@ -25,11 +25,14 @@ def checkField(data) :
         if len(data["group_name"]) < MinLength.group_name or len(data["group_name"]) > MaxLength.group_name :
             keyword.append("group_name")
     if "product_name" in data :
-        if len(data["product_name"]) < MinLength.product_name or len(data["product_name"]) > MaxLength.group_name :
+        if len(data["product_name"]) < MinLength.product_name or len(data["product_name"]) > MaxLength.product_name :
             keyword.append("product_name")
     if "option_name" in data :
-        if len(data["option_name"]) < MinLength.product_name or len(data["option_name"]) > MaxLength.group_name :
+        if len(data["option_name"]) < MinLength.option_name or len(data["option_name"]) > MaxLength.option_name :
             keyword.append("option_name")
+    if "suboption_name" in data :
+        if len(data["suboption_name"]) < MinLength.suboption_name or len(data["suboption_name"]) > MaxLength.suboption_name :
+            keyword.append("suboption_name")
 
     return keyword
 
@@ -258,8 +261,37 @@ def delete_option(inputData={}) :
 
     return {"result" : "Success", "code" : Code.Success}
 
-def add_suboption() :
-    return
+def add_suboption(inputData={}) :
+    fields = ["option_uid", "suboption_name", "price", "amount"]
+
+    # 필수 필드가 누락됐을 때,
+    for field in fields :
+        if field not in inputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    option = ProductOption.getOption(uid=inputData["option_uid"])
+
+    # 옵션이 존재하지 않을 때,
+    if len(option) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistProductOption}
+    
+    store = StoreInfo.getStore(uid=option["unique_store_info"])
+    user = Admins.getUser(uid=store["unique_admin"])
+
+    # 요청자와 소유자가 일치하지 않을 때,
+    if inputData["user_id"] != user["user_id"] :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+    
+    keyword = checkField(inputData)
+
+    # 데이터 형식이 맞지 않은 경우
+    if len(keyword) > 0 :
+        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
+    
+    # 서브옵션 생성
+    uid = ProductSuboption.add(inputData)
+
+    return {"result" : "Success", "code" : Code.Success, "uid" : uid}
 
 def nodify_suboption() :
     return
