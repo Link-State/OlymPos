@@ -229,8 +229,34 @@ def modify_option(inputData={}) :
 
     return {"result" : "Success", "code" : Code.Success}
 
-def delete_option() :
-    return
+def delete_option(inputData={}) :
+    fields = ["option_uid"]
+
+    # 필수 필드가 누락됐을 때,
+    for field in fields :
+        if field not in inputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    option = ProductOption.getOption(uid=inputData["option_uid"])
+
+    # 해당 옵션이 존재하지 않을 때,
+    if len(option) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistProductOption}
+    
+    store = StoreInfo.getStore(uid=option["unique_store_info"])
+    user = Admins.getUser(uid=store["unique_admin"])
+
+    # 요청자와 소유자가 일치하지 않을 때,
+    if inputData["user_id"] != user["user_id"] :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+    
+    # 옵션 삭제
+    ProductOption.remove(uid=inputData["option_uid"])
+
+    # 버전 업데이트
+    Version.setProductOption(uid=option["unique_store_info"])
+
+    return {"result" : "Success", "code" : Code.Success}
 
 def add_suboption() :
     return
