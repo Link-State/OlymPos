@@ -136,7 +136,16 @@ class Add_suboption(Resource) :
 class Modify_suboption(Resource) :
     @jwt_required()
     def post(self) :
-        return
+        identity = get_jwt_identity()
+        
+        # 토큰이 없을 경우
+        if identity is None :
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
+        
+        user_data = request.get_json()
+        user_data["user_id"] = identity
+
+        return jsonify(product.modify_suboption(inputData=user_data))
     
 class Delete_suboption(Resource) :
     @jwt_required()

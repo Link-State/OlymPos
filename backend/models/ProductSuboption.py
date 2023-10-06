@@ -45,15 +45,47 @@ def getSubOption(uid=-1) :
     return result
 
 def setOption(uid=-1, option_id=-1) :
+    sql = f"""
+    UPDATE Product_suboption
+    SET unique_product_option = {option_id}
+    WHERE unique_product_suboption = {uid};
+    """
+    
+    mysql.execute(SQL=sql)
+
     return
 
 def setName(uid=-1, name="") :
+    sql = f"""
+    UPDATE Product_suboption
+    SET suboption_name = '{name}'
+    WHERE unique_product_suboption = {uid};
+    """
+    
+    mysql.execute(SQL=sql)
+
     return
 
 def setPrice(uid=-1, price=0) :
+    sql = f"""
+    UPDATE Product_suboption
+    SET price = {price}
+    WHERE unique_product_suboption = {uid};
+    """
+    
+    mysql.execute(SQL=sql)
+
     return
 
 def setAmount(uid=-1, amount=-1) :
+    sql = f"""
+    UPDATE Product_suboption
+    SET amount = {amount}
+    WHERE unique_product_suboption = {uid};
+    """
+    
+    mysql.execute(SQL=sql)
+
     return
 
 def add(userData) :
