@@ -294,7 +294,11 @@ def add_suboption(inputData={}) :
     if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
 
+    suboption_uid = ProductSuboption.findSubOption(name=inputData["suboption_name"], price=inputData["price"], amount=inputData["amount"])
+
     # 이름+가격+남은수량 서브옵션이 이미 존재할 때,
+    if suboption_uid != -1 :
+        return {"result" : "Invalid", "code" : Code.AlreadyExistSubOption}
     
     # 서브옵션 생성
     uid = ProductSuboption.add(inputData)

@@ -16,7 +16,7 @@ def findSubOption(name="", price=0, amount=-1) :
     result = mysql.execute(SQL=sql, fetch=True)
 
     if len(result) != 1 :
-        return dict()
+        return -1
     
     return result[0]["unique_product_suboption"]
 

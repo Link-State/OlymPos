@@ -27,6 +27,7 @@ class Code() :
     AlreadyExistStore = 401
     AlreadyExistGroup = 402
     AlreadyExistOption = 404
+    AlreadyExistSubOption = 405
 
     # 로그인에 관한 코드
     AlreadyLogin = 500
