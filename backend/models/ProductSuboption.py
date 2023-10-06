@@ -6,6 +6,20 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from config import *
 from models import mysql
 
+def findSubOption(name="", price=0, amount=-1) :
+    sql = f"""
+    SELECT unique_product_suboption
+    FROM Product_suboption
+    WHERE suboption_name = '{name}' and price = {price} and amount = {amount};
+    """
+
+    result = mysql.execute(SQL=sql, fetch=True)
+
+    if len(result) != 1 :
+        return dict()
+    
+    return result[0]["unique_product_suboption"]
+
 # 해당 옵션의 서브옵션 목록 반환
 def getSubOptions(option_id=-1) :
     return
@@ -42,9 +56,14 @@ def setPrice(uid=-1, price=0) :
 def setAmount(uid=-1, amount=-1) :
     return
 
-def add(**kwargs) :
+def add(userData) :
     # require : product id, name, price, amount
-    return
+    sql = f"""INSERT INTO Product_suboption (unique_product_option, suboption_name, price, amount, disable_date)
+    VALUES('{userData["option_uid"]}', '{userData["suboption_name"]}', '{userData["price"]}', '{userData["amount"]}', NULL);"""
+
+    mysql.execute(SQL=sql)
+
+    return findSubOption(name=userData["suboption_name"], price=userData["price"], amount=userData["amount"])
 
 def remove(uid=-1) :
     return

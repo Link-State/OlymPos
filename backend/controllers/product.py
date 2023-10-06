@@ -219,6 +219,8 @@ def modify_option(inputData={}) :
     if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
     
+    # 해당 이름+가격+서브옵션유무의 옵션이 이미 존재할 때,
+
     # 옵션 수정
     if "option_name" in inputData :
         ProductOption.setName(uid=inputData["option_uid"], name=inputData["option_name"])
@@ -287,6 +289,8 @@ def add_suboption(inputData={}) :
     # 데이터 형식이 맞지 않은 경우
     if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
+
+    # 이름+가격+남은수량 서브옵션이 이미 존재할 때,
     
     # 서브옵션 생성
     uid = ProductSuboption.add(inputData)

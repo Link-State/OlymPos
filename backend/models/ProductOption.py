@@ -1,5 +1,6 @@
 import sys
 import os
+import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
@@ -51,12 +52,36 @@ def setProduct(uid=-1, product_id=-1) :
     return
 
 def setName(uid=-1, name="") :
+    sql = f"""
+    UPDATE Product_option
+    SET option_name = '{name}'
+    WHERE unique_product_option = {uid};
+    """
+    
+    mysql.execute(SQL=sql)
+
     return
 
 def setPrice(uid=-1, price=0) :
+    sql = f"""
+    UPDATE Product_option
+    SET price = {price}
+    WHERE unique_product_option = {uid};
+    """
+    
+    mysql.execute(SQL=sql)
+
     return
 
 def setIsOffer(uid=-1, isoffer=0) :
+    sql = f"""
+    UPDATE Product_option
+    SET suboption_offer = {isoffer}
+    WHERE unique_product_option = {uid};
+    """
+    
+    mysql.execute(SQL=sql)
+
     return
 
 def add(userData) :
@@ -70,5 +95,13 @@ def add(userData) :
 
     return findOption(store_uid=userData["store_uid"], name=userData["option_name"], price=userData["price"], isoffer=userData["isoffer"])
 
-def remove(uid=-1) :
+def remove(uid=-1, date=datetime.datetime.now()) :
+    sql = f"""
+    UPDATE Product_option
+    SET disable_date = {date}
+    WHERE unique_product_option = {uid};
+    """
+    
+    mysql.execute(SQL=sql)
+
     return
