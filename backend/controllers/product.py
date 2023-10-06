@@ -189,8 +189,45 @@ def add_option(inputData={}) :
     uid = ProductOption.add(inputData)
     return {"result" : "Success", "code" : Code.Success, "uid" : uid}
 
-def modify_option() :
-    return
+def modify_option(inputData={}) :
+    fields = ["option_uid"]
+
+    # 필수 필드가 누락됐을 때,
+    for field in fields :
+        if field not in inputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    option = ProductOption.getOption(uid=inputData["option_uid"])
+
+    # 해당 옵션이 존재하지 않을 때,
+    if len(option) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistProductOption}
+    
+    store = StoreInfo.getStore(uid=option["unique_store_info"])
+    user = Admins.getUser(store["unique_admin"])
+
+    # 요청자와 소유자가 일치하지 않을 때,
+    if inputData["user_id"] != user["user_id"] :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+    
+    keyword = checkField(inputData)
+
+    # 데이터 형식이 올바르지 않을 때,
+    if len(keyword) > 0 :
+        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
+    
+    # 옵션 수정
+    if "option_name" in inputData :
+        ProductOption.setName(uid=inputData["option_uid"], name=inputData["option_name"])
+    if "price" in inputData :
+        ProductOption.setPrice(uid=inputData["option_uid"], price=inputData["price"])
+    if "isoffer" in inputData :
+        ProductOption.setIsOffer(uid=inputData["option_uid"], isoffer=inputData["isoffer"])
+
+    # 버전 업데이트
+    Version.setProductOption(uid=option["unique_store_info"])
+
+    return {"result" : "Success", "code" : Code.Success}
 
 def delete_option() :
     return
