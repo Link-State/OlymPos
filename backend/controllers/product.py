@@ -358,10 +358,10 @@ def modify_suboption(inputData={}) :
     if "amount" in inputData :
         suboption["amount"] = inputData["amount"]
 
-    new_suboption = ProductSuboption.findSubOption(name=suboption["suboption_name"], price=suboption["price"], amount=suboption["amount"])
+    suboption_uid = ProductSuboption.findSubOption(name=suboption["suboption_name"], price=suboption["price"], amount=suboption["amount"])
 
     # 중복 데이터가 존재할 때,
-    if new_suboption != -1 :
+    if suboption_uid != -1 :
         return {"result" : "Invalid", "code" : Code.AlreadyExistSubOption}
     
     update_count = 0
