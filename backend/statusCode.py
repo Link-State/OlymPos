@@ -15,8 +15,8 @@ class Code() :
     NotExistStore = 301
     NotExistTable = 302
     NotExistGroup = 304
-    NotExistProduct = 306
-    NotExistProductOption = 307
+    NotExistProduct = 305
+    NotExistProductOption = 306
     NotExistProductSuboption = 307
     NotExistOrder = 308
     NotExistState = 309

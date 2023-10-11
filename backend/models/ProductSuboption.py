@@ -43,7 +43,7 @@ def getSubOption(uid=-1) :
         date = result[0]["disable_date"].isoformat(sep=' ', timespec="seconds")
         result[0]["disable_date"] = '-'.join(date.split(':'))
 
-    return result
+    return result[0]
 
 def setOption(uid=-1, option_id=-1) :
     sql = f"""

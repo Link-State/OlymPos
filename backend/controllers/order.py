@@ -70,8 +70,8 @@ def product_order(inputData={}) :
                 return {"result" : "Invalid", "code" : Code.NotExistProductOption}
             if len(suboption) <= 0 :
                 return {"result" : "Invalid", "code" : Code.NotExistProductSuboption}
-            
-    inputData["order_date"] = datetime.datetime.now()
+    
+    inputData["order_date"] = datetime.datetime.now().replace(microsecond=0)
 
     # 주문서 생성
     OrderList.add(inputData)
