@@ -178,7 +178,16 @@ class Modify_product_option_relation(Resource) :
 class Get_group_list(Resource) :
     @jwt_required()
     def get(self) :
-        return
+        identity = get_jwt_identity()
+
+        # 토큰이 없을 경우
+        if identity is None :
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
+        
+        user_data = request.args.to_dict()
+        user_data["user_id"] = identity
+
+        return jsonify()
 
 class Get_product_list(Resource) :
     @jwt_required()
