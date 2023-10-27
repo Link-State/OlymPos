@@ -62,7 +62,9 @@ def setProduct(uid=-1, time=datetime.datetime.now().isoformat(sep='-', timespec=
     
     return
 
-def setProductOptionRelations(uid=-1, time=datetime.datetime.now().isoformat(sep='-', timespec="milliseconds")) :
+def setProductOptionRelations(uid=-1, time=-1) :
+    if time == -1 :
+        time = datetime.datetime.now().isoformat(sep='-', timespec="milliseconds")
     time = time.replace(':', '').replace('-', '').replace('.', '')
 
     sql = f"""
@@ -70,6 +72,7 @@ def setProductOptionRelations(uid=-1, time=datetime.datetime.now().isoformat(sep
     SET product_option_relations = {time}
     WHERE unique_store_info = {uid};
     """
+
     mysql.execute(SQL=sql)
     
     return

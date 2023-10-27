@@ -49,7 +49,7 @@ def getProduct(uid=-1) :
         date = result[0]["disable_date"].isoformat(sep=' ', timespec="seconds")
         result[0]["disable_date"] = '-'.join(date.split(':'))
 
-    return result
+    return result[0]
 
 def setStore(uid=-1, id=-1) :
     return
