@@ -342,6 +342,7 @@ def modify_suboption(inputData={}) :
     
     keyword = checkField(inputData)
     
+    # 바꾸려는 옵션이 존재하지 않을 때, (데이터 형식이 맞지 않을 때,)
     if "option_uid" in inputData :
         option = ProductOption.getOption(uid=inputData["option_uid"])
         if len(option) <= 0 :
@@ -351,6 +352,7 @@ def modify_suboption(inputData={}) :
     if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
     
+    # 변경 데이터 적용
     if "suboption_name" in inputData :
         suboption["suboption_name"] = inputData["suboption_name"]
     if "price" in inputData :
@@ -434,18 +436,6 @@ def modify_product_option_relation(inputData={}) :
     if len(product) <= 0 :
         return {"result" : "Invalid", "code" : Code.NotExistProduct}
     
-    not_exist_options = []
-
-    # 존재하지 않는 옵션이 하나라도 있을 때,
-    for uid in inputData["option_uid"] :
-        option = ProductOption.getOption(uid=uid)
-
-        if len(option) <= 0 :
-            not_exist_options.append(uid)
-
-    if len(not_exist_options) > 0 :
-        return {"result" : "Invalid", "code" : Code.NotExistProductOption, "keyword" : not_exist_options}
-    
     store = StoreInfo.getStore(uid=product["unique_store_info"])
     user = Admins.getUser(uid=store["unique_admin"])
 
@@ -453,9 +443,34 @@ def modify_product_option_relation(inputData={}) :
     if inputData["user_id"] != user["user_id"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
-    # 상품-옵션 관계 추가
+    relations = ProductOptionRelations.getOptions(product_uid=inputData["product_uid"])
+
+    create = list(set(inputData["option_uid"]).difference(set(relations)))
+    delete = list(set(relations).difference(set(inputData["option_uid"])))
+    
+    not_exist_options = []
+
+    # 존재하지 않는 옵션이 하나라도 있을 때,
+    for uid in create :
+        option = ProductOption.getOption(uid=uid)
+
+        if len(option) <= 0 :
+            not_exist_options.append(uid)
+
+    if len(not_exist_options) > 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistProductOption, "keyword" : not_exist_options}
+
+    # 상품-옵션 관계 수정
+    # 1. 삭제
+    for option_uid in delete :
+        ProductOptionRelations.remove(product_uid=inputData["product_uid"], option_uid=option_uid)
+    
+    # 2. 생성
+    for option_uid in create :
+        ProductOptionRelations.add(product_uid=inputData["product_uid"], option_uid=option_uid)
 
     # 버전 업데이트
+    Version.setProductOptionRelations(uid=store["unique_store_info"])
 
     return {"result" : "Success", "code" : Code.Success}
 
