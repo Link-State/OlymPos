@@ -416,6 +416,49 @@ def delete_suboption(inputData={}) :
 
     return {"result" : "Success", "code" : Code.Success}
 
+def modify_product_option_relation(inputData={}) :
+    fields = ["product_uid", "option_uid"]
+
+    # 필수 필드가 누락됐을 때,
+    for field in fields :
+        if field not in inputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    # 데이터 형식이 맞지 않을 때,
+    if type(inputData["option_uid"]) is not type(list()) :
+        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : ["option_uid"]}
+
+    product = Product.getProduct(uid=inputData["product_uid"])
+
+    # 존재하지 않는 상품일 때,
+    if len(product) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistProduct}
+    
+    not_exist_options = []
+
+    # 존재하지 않는 옵션이 하나라도 있을 때,
+    for uid in inputData["option_uid"] :
+        option = ProductOption.getOption(uid=uid)
+
+        if len(option) <= 0 :
+            not_exist_options.append(uid)
+
+    if len(not_exist_options) > 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistProductOption, "keyword" : not_exist_options}
+    
+    store = StoreInfo.getStore(uid=product["unique_store_info"])
+    user = Admins.getUser(uid=store["unique_admin"])
+
+    # 요청자와 소유자가 일치하지 않을 때,
+    if inputData["user_id"] != user["user_id"] :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+    
+    # 상품-옵션 관계 추가
+
+    # 버전 업데이트
+
+    return {"result" : "Success", "code" : Code.Success}
+
 def get_group_list() :
     return
 
