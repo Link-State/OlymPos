@@ -179,13 +179,13 @@ def add_option(inputData={}) :
     option_uid = ProductOption.findOption(store_uid=inputData["store_uid"], name=inputData["option_name"], price=inputData["price"], isoffer=inputData["isoffer"])
     
     # 해당 이름+가격+서브옵션유무의 옵션이 이미 존재할 때,
-    if option_uid == -1 :
+    if option_uid != -1 :
         return {"result" : "Invalid", "code" : Code.AlreadyExistOption}
 
     keyword = checkField(inputData)
     
     # 데이터 양식이 맞지 않을 때,
-    if len(keyword) <= 0 :
+    if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
 
     # 옵션 생성
@@ -226,7 +226,7 @@ def modify_option(inputData={}) :
     if "isoffer" in inputData :
         option["suboption_offer"] = inputData["isoffer"]
 
-    option_uid = ProductOption.findOption(name=option["option_name"], price=option["price"], isoffer=option["suboption_offer"])
+    option_uid = ProductOption.findOption(store_uid=store["unique_store_info"], name=option["option_name"], price=option["price"], isoffer=option["suboption_offer"])
 
     # 해당 이름+가격+서브옵션유무의 옵션이 이미 존재할 때,
     if option_uid != -1 :
@@ -326,7 +326,7 @@ def modify_suboption(inputData={}) :
         if field not in inputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    suboption = ProductSuboption.getSubOption(uid=inputData["suboption"])
+    suboption = ProductSuboption.getSubOption(uid=inputData["suboption_uid"])
 
     # 해당 서브옵션이 존재하지 않을 때,
     if len(suboption) <= 0 :

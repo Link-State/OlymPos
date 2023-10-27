@@ -42,7 +42,7 @@ def getStores(admin_uid=-1, include_disable=False) :
     for st in result :
         date = st["last_modify_date"].isoformat(sep=' ', timespec="seconds")
         st["last_modify_date"] = '-'.join(date.split(':'))
-        if st["disable_date"] != None :
+        if include_disable and st["disable_date"] != None :
             date = st["disable_date"].isoformat(sep=' ', timespec="seconds")
             st["disable_date"] = '-'.join(date.split(':'))
 
