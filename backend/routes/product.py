@@ -187,7 +187,7 @@ class Get_group_list(Resource) :
         user_data = request.args.to_dict()
         user_data["user_id"] = identity
 
-        return jsonify()
+        return jsonify(product.get_group_list(inputData=user_data))
 
 class Get_product_list(Resource) :
     @jwt_required()

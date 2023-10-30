@@ -474,8 +474,27 @@ def modify_product_option_relation(inputData={}) :
 
     return {"result" : "Success", "code" : Code.Success}
 
-def get_group_list() :
-    return
+def get_group_list(inputData={}) :
+    # 필수 필드가 누락됐을 때,
+    fields = ["store_uid"]
+    for field in fields :
+        if field not in inputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    # 존재하지 않는 매장일 때,
+    store = StoreInfo.getStore(uid=inputData["store_uid"])
+    if len(store) <= 0 :
+        return {"result" : "Invalid", "code" : Code.NotExistStore}
+    
+    user = Admins.getUser(uid=store["unique_admin"])
+
+    # 요청자와 소유자가 일치하지 않을 때,
+    if inputData["user_id"] != user["user_id"] :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+    
+    groups = ProductGroup.getGroups(store_uid=inputData["store_uid"])
+
+    return {"result" : "Success", "code" : Code.Success, "groups" : groups}
 
 def get_product_list() :
     return
