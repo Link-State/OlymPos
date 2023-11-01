@@ -34,3 +34,17 @@ def execute(SQL, fetch=False) :
 
 def executes(SQLs=[], fetchs=[]) :
     return
+
+
+# 추가, 수정, 제거, 삭제 단위로 함수 생성
+def add() :
+    return
+
+def modify() :
+    return
+
+def remove() :
+    return
+
+def delete() :
+    return
