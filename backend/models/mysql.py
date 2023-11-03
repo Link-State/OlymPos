@@ -36,15 +36,18 @@ def executes(SQLs=[], fetchs=[]) :
     return
 
 
-# 추가, 수정, 제거, 삭제 단위로 함수 생성
-def add() :
+# 추가, 수정, 제거, 삭제, 검색 단위로 함수 생성
+def add(cols, values) :
     return
 
-def modify() :
+def modify(table, col, value) :
     return
 
-def remove() :
+def remove(table) :
     return
 
-def delete() :
+def delete(table) :
+    return
+
+def search(table, cols, conds) :
     return

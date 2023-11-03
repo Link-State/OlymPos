@@ -201,7 +201,14 @@ def signup(inputUserData={}) :
             return {"result" : "Invalid", "code" : Code.DeletedData}
         
         return {"result" : "Invalid", "code" : Code.AlreadyExistID}
-        
+    
+    # user = Admins.findUID(EMAIL)
+    # 이미 존재하는 이메일일 때,
+
+
+    # 이메일 인증 기능
+    
+
     keyword = checkField(inputUserData)
 
     # 입력 필드 확인
