@@ -127,7 +127,7 @@ def tableLogin(ssaid="", store_uid=-1, tableNum = -1) :
 
     # 해당 테이블 번호가 이미 로그인 상태인지 확인할 것.
     if "isLogin" in table and table["isLogin"] != '' :
-        return {"result" : "Invalid", "code" : Code.AlreadyLogin}
+        return {"result" : "Invalid", "code" : Code.AlreadyLogin, "SSAID" : table["isLogin"]}
     
     # 테이블 로그인 상태로 변경
     TableList.setIsLogin(store_uid=store_uid, tableNum=tableNum, islogin=ssaid)
