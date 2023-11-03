@@ -176,9 +176,9 @@ def userLogout(ssaid="", store_uid=-1, tableNum=-1) :
     if "isLogin" in table and table["isLogin"] == '' :
         return {"result" : "Invalid", "code" : Code.NotLoginState}
     
-    # SSAID가 맞지 않을 때,
+    # 요청자와 로그인중인 사용자의 SSAID가 일치하지 않을 때,
     if table["isLogin"] != ssaid :
-        return {"result" : "Invalid", "code" : Code.AlreadyLogin}
+        return {"result" : "Invalid", "code" : Code.NotEquals}
     
     # 로그아웃
     TableList.setIsLogin(store_uid=store_uid, tableNum=tableNum, islogin='')
