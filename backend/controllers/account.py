@@ -167,10 +167,6 @@ def userLogout(ssaid="", store_uid=-1, tableNum=-1) :
     # 테이블이 검색되지 않을 때,
     if len(table) <= 0 :
         return {"result" : "Invalid", "code" : Code.NotExistTable}
-    
-    # 삭제된 매장일 때,
-    if table["disable_date"] != None :
-        return {"result" : "Invalid", "code" : Code.DeletedData}
 
     # 로그인 상태가 아닐 때,
     if "isLogin" in table and table["isLogin"] == '' :
