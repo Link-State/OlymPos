@@ -57,20 +57,15 @@ def addStore(inputStoreInfo={}) :
     if uid == -1 :
         return {"result" : "Invalid", "code" : Code.NotExistID}
 
-    store_uid = StoreInfo.findStore(uid=uid, name=inputStoreInfo["name"])
+    store_uid = StoreInfo.findStore(name=inputStoreInfo["name"])
 
-    # 이미 해당 유저에게 존재하는 매장일 때,
+    # 해당 매장이름을 가진 매장이 존재할 때,
     if store_uid != -1 :
-        store = StoreInfo.getStore(uid=store_uid)
-        
-        # 삭제된 매장일 때,
-        if store["disable_date"] != None :
-            return {"result" : "Invalid", "code" : Code.DeletedData}
-        
         return {"result" : "Invalid", "code" : Code.AlreadyExistStore}
-    
+
     keyword = checkField(inputStoreInfo)
 
+    # 데이터 형식이 잘못 됐을 때,
     if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
     
@@ -79,7 +74,7 @@ def addStore(inputStoreInfo={}) :
     # DB에 매장 추가
     StoreInfo.add(inputStoreInfo)
 
-    store_uid = StoreInfo.findStore(uid=uid, name=inputStoreInfo["name"])
+    store_uid = StoreInfo.findStore(name=inputStoreInfo["name"])
 
     # 폴더 추가
     store_image_path = Path.IMAGE + "/" + str(store_uid)

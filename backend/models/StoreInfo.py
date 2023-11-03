@@ -7,11 +7,11 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from models import mysql
 from models import TableList
 
-def findStore(uid=-1, name="") :
+def findStore(name="") :
     sql = f"""
     SELECT unique_store_info
     FROM Store_info
-    WHERE unique_admin = {uid} and store_name = '{name}';
+    WHERE store_name = '{name}';
     """
 
     result = mysql.execute(SQL=sql, fetch=True)
