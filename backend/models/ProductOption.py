@@ -22,8 +22,31 @@ def findOption(store_uid=-1, name='', price=0, isoffer=0) :
     return result[0]["unique_product_option"]
 
 # 해당 제품의 옵션 목록 반환
-def getOptions(product_uid=-1) :
-    return
+def getOptions(store_uid=-1, include_disable=False) :
+    select = ''
+    where = " and disable_date is NULL"
+
+    if include_disable :
+        select = ", disable_date"
+        where = ''
+    
+    sql = f"""
+    SELECT unique_product_option, unique_store_info, option_name, price, suboption_offer{select}
+    FROM Product_option
+    WHERE unique_store_info = {store_uid}{where};
+    """
+
+    result = mysql.execute(SQL=sql, fetch=True)
+    
+    # 각 매장에 대한 날짜 포맷팅
+    for st in result :
+        if "disable_date" not in st :
+            break
+        if st["disable_date"] != None :
+            date = st["disable_date"].isoformat(sep=' ', timespec="seconds")
+            st["disable_date"] = '-'.join(date.split(':'))
+
+    return result
 
 def getOption(uid=-1) :
     sql = f"""
