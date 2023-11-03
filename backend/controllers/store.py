@@ -1,6 +1,7 @@
 import sys
 import os
 import shutil
+import re
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
@@ -23,18 +24,22 @@ def checkField(data) :
     keyword = []
 
     if "name" in data :
+        data["name"] = re.sub(r"[^\uAC00-\uD7A30-9a-zA-Z\s]", "", data["name"]).replace("\n", "").strip()
         if len(data["name"]) < MinLength.store_name or len(data["name"]) > MaxLength.store_name :
             keyword.append("name")
 
     if "owner" in data :
+        data["owner"] = re.sub(r"[^\uAC00-\uD7A30-9a-zA-Z\s]", "", data["owner"]).replace("\n", "").strip()
         if len(data["owner"]) < MinLength.store_owner or len(data["owner"]) > MaxLength.store_owner :
             keyword.append("owner")
 
     if "address" in data :
+        data["address"] = re.sub(r"[^\uAC00-\uD7A30-9a-zA-Z\s]", "", data["address"]).replace("\n", "").strip()
         if len(data["address"]) < MinLength.store_address or len(data["address"]) > MaxLength.store_address :
             keyword.append("address")
 
     if "tel_num" in data :
+        data["tel_num"] = re.sub(r"[^0-9-]", "", data["tel_num"])
         if len(data["tel_num"]) < MinLength.store_tel_number or len(data["tel_num"]) > MaxLength.store_tel_number :
             keyword.append("tel_num")
 
@@ -50,6 +55,12 @@ def addStore(inputStoreInfo={}) :
     for field in fields :
         if field not in inputStoreInfo :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    keyword = checkField(inputStoreInfo)
+
+    # 데이터 형식이 잘못 됐을 때,
+    if len(keyword) > 0 :
+        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
 
     uid = Admins.findUID(id=inputStoreInfo["user_id"])
 
@@ -62,12 +73,6 @@ def addStore(inputStoreInfo={}) :
     # 해당 매장이름을 가진 매장이 존재할 때,
     if store_uid != -1 :
         return {"result" : "Invalid", "code" : Code.AlreadyExistStore}
-
-    keyword = checkField(inputStoreInfo)
-
-    # 데이터 형식이 잘못 됐을 때,
-    if len(keyword) > 0 :
-        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
     
     inputStoreInfo["unique_admin"] = uid
 
@@ -97,6 +102,12 @@ def change_store_info(inputStoreInfo={}) :
     if "store_uid" not in inputStoreInfo :
         return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
+    keyword = checkField(inputStoreInfo)
+    
+    # 데이터 형식이 잘못 된 경우,
+    if len(keyword) > 0 :
+        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
+
     store = StoreInfo.getStore(uid=inputStoreInfo["store_uid"])
 
     # 매장이 존재하지 않는 경우,
@@ -112,12 +123,6 @@ def change_store_info(inputStoreInfo={}) :
     # 요청한 사람의 매장이 아닌 경우,
     if uid != store["unique_admin"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
-
-    keyword = checkField(inputStoreInfo)
-    
-    # 데이터 형식이 잘못 된 경우,
-    if len(keyword) > 0 :
-        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
     
     # 매장 정보 수정
     store_uid = inputStoreInfo["store_uid"]
