@@ -46,6 +46,8 @@ def get(table="", cols=[], conds=[]) :
     FROM {table}
     WHERE {" and ".join(conds)};"""
 
+    print(sql)
+
     result = execute(sql, True)
 
     # 반환타입 : list(dict())

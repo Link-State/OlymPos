@@ -141,3 +141,13 @@ class Get_account_info(Resource) :
             return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
         
         return jsonify(account.get_account(id=identity))
+
+class Find_account(Resource) :
+    def get(self) :
+        user_data = request.args.to_dict()
+        return jsonify(account.find_account(user_data))
+
+class Find_password(Resource) :
+    def get(self) :
+        user_data = request.args.to_dict()
+        return jsonify(account.find_password(user_data))

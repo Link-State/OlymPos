@@ -208,7 +208,7 @@ def signup(inputUserData={}) :
     result = mysql.get(table="Admins", cols=["unique_admin"], conds=[f"""email = '{inputUserData["email"]}'"""])
     
     if len(result) > 0 :
-        return {"result" : "Invalid", "code" : Code.AlreadyExistID}
+        return {"result" : "Invalid", "code" : Code.AlreadyEmail}
 
     # 이메일 인증 기능
     
@@ -297,3 +297,27 @@ def get_isExist(userInputData={}) :
         isExist = 1
 
     return {"result" : "Success", "code" : Code.Success, "isExist" : isExist}
+
+def find_account(inputData={}) :
+    # 필수 필드가 누락 됐을 때,
+    fields = ['name', 'tel_num', 'email']
+    for field in fields :
+        if field not in inputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    conds=[f"name = '{inputData['name']}'",
+           f"phone_number = '{inputData['tel_num']}'",
+           f"email = '{inputData['email']}'"]
+    
+    user = mysql.get(table="Admins", cols=["unique_admin", "user_id"], conds=conds)
+
+    # 해당 조건으로 아이디를 찾을 수 없을 때,
+    if len(user) != 1 :
+        return {"result" : "Invalid", "code" : Code.NotExistID}
+    
+    user = user[0]
+
+    return {"result" : "Success", "code" : Code.Success, "user" : user}
+
+def find_password(inputData={}) :
+    return
