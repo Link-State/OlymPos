@@ -10,6 +10,7 @@ from models import Admins
 from models import StoreInfo
 from models import TableList
 from models import Product
+from models import mysql
 
 def checkField(data) :
     keyword = []
@@ -204,7 +205,10 @@ def signup(inputUserData={}) :
     
     # user = Admins.findUID(EMAIL)
     # 이미 존재하는 이메일일 때,
-
+    result = mysql.get(table="Admins", cols=["unique_admin"], conds=[f"""email = '{inputUserData["email"]}'"""])
+    
+    if len(result) > 0 :
+        return {"result" : "Invalid", "code" : Code.AlreadyExistID}
 
     # 이메일 인증 기능
     
