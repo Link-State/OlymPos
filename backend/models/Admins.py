@@ -6,6 +6,29 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from config import *
 from models import mysql
+from models.mysql import DB
+from sqlalchemy import Integer, String, DateTime
+from sqlalchemy.sql.schema import Column
+
+# models/* 각 파일에 아래와 같은 테이블 클래스 선언하여 사용하는 방향으로 가야함.
+class Admins(DB.Model) :
+    __tablename__ = "Admins"
+
+    unique_admin = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    user_id = Column(String(MaxLength.user_id), nullable=False)
+    user_pwd = Column(String(MaxLength.user_pwd), nullable=False)
+    name = Column(String(MaxLength.user_name), nullable=False)
+    phone_number = Column(String(MaxLength.phone_number), nullable=False)
+    email = Column(String(MaxLength.email), nullable=False)
+    disable_date = Column(DateTime, nullable=True, default=None)
+
+    def __init__(self, id, pwd, name, number, email, disable=None) :
+        self.user_id = id
+        self.user_pwd = pwd
+        self.name = name
+        self.phone_number = number
+        self.email = email
+        self.disable_date = disable
 
 def findUID(id="") :
     sql = f"""

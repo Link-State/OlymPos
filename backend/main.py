@@ -2,22 +2,27 @@ import os
 import sys
 
 from flask import Flask
-from flask_restful import Api
+from flask_restful import Api, Resource
 from flask_jwt_extended import *
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
 from config import API
 from config import Path
+from config import MaxLength
 from routes import account
 from routes import store
 from routes import product
 from routes import order
 from routes import version
+from models.mysql import DB
+from models.Admins import Admins
 
 # flask
-# pyJWT
 # flask_restful
 # flask_jwt_extended
 # flask_cors
+# flask_sqlalchemy
+# pyJWT
 # pymysql
 # cryptography
 
@@ -25,18 +30,59 @@ from routes import version
 if not os.path.exists(Path.IMAGE) :
     os.mkdir(Path.IMAGE)
 
+# 안쓰는 변수(삭제할 것)
 connection = None
 command = None
 
 app = Flask(import_name=__name__)
+
 app.config.update(
     DEBUG = True,
     JWT_SECRET_KEY = API.key
 )
+app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql+pymysql://{API.mysql_username}:{API.mysql_pwd}@{API.host}:{API.mysql_port}/{API.database}"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# db = SQLAlchemy()를 두번 호출하면 오류남.
+# db = SQLAlchemy()를 호출한 모듈이 완전히 초기화 된 후 다른 곳에서 db변수를 불러와야 함.
+# https://streamls.tistory.com/entry/Flask%EA%B0%95%EC%A2%8C4-FlaskSQLAlchemy-Database%EC%97%B0%EB%8F%99
+DB.init_app(app)
 
 jwt = JWTManager(app)
 
 api = Api(app)
+
+@app.route('/test')
+def test() :
+    print("hello\n\n\n\n\n")
+    
+    # 추가
+    admin = Admins(id="test1", pwd="test1", name="dummy", number="01012341234", email="asdf@qwer.com")
+    DB.session.add(admin)
+    DB.session.commit()
+
+    aaaa = Admins.query.all()
+
+    for i in aaaa :
+        print(i.unique_admin)
+        print(i.user_id)
+        print(i.user_pwd)
+        print(i.name)
+        print(i.phone_number)
+        print(i.email)
+        print(i.disable_date)
+        print()
+
+    # 삭제
+    admin = Admins.query.filter_by(name="dummy")
+
+    if admin.count() == 1 :
+        DB.session.delete(admin)
+        DB.session.commit()
+
+    print("\n\n\n\n\n")
+    print("hello world")
+
 api.add_resource(account.AdminLogin, '/admin-login')
 api.add_resource(account.AdminLogout, '/admin-logout')
 api.add_resource(account.UserLogin, '/user-login')

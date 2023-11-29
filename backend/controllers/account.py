@@ -311,7 +311,7 @@ def find_account(inputData={}) :
     
     user = mysql.get(table="Admins", cols=["unique_admin", "user_id"], conds=conds)
 
-    # 해당 조건으로 아이디를 찾을 수 없을 때,
+    # 해당 조건으로 비밀번호를 찾을 수 없을 때,
     if len(user) != 1 :
         return {"result" : "Invalid", "code" : Code.NotExistID}
     
