@@ -6,6 +6,15 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from config import *
 from models import mysql
+from models.mysql import DB
+from sqlalchemy.sql.schema import Column
+from sqlalchemy import Integer, String, DateTime, ForeignKey
+
+class ProductGroup(DB.Model) :
+    __tablename__ = "Product_group"
+
+    unique_product_group = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    unique_store_info = Column(Integer, ForeignKey('Store_info'))
 
 # 해당 매장의 카테고리 목록 반환
 def findGroup(store_uid=-1, name='') :
