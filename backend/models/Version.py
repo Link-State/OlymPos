@@ -4,7 +4,28 @@ import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
+from config import *
 from models import mysql
+from models.mysql import DB
+from sqlalchemy import Column, Integer, BigInteger, ForeignKey
+
+class Version(DB.Model) :
+    __tablename__ = "Version"
+
+    unique_store_info = Column(Integer, ForeignKey('Store_info.unique_store_info'), primary_key=True, nullable=False)
+    table_list = Column(BigInteger, nullable=False)
+    product_group = Column(BigInteger, nullable=False)
+    product = Column(BigInteger, nullable=False)
+    product_option = Column(BigInteger, nullable=False)
+    product_suboption = Column(BigInteger, nullable=False)
+
+    def __init__(self, store, table, group, product, option, suboption) :
+        self.unique_store_info = store
+        self.table_list = table
+        self.product_group = group
+        self.product = product
+        self.product_option = option
+        self.product_suboption = suboption
 
 def getVersion(uid=-1) :
     sql = f"""
