@@ -13,8 +13,8 @@ class Product(DB.Model) :
     __tablename__ = "Product"
 
     unique_product = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    unique_store_info = Column(Integer, ForeignKey(''), nullable=False)
-    unique_product_group = Column(Integer, ForeignKey(''), nullable=False)
+    unique_store_info = Column(Integer, ForeignKey('Store_info.unique_store_info'), nullable=False)
+    unique_product_group = Column(Integer, ForeignKey('Product_group.unique_product_group'), nullable=False)
     product_name = Column(String(MaxLength.product_name), nullable=False)
     price = Column(Integer, nullable=False)
     image = Column(Text, nullable=True, default="")
