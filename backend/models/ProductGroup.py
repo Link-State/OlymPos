@@ -15,6 +15,14 @@ class ProductGroup(DB.Model) :
 
     unique_product_group = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     unique_store_info = Column(Integer, ForeignKey('Store_info'))
+    group_name = Column(String(MaxLength.group_name), nullable=False)
+    disable_date = Column(DateTime, nullable=True, default=None)
+
+    def __init__(self, store, name, disable) :
+        self.unique_store_info = store
+        self.group_name = name
+        self.disable_date = disable
+
 
 # 해당 매장의 카테고리 목록 반환
 def findGroup(store_uid=-1, name='') :
