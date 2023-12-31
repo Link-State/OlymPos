@@ -7,8 +7,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from config import *
 from models import mysql
 from models.mysql import DB
-from sqlalchemy import Integer, String, DateTime
-from sqlalchemy.sql.schema import Column
+from sqlalchemy import Column, Integer, String, DateTime
 
 # models/* 각 파일에 아래와 같은 테이블 클래스 선언하여 사용하는 방향으로 가야함.
 class Admins(DB.Model) :

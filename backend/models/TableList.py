@@ -6,13 +6,12 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from models import mysql
 from models.mysql import DB
-from sqlalchemy.sql.schema import Column
-from sqlalchemy import Integer, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, Text, DateTime, ForeignKey
 
 class TableList(DB.Model) :
     __tablename__ = "Table_list"
 
-    unique_store_info = Column(Integer, ForeignKey('Store_info.unique_store_info'))
+    unique_store_info = Column(Integer, ForeignKey('Store_info.unique_store_info'), primary_key=True, nullable=False)
     table_number = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     table_state = Column(Integer, nullable=False)
     isLogin = Column(Text, nullable=False, default="")

@@ -7,14 +7,13 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from config import *
 from models import mysql
 from models.mysql import DB
-from sqlalchemy import Integer, String, DateTime, ForeignKey
-from sqlalchemy.sql.schema import Column
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 
 class StoreInfo(DB.Model) :
     __tablename__ = "Store_info"
 
     unique_store_info = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    unique_admin = Column(Integer, ForeignKey('Admins.unique_admin'))
+    unique_admin = Column(Integer, ForeignKey('Admins.unique_admin'), nullable=False)
     store_name = Column(String(MaxLength.store_name), nullable=False)
     store_owner = Column(String(MaxLength.store_owner), nullable=False)
     store_address = Column(String(MaxLength.store_address), nullable=False)
