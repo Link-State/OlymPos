@@ -12,7 +12,7 @@ class ProductOptionRelations(DB.Model) :
     __tablename__ = "Product_Option_relations"
 
     unique_product = Column(Integer, ForeignKey('Product.unique_product'), primary_key=True, nullable=False)
-    unique_product_option = Column(Integer, ForeignKey('Product_option'), primary_key=True, nullable=False)
+    unique_product_option = Column(Integer, ForeignKey('Product_option.unique_product_option'), primary_key=True, nullable=False)
 
     def __init__(self, product, option) :
         self.unique_product = product

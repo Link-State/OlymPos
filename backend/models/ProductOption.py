@@ -19,7 +19,7 @@ class ProductOption(DB.Model) :
     suboption_offer = Column(Integer, nullable=False)
     disable_date = Column(DateTime, nullable=True, default=None)
 
-    def __init__(self, store, name, price, offer, disable) :
+    def __init__(self, store, name, price, offer, disable=None) :
         self.unique_store_info = store
         self.option_name = name
         self.price = price
