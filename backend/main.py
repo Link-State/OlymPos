@@ -16,6 +16,7 @@ from routes import order
 from routes import version
 from models.mysql import DB
 from models.Admins import Admins
+from models.StoreInfo import StoreInfo
 
 # flask
 # flask_restful
@@ -73,11 +74,35 @@ def test() :
         print(i.disable_date)
         print()
 
+    store = StoreInfo(admin=admin.unique_admin, name="우하하 가게", owner="칡칡이", address="음메민국 칡소시 발굽로 123-2", number="033-123-3333", count=4)
+    DB.session.add(store)
+    DB.session.commit()
+
+    bbbb = StoreInfo.query.all()
+
+    for i in bbbb :
+        print(i.unique_store_info)
+        print(i.unique_admin)
+        print(i.store_name)
+        print(i.store_owner)
+        print(i.store_address)
+        print(i.store_tel_number)
+        print(i.table_count)
+        print(i.last_modify_date)
+        print(i.disable_date)
+        print()
+
     # 삭제
     admin = Admins.query.filter_by(name="dummy")
 
     if admin.count() == 1 :
-        DB.session.delete(admin)
+        DB.session.delete(admin.first())
+        DB.session.commit()
+
+    store = StoreInfo.query.filter_by(store_name="우하하 가게")
+
+    if store.count() == 1 :
+        DB.session.delete(store.first())
         DB.session.commit()
 
     print("\n\n\n\n\n")
