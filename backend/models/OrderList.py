@@ -20,7 +20,7 @@ class OrderList(DB.Model) :
     order_state = Column(Integer, nullable=False)
     order_date = Column(DateTime, nullable=False)
 
-    def __init__(self, store, product, number, amount, state, date) :
+    def __init__(self, store, product, amount, state, date, number=None) :
         self.unique_store_info = store
         self.unique_product = product
         self.table_number = number
