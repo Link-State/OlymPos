@@ -69,19 +69,15 @@ def adminLogin(id="", pwd="") :
     # 탈퇴한 유저일 때,
     if user["disable_date"] != None :
         return {"result" : "Invalid", "code" : Code.DeletedData}
-    
-    rows = StoreInfo.query.filter_by(unique_admin=user["unique_admin"]).all()
 
+    records = StoreInfo.query.filter_by(unique_admin=user["unique_admin"]).all() # 해당 유저 소유의 가게 리스트
+    
+    # dict형으로 변환
     stores = []
-    for row in rows :
-        store = dict()
-        store["unique_admin"] = row.unique_admin
-        store["store_name"] = row.store_name
-        store["store_owner"] = row.store_owner
-        store["store_tel_number"] = row.store_tel_number
-        store["table_count"] = row.table_count
-        store["disable_date"] = row.disable_date
-        stores.append(store)
+    for rec in records :
+        dictRec = dict(rec.__dict__)
+        dictRec.pop('_sa_instance_state', None)
+        stores.append(dictRec)
 
     return {
         "result" : "Success",
@@ -91,26 +87,33 @@ def adminLogin(id="", pwd="") :
     }
 
 def userLogin(id="", pwd="") :
-    uid = Admins.findUID(id=id)
+    user = Admins.query.filter_by(user_id=id, user_pwd=pwd).first()
 
-    # 유저 아이디로 고유번호가 검색되지 않을 때,
-    if uid == -1 :
+    # 해당 아이디/비밀번호로 계정이 검색되지 않을 때,
+    if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
 
-    user = Admins.getUser(uid=uid)
+    user = user.__dict__
     
     # 탈퇴한 유저일 때,
     if user["disable_date"] != None :
         return {"result" : "Invalid", "code" : Code.DeletedData}
     
-    # 유저 아이디, 비밀번호가 맞지 않을 때,
-    if user["user_id"] != id or user["user_pwd"] != pwd :
-        return {"result" : "Invalid", "code" : Code.WrongPWD}
-    
     # 매장 목록 검색
-    stores = StoreInfo.getStores(admin_uid=uid)
+    records = StoreInfo.query.filter_by(unique_admin=user["unique_admin"]).all() # 해당 유저 소유의 가게 리스트
 
-    return {"result" : "Success", "code" : Code.Success, "stores" : stores}
+    # dict형으로 변환
+    stores = []
+    for rec in records :
+        dictRec = dict(rec.__dict__)
+        dictRec.pop('_sa_instance_state', None)
+        stores.append(dictRec)
+
+    return {
+        "result" : "Success",
+        "code" : Code.Success,
+        "stores" : stores
+    }
 
 def tableLogin(ssaid="", store_uid=-1, tableNum = -1) :
     store = StoreInfo.getStore(store_uid)
