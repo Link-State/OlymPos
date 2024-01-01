@@ -149,8 +149,10 @@ def tableLogin(ssaid="", store_uid=-1, tableNum = -1) :
     table.isLogin = ssaid
     DB.session.commit()
 
+    # 상품 검색
     records = Product.query.filter_by(unique_store_info=store_uid).all() # 상품 리스트
 
+    # dict형으로 변환
     products = []
     for rec in records :
         dictRec = dict(rec.__dict__)
@@ -160,13 +162,13 @@ def tableLogin(ssaid="", store_uid=-1, tableNum = -1) :
     return {"result" : "Success", "code" : Code.Success, "products" : products}
 
 def adminLogout(id="") :
-    uid = Admins.findUID(id)
+    user = Admins.query.filter_by(user_id=id).first()
 
     # 유저 아이디로 고유번호가 검색되지 않을 때,
-    if uid == -1 :
+    if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
     
-    user = Admins.getUser(uid=uid)
+    user = user.__dict__
 
     # 탈퇴한 유저일 때,
     if user["disable_date"] != None :
