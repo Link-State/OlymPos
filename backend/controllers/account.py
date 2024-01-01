@@ -6,11 +6,12 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from config import *
 from statusCode import *
 from flask_jwt_extended import *
+from models import mysql
+from models.mysql import DB
 from models.Admins import Admins
 from models.StoreInfo import StoreInfo
-from models import TableList
-from models import Product
-from models import mysql
+from models.TableList import TableList
+from models.Product import Product
 
 def checkField(data) :
     keyword = []
@@ -116,34 +117,45 @@ def userLogin(id="", pwd="") :
     }
 
 def tableLogin(ssaid="", store_uid=-1, tableNum = -1) :
-    store = StoreInfo.getStore(store_uid)
+    store = StoreInfo.query.filter_by(unique_store_info=store_uid).first()
     
     # 매장이 검색되지 않을 때,
-    if len(store) <= 0 :
+    if store == None :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
+    store = store.__dict__
+
     # 삭제된 매장일 때,
     if store["disable_date"] != None :
         return {"result" : "Invalid", "code" : Code.DeletedData}
 
-    table = TableList.getTable(store_uid=store_uid, tableNum=tableNum)
+    table = TableList.query.filter_by(unique_store_info=store_uid, table_number=tableNum).first()
 
     # 테이블이 검색되지 않을 때,
-    if len(table) <= 0 :
+    if table == None :
         return {"result" : "Invalid", "code" : Code.NotExistTable}
     
+    dictTable = table.__dict__
+    
     # 삭제된 테이블일 때,
-    if table["disable_date"] != None :
+    if dictTable["disable_date"] != None :
         return {"result" : "Invalid", "code" : Code.DeletedData}
 
     # 해당 테이블 번호가 이미 로그인 상태인지 확인할 것.
-    if "isLogin" in table and table["isLogin"] != '' :
-        return {"result" : "Invalid", "code" : Code.AlreadyLogin, "SSAID" : table["isLogin"]}
+    if "isLogin" in dictTable and dictTable["isLogin"] != '' :
+        return {"result" : "Invalid", "code" : Code.AlreadyLogin, "SSAID" : dictTable["isLogin"]}
     
     # 테이블 로그인 상태로 변경
-    TableList.setIsLogin(store_uid=store_uid, tableNum=tableNum, islogin=ssaid)
+    table.isLogin = ssaid
+    DB.session.commit()
 
-    products = Product.getProducts(store_uid=store_uid)
+    records = Product.query.filter_by(unique_store_info=store_uid).all() # 상품 리스트
+
+    products = []
+    for rec in records :
+        dictRec = dict(rec.__dict__)
+        dictRec.pop('_sa_instance_state', None)
+        products.append(dictRec)
 
     return {"result" : "Success", "code" : Code.Success, "products" : products}
 
