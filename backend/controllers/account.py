@@ -6,8 +6,8 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from config import *
 from statusCode import *
 from flask_jwt_extended import *
-from models import Admins
-from models import StoreInfo
+from models.Admins import Admins
+from models.StoreInfo import StoreInfo
 from models import TableList
 from models import Product
 from models import mysql
@@ -58,23 +58,30 @@ def get_account(id=-1) :
     return {"result" : "Success", "code" : Code.Success, "user" : user}
 
 def adminLogin(id="", pwd="") :
-    uid = Admins.findUID(id=id)
+    user = Admins.query.filter_by(user_id=id, user_pwd=pwd).first()
     
-    # 유저 아이디로 고유번호가 검색되지 않을 때,
-    if uid == -1 :
+    # 해당 아이디/비밀번호의 계정이 검색되지 않을 때,
+    if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
-
-    user = Admins.getUser(uid=uid)
     
+    user = user.__dict__
+
     # 탈퇴한 유저일 때,
     if user["disable_date"] != None :
         return {"result" : "Invalid", "code" : Code.DeletedData}
-
-    # 유저 아이디, 비밀번호가 맞지 않을 때,
-    if user["user_id"] != id or user["user_pwd"] != pwd :
-        return {"result" : "Invalid", "code" : Code.WrongPWD}
     
-    stores = StoreInfo.getStores(admin_uid=uid)
+    rows = StoreInfo.query.filter_by(unique_admin=user["unique_admin"]).all()
+
+    stores = []
+    for row in rows :
+        store = dict()
+        store["unique_admin"] = row.unique_admin
+        store["store_name"] = row.store_name
+        store["store_owner"] = row.store_owner
+        store["store_tel_number"] = row.store_tel_number
+        store["table_count"] = row.table_count
+        store["disable_date"] = row.disable_date
+        stores.append(store)
 
     return {
         "result" : "Success",
