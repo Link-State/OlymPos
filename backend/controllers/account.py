@@ -38,11 +38,18 @@ def checkField(data) :
             keyword.append("phone")
 
     if "email" in data :
+        # 유효성 검사
+        email = Admins.query.filter_by(email=data["email"]).first()
+
+        if email != None :
+            keyword.append("email:already_exist")
+
+        # 길이 검사
         memberLength = len(data["email"])
         alphaIdx = data["email"].find('@')
         dotIdx = data["email"].find('.')
         if memberLength < MinLength.email or memberLength > MaxLength.email or alphaIdx <= 1 or dotIdx <= 3 or dotIdx - alphaIdx <= 1 or dotIdx+1 == memberLength :
-            keyword.append("email")
+            keyword.append("email:wrong_length")
         
     return keyword
 
@@ -165,7 +172,7 @@ def tableLogin(ssaid="", store_uid=-1, tableNum = -1) :
 def adminLogout(id="") :
     user = Admins.query.filter_by(user_id=id).first()
 
-    # 유저 아이디로 고유번호가 검색되지 않을 때,
+    # 아이디로 유저가 검색되지 않을 때,
     if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
     
@@ -263,7 +270,7 @@ def signup(inputUserData={}) :
 def delete_account(id='') :
     user = Admins.query.filter_by(user_id=id).first()
 
-    # 유저 아이디로 고유번호가 검색되지 않을 때,
+    # 아이디로 유저가 검색되지 않을 때,
     if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
     
@@ -280,20 +287,20 @@ def delete_account(id='') :
     return {"result" : "Success", "code" : Code.Success}
 
 def change_account(inputUserData={}) :
-    uid = Admins.findUID(id=inputUserData["user_id"])
+    user = Admins.query.filter_by(user_id=inputUserData["user_id"]).first()
 
     # 유저 아이디로 고유번호가 검색되지 않을 때,
-    if uid == -1 :
+    if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
     
-    user = Admins.getUser(uid=uid)
+    dictUser = user.__dict__
 
     # 이미 탈퇴한 유저일 때,
-    if user["disable_date"] != None :
+    if dictUser["disable_date"] != None :
         return {"result" : "Invalid", "code" : Code.DeletedData}
     
     # 비밀번호 변경 시 기존 비밀번호 일치 확인
-    if "before_pwd" in inputUserData and "after_pwd" in inputUserData and inputUserData["before_pwd"] != user["user_pwd"] :
+    if "before_pwd" in inputUserData and "after_pwd" in inputUserData and inputUserData["before_pwd"] != dictUser["user_pwd"] :
         return {"result" : "Invalid", "code" : Code.WrongPWD}
 
     keyword = checkField(inputUserData)
@@ -305,21 +312,23 @@ def change_account(inputUserData={}) :
     # 정보 수정
     ## 비밀번호 수정
     if "before_pwd" in inputUserData and "after_pwd" in inputUserData :
-        Admins.setPWD(uid=uid, pwd=inputUserData["after_pwd"])
+        user.user_pwd = inputUserData["after_pwd"]
 
     ## 이름 수정
     if "name" in inputUserData :
-        Admins.setName(uid=uid, name=inputUserData["name"])
+        user.name = inputUserData["name"]
 
     ## 전화번호 수정
     if "phone" in inputUserData :
-        Admins.setPhoneNum(uid=uid, num=inputUserData["phone"])
+        user.phone_number = inputUserData["phone"]
 
     ## 이메일 수정
     if "email" in inputUserData :
-        Admins.setEmail(uid=uid, email=inputUserData["email"])
+        user.email = inputUserData["email"]
+    
+    DB.session.commit()
 
-    return {"result" : "Success", "code" : Code.Success, "keyword" : keyword}
+    return {"result" : "Success", "code" : Code.Success}
 
 def get_isExist(userInputData={}) :
 
