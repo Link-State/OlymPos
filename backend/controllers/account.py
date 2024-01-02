@@ -177,32 +177,37 @@ def adminLogout(id="") :
     return {"result" : "Success", "code" : Code.Success}
 
 def userLogout(ssaid="", store_uid=-1, tableNum=-1) :
-    store = StoreInfo.getStore(store_uid)
+    store = StoreInfo.query.filter_by(unique_store_info=store_uid).first()
     
     # 매장이 검색되지 않을 때,
-    if len(store) <= 0 :
+    if store == None :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
+    store = store.__dict__
+
     # 삭제된 매장일 때,
     if store["disable_date"] != None :
         return {"result" : "Invalid", "code" : Code.DeletedData}
     
-    table = TableList.getTable(store_uid=store_uid, tableNum=tableNum)
-    
+    table = TableList.query.filter_by(unique_store_info=store_uid, table_number=tableNum)
+
     # 테이블이 검색되지 않을 때,
-    if len(table) <= 0 :
+    if table == None :
         return {"result" : "Invalid", "code" : Code.NotExistTable}
+    
+    dictTable = table.__dict__
 
     # 로그인 상태가 아닐 때,
-    if "isLogin" in table and table["isLogin"] == '' :
+    if "isLogin" in dictTable and dictTable["isLogin"] == '' :
         return {"result" : "Invalid", "code" : Code.NotLoginState}
     
     # 요청자와 로그인중인 사용자의 SSAID가 일치하지 않을 때,
-    if table["isLogin"] != ssaid :
+    if dictTable["isLogin"] != ssaid :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
     # 로그아웃
-    TableList.setIsLogin(store_uid=store_uid, tableNum=tableNum, islogin='')
+    table.isLogin = ""
+    DB.session.commit()
     
     return {"result" : "Success", "code" : Code.Success}
 
