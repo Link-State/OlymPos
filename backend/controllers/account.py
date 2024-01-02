@@ -1,5 +1,6 @@
 import sys
 import os
+from datetime import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
@@ -260,19 +261,21 @@ def signup(inputUserData={}) :
     return {"result" : "Success", "code" : Code.Success}
 
 def delete_account(id='') :
-    uid = Admins.findUID(id=id)
+    user = Admins.query.filter_by(user_id=id).first()
 
     # 유저 아이디로 고유번호가 검색되지 않을 때,
-    if uid == -1 :
+    if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
     
-    user = Admins.getUser(uid=uid)
+    dictUser = user.__dict__
 
     # 이미 탈퇴한 유저일 때,
-    if user["disable_date"] != None :
+    if dictUser["disable_date"] != None :
         return {"result" : "Invalid", "code" : Code.DeletedData}
-
-    Admins.remove(uid=uid)
+    
+    # 탈퇴 처리
+    user.disable_date = datetime.now()
+    DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
 
