@@ -338,10 +338,12 @@ def get_account(id=-1) :
     # 아이디로 유저가 검색되지 않을 때,
     if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
-
+    
+    # dict형으로 변환
     user = dict(user.__dict__)
     user.pop('_sa_instance_state', None)
 
+    # 비밀번호는 마스킹 후 반환
     user["user_pwd"] = ""
 
     return {"result" : "Success", "code" : Code.Success, "user" : user}
@@ -353,17 +355,21 @@ def find_account(inputData={}) :
         if field not in inputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    conds=[f"name = '{inputData['name']}'",
-           f"phone_number = '{inputData['tel_num']}'",
-           f"email = '{inputData['email']}'"]
-    
-    user = mysql.get(table="Admins", cols=["unique_admin", "user_id"], conds=conds)
+    user = Admins.query.filter_by(
+        name=inputData["name"],
+        phone_number=inputData["tel_num"],
+        email=inputData["email"]
+    ).first()
 
-    # 해당 조건으로 비밀번호를 찾을 수 없을 때,
-    if len(user) != 1 :
+    # 해당 조건으로 아이디를 찾을 수 없을 때,
+    if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
     
-    user = user[0]
+    # dict형으로 변환
+    user = dict(user.__dict__)
+    user.pop('_sa_instance_state', None)
+
+    user["user_pwd"] = ""
 
     return {"result" : "Success", "code" : Code.Success, "user" : user}
 
