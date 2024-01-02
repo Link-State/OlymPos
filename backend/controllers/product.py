@@ -226,6 +226,11 @@ def add_option(inputData={}) :
         offer=inputData["isoffer"]
     )
 
+    # 버전 업데이트
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(inputData["store_uid"])
+    version.product_option = now_lnt
+
     DB.session.add(option)
     DB.session.commit()
 
@@ -239,17 +244,17 @@ def modify_option(inputData={}) :
         if field not in inputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    option = ProductOption.getOption(uid=inputData["option_uid"])
+    option = ProductOption.query.get(inputData["option_uid"])
 
     # 해당 옵션이 존재하지 않을 때,
-    if len(option) <= 0 :
+    if option == None :
         return {"result" : "Invalid", "code" : Code.NotExistProductOption}
-    
-    store = StoreInfo.getStore(uid=option["unique_store_info"])
-    user = Admins.getUser(store["unique_admin"])
+
+    store = StoreInfo.query.get(option.unique_store_info)
+    user = Admins.query.get(store.unique_admin)
 
     # 요청자와 소유자가 일치하지 않을 때,
-    if inputData["user_id"] != user["user_id"] :
+    if user.user_id != inputData["user_id"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
     keyword = checkField(inputData)
@@ -258,35 +263,39 @@ def modify_option(inputData={}) :
     if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
     
-    if "option_name" in inputData :
-        option["option_name"] = inputData["option_name"]
-    if "price" in inputData :
-        option["price"] = inputData["price"]
-    if "isoffer" in inputData :
-        option["suboption_offer"] = inputData["isoffer"]
+    # 옵션 수정
+    option_name = option.option_name
+    price = option.price
+    suboption_offer = option.suboption_offer
 
-    option_uid = ProductOption.findOption(store_uid=store["unique_store_info"], name=option["option_name"], price=option["price"], isoffer=option["suboption_offer"])
+    if "option_name" in inputData :
+        option_name = inputData["option_name"]
+    if "price" in inputData :
+        price = inputData["price"]
+    if "isoffer" in inputData :
+        suboption_offer = inputData["isoffer"]
+
+    modify_option = ProductOption.query.filter_by(
+        unique_store_info=store.unique_store_info,
+        option_name=option_name,
+        price=price,
+        suboption_offer=suboption_offer
+    )
 
     # 해당 이름+가격+서브옵션유무의 옵션이 이미 존재할 때,
-    if option_uid != -1 :
+    if modify_option.count() > 0 :
         return {"result" : "Invalid", "code" : Code.AlreadyExistOption}
-    
-    update_count = 0
 
-    # 옵션 수정
-    if "option_name" in inputData :
-        ProductOption.setName(uid=inputData["option_uid"], name=inputData["option_name"])
-        update_count += 1
-    if "price" in inputData :
-        ProductOption.setPrice(uid=inputData["option_uid"], price=inputData["price"])
-        update_count += 1
-    if "isoffer" in inputData :
-        ProductOption.setIsOffer(uid=inputData["option_uid"], isoffer=inputData["isoffer"])
-        update_count += 1
+    option.option_name = option_name
+    option.price = price
+    option.suboption_offer = suboption_offer
 
     # 버전 업데이트
-    if update_count > 0 :
-        Version.setProductOption(uid=option["unique_store_info"])
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(option.unique_store_info)
+    version.product_option = now_lnt
+
+    DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
 
