@@ -337,10 +337,10 @@ def get_isExist(userInputData={}) :
         return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
     isExist = 0
-    uid = Admins.findUID(id=userInputData["user_id"])
+    user = Admins.query.filter_by(user_id=userInputData["user_id"]).first()
 
     # 해당 아이디를 가진 유저가 이미 존재할 떄,
-    if uid != -1 :
+    if user != None :
         isExist = 1
 
     return {"result" : "Success", "code" : Code.Success, "isExist" : isExist}
