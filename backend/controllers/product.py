@@ -147,24 +147,28 @@ def delete_group(inputData={}) :
         if field not in inputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    group = ProductGroup.getGroup(uid=inputData["group_uid"])
+    group = ProductGroup.query.get(inputData["group_uid"])
 
     # 해당 카테고리가 존재하지 않을 때,
-    if len(group) <= 0 :
+    if group == None :
         return {"result" : "Invalid", "code" : Code.NotExistGroup}
     
-    store = StoreInfo.getStore(uid=group["unique_store_info"])
-    user = Admins.getUser(uid=store["unique_admin"])
+    store = StoreInfo.query.get(group.unique_store_info)
+    user = Admins.query.get(store.unique_admin)
 
     # 해당 매장의 소유주와 요청자의 id가 다를 때,
-    if inputData["user_id"] != user["user_id"] :
+    if user.user_id != inputData["user_id"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
     # 해당 카테고리 삭제
-    ProductGroup.remove(uid=inputData["group_uid"])
+    group.disable_date = datetime.now()
 
     # 버전 업데이트
-    Version.setProductGroup(uid=group["unique_store_info"])
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(group.unique_store_info)
+    version.product_group = now_lnt
+
+    DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
 
