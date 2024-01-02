@@ -103,25 +103,24 @@ def modify_group(userInputData) :
         if field not in userInputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    uid = Admins.findUID(id=userInputData["user_id"])
+    user = Admins.query.filter_by(user_id=userInputData["user_id"]).first()
 
     # 유저가 존재하지 않을 때,
-    if uid == -1 :
+    if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
     
-    group = ProductGroup.getGroup(uid=userInputData["group_uid"])
+    group = ProductGroup.query.get(userInputData["group_uid"])
 
-    # 해당 그룹이 존재하지 않을 때,
-    if len(group) <= 0 :
+    # 정보를 수정하려는 그룹이 존재하지 않을 때,
+    if group == None :
         return {"result" : "Invalid", "code" : Code.NotExistGroup}
     
-    groups = ProductGroup.getGroups(store_uid=group["unique_store_info"])
+    groups = ProductGroup.query.filter_by(unique_store_info=group.unique_store_info, group_name=userInputData["group_name"])
 
-    # 해당 이름을 가진 그룹이 이미 존재할 때,
-    for g in groups :
-        if g["group_name"] == userInputData["group_name"] :
-            return {"result" : "Invalid", "code" : Code.AlreadyExistGroup}
-
+    # 해당 이름의 그룹이 이미 매장에 존재할 때,
+    if groups.count() > 0 :
+        return {"result" : "Invalid", "code" : Code.AlreadyExistGroup}
+    
     keyword = checkField(userInputData)
 
     # 데이터 형식이 맞지 않을 때,
@@ -129,8 +128,14 @@ def modify_group(userInputData) :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
 
     # 그룹 정보 수정
-    ProductGroup.setName(uid=userInputData["group_uid"], name=userInputData["group_name"])
-    Version.setProductGroup(uid=group["unique_store_info"])
+    group.group_name = userInputData["group_name"]
+
+    # 버전 업데이트
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(group.unique_store_info)
+    version.product_group = now_lnt
+
+    DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
 
