@@ -220,11 +220,11 @@ def signup(inputUserData={}) :
         if field not in inputUserData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
 
-    uid = Admins.findUID(id=inputUserData["user_id"])
+    user = Admins.query.filter_by(user_id=inputUserData["user_id"]).first()
 
     # 이미 존재하는 아이디일 때,
-    if uid != -1 :
-        user = Admins.getUser(uid=uid)
+    if user != None :
+        user = user.__dict__
 
         # 탈퇴한 유저라면,
         if user["disable_date"] != None :
@@ -232,15 +232,13 @@ def signup(inputUserData={}) :
         
         return {"result" : "Invalid", "code" : Code.AlreadyExistID}
     
-    # user = Admins.findUID(EMAIL)
     # 이미 존재하는 이메일일 때,
-    result = mysql.get(table="Admins", cols=["unique_admin"], conds=[f"""email = '{inputUserData["email"]}'"""])
-    
-    if len(result) > 0 :
+    user = Admins.query.filter_by(email=inputUserData["email"]).first()
+
+    if user != None :
         return {"result" : "Invalid", "code" : Code.AlreadyEmail}
 
     # 이메일 인증 기능
-    
 
     keyword = checkField(inputUserData)
 
@@ -249,7 +247,15 @@ def signup(inputUserData={}) :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
 
     # DB에 회원 추가
-    Admins.add(inputUserData)
+    user = Admins(
+        id=inputUserData["user_id"],
+        pwd=inputUserData["user_pwd"],
+        name=inputUserData["name"],
+        number=inputUserData["phone"],
+        email=inputUserData["email"]
+    )
+    DB.session.add(user)
+    DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
 
