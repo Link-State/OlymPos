@@ -6,17 +6,19 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from config import *
 from statusCode import *
 from flask_jwt_extended import *
-from models import Admins
-from models import StoreInfo
-from models import TableList
-from models import ProductGroup
-from models import Product
-from models import ProductOption
-from models import ProductOptionRelations
-from models import ProductSuboption
-from models import OrderList
-from models import SelectedOption
-from models import Version
+from datetime import datetime
+from models.mysql import DB
+from models.Admins import Admins
+from models.StoreInfo import StoreInfo
+from models.TableList import TableList
+from models.ProductGroup import ProductGroup
+from models.Product import Product
+from models.ProductOption import ProductOption
+from models.ProductOptionRelations import ProductOptionRelations
+from models.ProductSuboption import ProductSuboption
+from models.OrderList import OrderList
+from models.SelectedOption import SelectedOption
+from models.Version import Version
 
 def checkField(data) :
     keyword = []
@@ -45,26 +47,29 @@ def add_group(userInputData={}) :
         if field not in userInputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    store = StoreInfo.getStore(uid=userInputData["store_uid"])
+    store = StoreInfo.query.get(userInputData["store_uid"])
 
     # 해당 매장이 존재하지 않을 때,
-    if len(store) <= 0 :
+    if store == None :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
-    uid = Admins.findUID(id=userInputData["user_id"])
+    user = Admins.query.filter_by(user_id=userInputData["user_id"]).first()
 
     # 유저가 존재하지 않을 때,
-    if uid == -1 :
+    if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
 
     # 해당 매장이 요청자 소유가 아닐 때,
-    if store["unique_admin"] != uid :
+    if user.unique_admin != store.unique_admin :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
-    group_uid = ProductGroup.findGroup(store_uid=userInputData["store_uid"], name=userInputData["group_name"])
+    product_group = ProductGroup.query.filter_by(
+        unique_store_info=userInputData["store_uid"],
+        group_name=userInputData["group_name"]
+    ).first()
     
     # 해당 이름의 그룹이 이미 존재할 때,
-    if group_uid != -1 :
+    if product_group != None :
         return {"result" : "Invalid", "code" : Code.AlreadyExistGroup}
     
     keyword = checkField(userInputData)
@@ -74,10 +79,21 @@ def add_group(userInputData={}) :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
     
     # 카테고리 생성
-    group_uid = ProductGroup.add(userInputData)
-    Version.setProductGroup(uid=store["unique_store_info"])
+    product_group = ProductGroup(
+        store=userInputData["store_uid"],
+        name=userInputData["group_name"]
+    )
+    DB.session.add(product_group)
+
+    # 버전 업데이트
+    version = Version.query.get(store.unique_store_info)
     
-    return {"result" : "Success", "code" : Code.Success, "uid" : group_uid}
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version.product_group = now_lnt
+
+    DB.session.commit()
+    
+    return {"result" : "Success", "code" : Code.Success, "uid" : product_group.unique_product_group}
 
 def modify_group(userInputData) :
     fields = ["group_uid", "group_name"]
