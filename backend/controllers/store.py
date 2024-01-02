@@ -281,20 +281,27 @@ def get_store_info(inputStoreInfo={}) :
     if "store_uid" not in inputStoreInfo :
         return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    store = StoreInfo.getStore(uid=inputStoreInfo["store_uid"])
-
-    # 매장이 존재하지 않는 경우,
-    if len(store) <= 0 :
-        return {"result" : "Invalid", "code" : Code.NotExistStore}
-    
-    uid = Admins.findUID(id=inputStoreInfo["user_id"])
+    user = Admins.query.filter_by(user_id=inputStoreInfo["user_id"]).first()
 
     # 해당 유저가 존재하지 않을 경우,
-    if uid == -1 :
+    if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
     
+    store = StoreInfo.query.get(inputStoreInfo["store_uid"])
+
+    # 매장이 존재하지 않는 경우,
+    if store == None :
+        return {"result" : "Invalid", "code" : Code.NotExistStore}
+    
+    # 삭제된 매장일 경우,
+    if store.disable_date != None :
+        return {"result" : "Invalid", "code" : Code.DeletedData}
+    
     # 요청한 사람의 매장이 아닌 경우,
-    if uid != store["unique_admin"] :
+    if user.unique_admin != store.unique_admin :
         return {"result" : "Invalid", "code" : Code.NotEquals}
+    
+    store = dict(store.__dict__)
+    store.pop('_sa_instance_state', None)
     
     return {"result" : "Success", "code" : Code.Success, "store" : store}
