@@ -2,23 +2,25 @@ import sys
 import os
 import shutil
 import re
+from datetime import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from config import *
 from statusCode import *
 from flask_jwt_extended import *
-from models import Admins
-from models import StoreInfo
-from models import TableList
-from models import ProductGroup
-from models import Product
-from models import ProductOption
-from models import ProductOptionRelations
-from models import ProductSuboption
-from models import OrderList
-from models import SelectedOption
-from models import Version
+from models.mysql import DB
+from models.Admins import Admins
+from models.StoreInfo import StoreInfo
+from models.TableList import TableList
+from models.ProductGroup import ProductGroup
+from models.Product import Product
+from models.ProductOption import ProductOption
+from models.ProductOptionRelations import ProductOptionRelations
+from models.ProductSuboption import ProductSuboption
+from models.OrderList import OrderList
+from models.SelectedOption import SelectedOption
+from models.Version import Version
 
 def checkField(data) :
     keyword = []
@@ -62,40 +64,58 @@ def addStore(inputStoreInfo={}) :
     if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
 
-    uid = Admins.findUID(id=inputStoreInfo["user_id"])
+    user = Admins.query.filter_by(user_id=inputStoreInfo["user_id"]).first()
 
-    # 유저 아이디로 고유번호가 검색되지 않을 때,
-    if uid == -1 :
+    # 아이디로 유저가 검색되지 않을 때,
+    if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
-
-    store_uid = StoreInfo.findStore(name=inputStoreInfo["name"])
+    
+    store = StoreInfo.query.filter_by(store_name=inputStoreInfo["name"]).first()
 
     # 해당 매장이름을 가진 매장이 존재할 때,
-    if store_uid != -1 :
+    if store != None :
         return {"result" : "Invalid", "code" : Code.AlreadyExistStore}
-    
-    inputStoreInfo["unique_admin"] = uid
 
     # DB에 매장 추가
-    StoreInfo.add(inputStoreInfo)
-
-    store_uid = StoreInfo.findStore(name=inputStoreInfo["name"])
+    store = StoreInfo(
+        admin=user.unique_admin,
+        name=inputStoreInfo["name"],
+        owner=inputStoreInfo["owner"],
+        address=inputStoreInfo["address"],
+        number=inputStoreInfo["tel_num"],
+        count=inputStoreInfo["count"]
+    )
+    DB.session.add(store)
+    DB.session.commit()
 
     # 폴더 추가
-    store_image_path = Path.IMAGE + "/" + str(store_uid)
-    if not os.path.exists(store_image_path) :
+    store_image_path = Path.STORE + "/" + str(store.unique_store_info)
+    if os.path.exists(store_image_path) :
         shutil.rmtree(store_image_path)
     os.mkdir(store_image_path)
-    os.mkdir(store_image_path + "/product")
+
+    # 추가한 매장 가져오기
+    store = StoreInfo.query.filter_by(
+        unique_admin=user.unique_admin,
+        store_name=inputStoreInfo["name"],
+        store_owner=inputStoreInfo["owner"],
+        store_address=inputStoreInfo["address"],
+        store_tel_number=inputStoreInfo["tel_num"],
+        table_count=inputStoreInfo["count"]
+    ).first()
 
     # 테이블을 1부터 순차적으로 추가
-    for table in range(1, inputStoreInfo["count"]+1) :
-        TableList.add({"store_uid" : store_uid, "table":table})
+    for table_n in range(1, inputStoreInfo["count"]+1) :
+        table = TableList(store=store.unique_store_info, number=table_n, state=0)
+        DB.session.add(table)
     
     # 버전 추가
-    Version.add(uid=store_uid)
+    ver = Version(store=store.unique_store_info)
+    DB.session.add(ver)
 
-    return {"result" : "Success", "code" : Code.Success, "uid" : store_uid}
+    DB.session.commit()
+
+    return {"result" : "Success", "code" : Code.Success, "uid" : store.unique_store_info}
 
 def change_store_info(inputStoreInfo={}) :
     # 필수 값이 누락됐을 때,

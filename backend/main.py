@@ -28,8 +28,12 @@ from models.StoreInfo import StoreInfo
 # cryptography
 
 # 이미지 폴더 생성
-if not os.path.exists(Path.IMAGE) :
-    os.mkdir(Path.IMAGE)
+if not os.path.exists(Path.ADMIN) :
+    os.makedirs(Path.ADMIN)
+if not os.path.exists(Path.STORE) :
+    os.makedirs(Path.STORE)
+if not os.path.exists(Path.PRODUCT) :
+    os.makedirs(Path.PRODUCT)
 
 # 안쓰는 변수(삭제할 것)
 connection = None

@@ -1,5 +1,6 @@
 import sys
 import os
+from datetime import datetime as dt
 import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
@@ -7,7 +8,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from config import *
 from models import mysql
 from models.mysql import DB
-from sqlalchemy import Column, Integer, BigInteger, ForeignKey
+from sqlalchemy import Column, Integer, BigInteger, DateTime, ForeignKey
 
 class Version(DB.Model) :
     __tablename__ = "Version"
@@ -16,16 +17,35 @@ class Version(DB.Model) :
     table_list = Column(BigInteger, nullable=False)
     product_group = Column(BigInteger, nullable=False)
     product = Column(BigInteger, nullable=False)
+    product_option_relations = Column(BigInteger, nullable=False)
     product_option = Column(BigInteger, nullable=False)
     product_suboption = Column(BigInteger, nullable=False)
+    disable_date = Column(DateTime, nullable=True, default=None)
 
-    def __init__(self, store, table, group, product, option, suboption) :
+    def __init__(self, store, table=None, group=None, product=None, relations=None, option=None, suboption=None, disable=None) :
+        now = int(dt.now().strftime('%Y%m%d%H%M%S%f')[:-3])
+
+        if table == None :
+            table = now
+        if group == None :
+            group = now
+        if product == None :
+            product = now
+        if relations == None :
+            relations = now
+        if option == None :
+            option = now
+        if suboption == None :
+            suboption = now
+        
         self.unique_store_info = store
         self.table_list = table
         self.product_group = group
         self.product = product
+        self.product_option_relations = relations
         self.product_option = option
         self.product_suboption = suboption
+        self.disable_date = disable
 
 def getVersion(uid=-1) :
     sql = f"""
