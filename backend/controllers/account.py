@@ -53,19 +53,6 @@ def checkField(data) :
         
     return keyword
 
-def get_account(id=-1) :
-    uid = Admins.findUID(id=id)
-    
-    # 유저 아이디로 고유번호가 검색되지 않을 때,
-    if uid == -1 :
-        return {"result" : "Invalid", "code" : Code.NotExistID}
-
-    user = Admins.getUser(uid=uid)
-
-    user["user_pwd"] = "BLINDED"
-
-    return {"result" : "Success", "code" : Code.Success, "user" : user}
-
 def adminLogin(id="", pwd="") :
     user = Admins.query.filter_by(user_id=id, user_pwd=pwd).first()
     
@@ -289,7 +276,7 @@ def delete_account(id='') :
 def change_account(inputUserData={}) :
     user = Admins.query.filter_by(user_id=inputUserData["user_id"]).first()
 
-    # 유저 아이디로 고유번호가 검색되지 않을 때,
+    # 아이디로 유저가 검색되지 않을 때,
     if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
     
@@ -344,6 +331,20 @@ def get_isExist(userInputData={}) :
         isExist = 1
 
     return {"result" : "Success", "code" : Code.Success, "isExist" : isExist}
+
+def get_account(id=-1) :
+    user = Admins.query.filter_by(user_id=id).first()
+    
+    # 아이디로 유저가 검색되지 않을 때,
+    if user == None :
+        return {"result" : "Invalid", "code" : Code.NotExistID}
+
+    user = dict(user.__dict__)
+    user.pop('_sa_instance_state', None)
+
+    user["user_pwd"] = ""
+
+    return {"result" : "Success", "code" : Code.Success, "user" : user}
 
 def find_account(inputData={}) :
     # 필수 필드가 누락 됐을 때,
