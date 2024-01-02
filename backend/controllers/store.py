@@ -197,7 +197,7 @@ def change_store_info(inputStoreInfo={}) :
     #             tables[i-1].table_state = 0
     #             tables[i-1].disable_date = now
     
-    # DB.session.commit()
+    DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
     
@@ -229,13 +229,7 @@ def delete_store(inputStoreInfo={}) :
 
     # 테이블 삭제
     modify_store(store=store, inputStoreInfo={"count" : 0})
-
-    # tables = TableList.query.filter_by(unique_store_info=inputStoreInfo["store_uid"]).order_by(TableList.table_number).all()
-    # for i in range(1, store.table_count + 1) :
-    #     TableList.remove(store_uid=inputStoreInfo["store_uid"], tableNum=i)
-    #     tables[i-1].disable_date = now
-        
-
+    
     # 해당 모듈 추가 후, 알맞는 삭제함수 호출할 것
         
     # 상품 그룹 삭제
@@ -258,6 +252,8 @@ def delete_store(inputStoreInfo={}) :
 
     # 선택된 옵션 삭제
     ## 주문서 고유번호로 선택된옵션 찾을 것.
+    
+    DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
 

@@ -4,8 +4,8 @@ from models.mysql import DB
 from models.TableList import TableList
 from models.Version import Version
 
+# 매장 정보 수정
 def modify_store(store, inputStoreInfo={}) :
-    # 매장 정보 수정
     if "name" in inputStoreInfo :
         store.store_name = inputStoreInfo["name"]
 
@@ -58,5 +58,3 @@ def modify_store(store, inputStoreInfo={}) :
                 tables[i-1].isLogin = ""
                 tables[i-1].table_state = 0
                 tables[i-1].disable_date = now
-    
-    DB.session.commit()
