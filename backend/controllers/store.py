@@ -258,14 +258,21 @@ def delete_store(inputStoreInfo={}) :
     return {"result" : "Success", "code" : Code.Success}
 
 def get_my_stores(user_id='') :
-    uid = Admins.findUID(id=user_id)
+    user = Admins.query.filter_by(user_id=user_id).first()
 
     # 해당 유저가 존재하지 않을 경우,
-    if uid == -1 :
+    if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
     
     # 보유 매장 불러오기
-    stores = StoreInfo.getStores(admin_uid=uid)
+    records = StoreInfo.query.filter_by(unique_admin=user.unique_admin, disable_date=None).all() # 삭제되지 않은 보유 매장 컬럼 리스트
+    
+    # dict형으로 변환
+    stores = []
+    for rec in records :
+        dictRec = dict(rec.__dict__)
+        dictRec.pop('_sa_instance_state', None)
+        stores.append(dictRec)
     
     return {"result" : "Success", "code" : Code.Success, "stores" : stores}
 
