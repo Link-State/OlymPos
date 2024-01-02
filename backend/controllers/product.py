@@ -189,22 +189,27 @@ def add_option(inputData={}) :
         if field not in inputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    store = StoreInfo.getStore(uid=inputData["store_uid"])
+    store = StoreInfo.query.get(inputData["store_uid"])
 
     # 해당 매장이 존재하지 않을 때,
-    if len(store) <= 0 :
+    if store == None :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
-    user = Admins.getUser(uid=store["unique_admin"])
+    user = Admins.query.get(store.unique_admin)
 
     # 요청자와 소유자가 일치하지 않을 때,
-    if inputData["user_id"] != user["user_id"] :
+    if user.user_id != inputData["user_id"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
 
-    option_uid = ProductOption.findOption(store_uid=inputData["store_uid"], name=inputData["option_name"], price=inputData["price"], isoffer=inputData["isoffer"])
-    
+    option = ProductOption.query.filter_by(
+        unique_store_info=inputData["store_uid"],
+        option_name=inputData["option_name"],
+        price=inputData["price"],
+        suboption_offer=inputData["isoffer"]
+    ).first()
+
     # 해당 이름+가격+서브옵션유무의 옵션이 이미 존재할 때,
-    if option_uid != -1 :
+    if option != None :
         return {"result" : "Invalid", "code" : Code.AlreadyExistOption}
 
     keyword = checkField(inputData)
@@ -214,8 +219,17 @@ def add_option(inputData={}) :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
 
     # 옵션 생성
-    uid = ProductOption.add(inputData)
-    return {"result" : "Success", "code" : Code.Success, "uid" : uid}
+    option = ProductOption(
+        store=inputData["store_uid"],
+        name=inputData["option_name"],
+        price=inputData["price"],
+        offer=inputData["isoffer"]
+    )
+
+    DB.session.add(option)
+    DB.session.commit()
+
+    return {"result" : "Success", "code" : Code.Success, "uid" : option.unique_product_option}
 
 def modify_option(inputData={}) :
     fields = ["option_uid"]
