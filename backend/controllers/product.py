@@ -506,23 +506,24 @@ def modify_product_option_relation(inputData={}) :
     if type(inputData["option_uid"]) is not type(list()) :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : ["option_uid"]}
 
-    product = Product.getProduct(uid=inputData["product_uid"])
+    product = Product.query.get(inputData["product_uid"])
 
     # 존재하지 않는 상품일 때,
-    if len(product) <= 0 :
+    if product == None :
         return {"result" : "Invalid", "code" : Code.NotExistProduct}
     
-    store = StoreInfo.getStore(uid=product["unique_store_info"])
-    user = Admins.getUser(uid=store["unique_admin"])
+    store = StoreInfo.query.get(product.unique_store_info)
+    user = Admins.query.get(store.unique_admin)
 
     # 요청자와 소유자가 일치하지 않을 때,
-    if inputData["user_id"] != user["user_id"] :
+    if user.user_id != inputData["user_id"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
-    relations = ProductOptionRelations.getOptions(product_uid=inputData["product_uid"])
+    relations = ProductOptionRelations.query.filter_by(unique_product=inputData["product_uid"]).all()
+    # -> 없는 경우는?
 
-    create = list(set(inputData["option_uid"]).difference(set(relations)))
-    delete = list(set(relations).difference(set(inputData["option_uid"])))
+    create = list(set(inputData["option_uid"]).difference(set(relations))) # 집합 A - B
+    delete = list(set(relations).difference(set(inputData["option_uid"]))) # 집합 B - A
     
     not_exist_options = []
 
