@@ -339,17 +339,17 @@ def add_suboption(inputData={}) :
         if field not in inputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    option = ProductOption.getOption(uid=inputData["option_uid"])
+    option = ProductOption.query.get(inputData["option_uid"])
 
     # 옵션이 존재하지 않을 때,
-    if len(option) <= 0 :
+    if option == None :
         return {"result" : "Invalid", "code" : Code.NotExistProductOption}
-    
-    store = StoreInfo.getStore(uid=option["unique_store_info"])
-    user = Admins.getUser(uid=store["unique_admin"])
+
+    store = StoreInfo.query.get(option.unique_store_info)
+    user = Admins.query.get(store.unique_admin)
 
     # 요청자와 소유자가 일치하지 않을 때,
-    if inputData["user_id"] != user["user_id"] :
+    if user.user_id != inputData["user_id"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
     keyword = checkField(inputData)
@@ -358,16 +358,28 @@ def add_suboption(inputData={}) :
     if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
 
-    suboption_uid = ProductSuboption.findSubOption(name=inputData["suboption_name"], price=inputData["price"], amount=inputData["amount"])
+    suboption = ProductSuboption.query.filter_by(
+        suboption_name=inputData["suboption_name"],
+        price=inputData["price"],
+        amount=inputData["amount"]
+    )
 
     # 이름+가격+남은수량 서브옵션이 이미 존재할 때,
-    if suboption_uid != -1 :
+    if suboption.count() > 0 :
         return {"result" : "Invalid", "code" : Code.AlreadyExistSubOption}
     
     # 서브옵션 생성
-    uid = ProductSuboption.add(inputData)
+    suboption = ProductSuboption(
+        option=inputData["option_uid"],
+        name=inputData["suboption_name"],
+        price=inputData["price"],
+        amount=inputData["amount"]
+    )
 
-    return {"result" : "Success", "code" : Code.Success, "uid" : uid}
+    DB.session.add(suboption)
+    DB.session.commit()
+
+    return {"result" : "Success", "code" : Code.Success, "uid" : suboption.unique_product_suboption}
 
 def modify_suboption(inputData={}) :
     fields = ["suboption_uid"]
