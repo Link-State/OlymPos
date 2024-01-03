@@ -624,16 +624,23 @@ def get_option_list(inputData={}) :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
     # 존재하지 않는 매장일 때,
-    store = StoreInfo.getStore(uid=inputData["store_uid"])
-    if len(store) <= 0 :
+    store = StoreInfo.query.get(inputData["store_uid"])
+    if store == None :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
-    user = Admins.getUser(uid=store["unique_admin"])
+    user = Admins.query.get(store.unique_admin)
 
     # 요청자와 소유자가 일치하지 않을 때,
-    if inputData["user_id"] != user["user_id"] :
+    if user.user_id != inputData["user_id"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
-    options = ProductOption.getOptions(store_uid=inputData["store_uid"])
+    records = ProductOption.query.filter_by(unique_store_info=inputData["store_uid"], disable_date=None).all() # 옵션 목록
+
+    # dict형으로 변환
+    options = []
+    for rec in records :
+        dictRec = dict(rec.__dict__)
+        dictRec.pop('_sa_instance_state', None)
+        options.append(dictRec)
 
     return {"result" : "Success", "code" : Code.Success, "options" : options}
