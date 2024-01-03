@@ -376,6 +376,11 @@ def add_suboption(inputData={}) :
         amount=inputData["amount"]
     )
 
+    # 버전 업데이트
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(store.unique_store_info)
+    version.product_suboption = now_lnt
+
     DB.session.add(suboption)
     DB.session.commit()
 
@@ -389,65 +394,69 @@ def modify_suboption(inputData={}) :
         if field not in inputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    suboption = ProductSuboption.getSubOption(uid=inputData["suboption_uid"])
+    suboption = ProductSuboption.query.get(inputData["suboption_uid"])
 
     # 해당 서브옵션이 존재하지 않을 때,
-    if len(suboption) <= 0 :
+    if suboption == None :
         return {"result" : "Invalid", "code" : Code.NotExistProductSuboption}
-    
-    option = ProductOption.getOption(uid=suboption["unique_product_option"])
-    store = StoreInfo.getStore(uid=option["unique_store_info"])
-    user = Admins.getUser(uid=store["unique_admin"])
+
+    option = ProductOption.query.get(suboption.unique_product_option)
+    store = StoreInfo.query.get(option.unique_store_info)
+    user = Admins.query.get(store.unique_admin)
 
     # 요청자와 소유자가 일치하지 않을 때,
-    if inputData["user_id"] != user["user_id"] :
+    if user.user_id != inputData["user_id"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
-    keyword = checkField(inputData)
-    
-    # 바꾸려는 옵션이 존재하지 않을 때, (데이터 형식이 맞지 않을 때,)
+    # 수정된 데이터 임시 적용
+    option_uid = suboption.unique_product_option
+    suboption_name = suboption.suboption_name
+    price = suboption.price
+    amount = suboption.amount
+
     if "option_uid" in inputData :
-        option = ProductOption.getOption(uid=inputData["option_uid"])
-        if len(option) <= 0 :
-            keyword.append("option_uid")
+        option_uid = inputData["option_uid"]
+    if "suboption_name" in inputData :
+        suboption_name = inputData["suboption_name"]
+    if "price" in inputData :
+        price = inputData["price"]
+    if "amount" in inputData :
+        amount = inputData["amount"]
     
-    # 데이터 형식이 맞지 않을 때,
+    # 데이터 형식 검사
+    keyword = checkField(inputData)
+
+    ## 추가로 수정하려는 옵션 존재 유무 검사
+    modify_option = ProductOption.query.get(option_uid)
+    if modify_option == None :
+        keyword.append("option_uid")
+    
     if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
     
-    # 변경 데이터 적용
-    if "suboption_name" in inputData :
-        suboption["suboption_name"] = inputData["suboption_name"]
-    if "price" in inputData :
-        suboption["price"] = inputData["price"]
-    if "amount" in inputData :
-        suboption["amount"] = inputData["amount"]
+    # 수정된 옵션이 이미 존재하는지 검사
+    modify_suboption = ProductSuboption.query.filter_by(
+        unique_product_option=option_uid,
+        suboption_name=suboption_name,
+        price=price,
+        amount=amount
+    )
 
-    suboption_uid = ProductSuboption.findSubOption(name=suboption["suboption_name"], price=suboption["price"], amount=suboption["amount"])
-
-    # 중복 데이터가 존재할 때,
-    if suboption_uid != -1 :
+    if modify_suboption.count() > 0 :
         return {"result" : "Invalid", "code" : Code.AlreadyExistSubOption}
     
-    update_count = 0
-
     # 서브옵션 수정
-    if "option_uid" in inputData :
-        ProductSuboption.setOption(uid=inputData["suboption_uid"], option_id=inputData["option_uid"])
-        update_count += 1
-    if "suboption_name" in inputData :
-        ProductSuboption.setName(uid=inputData["suboption_uid"], name=inputData["suboption_name"])
-        update_count += 1
-    if "price" in inputData :
-        ProductSuboption.setPrice(uid=inputData["suboption_uid"], price=inputData["price"])
-        update_count += 1
-    if "amount" in inputData :
-        ProductSuboption.setAmount(uid=inputData["suboption_uid"], amount=inputData["amount"])
-        update_count += 1
+    suboption.unique_product_option = option_uid
+    suboption.suboption_name = suboption_name
+    suboption.price = price
+    suboption.amount = amount
 
     # 버전 업데이트
-    if update_count > 0 :
-        Version.setProductSuboption(uid=store["unique_store_info"])
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(store.unique_store_info)
+    version.product_suboption = now_lnt
+
+    DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
 
