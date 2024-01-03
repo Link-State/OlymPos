@@ -468,25 +468,29 @@ def delete_suboption(inputData={}) :
         if field not in inputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    suboption = ProductSuboption.getSubOption(uid=inputData["suboption_uid"])
+    suboption = ProductSuboption.query.get(inputData["suboption_uid"])
 
     # 서브옵션이 존재하지 않을 때,
-    if len(suboption) <= 0 :
+    if suboption == None :
         return {"result" : "Invalid", "code" : Code.NotExistProductSuboption}
     
-    option = ProductOption.getOption(uid=suboption["unique_product_option"])
-    store = StoreInfo.getStore(uid=option["unique_store_info"])
-    user = Admins.getUser(uid=store["unique_admin"])
+    option = ProductOption.query.get(suboption.unique_product_option)
+    store = StoreInfo.query.get(option.unique_store_info)
+    user = Admins.query.get(store.unique_admin)
 
     # 요청자와 소유자가 일치하지 않을 때,
-    if inputData["user_id"] != user["user_id"] :
+    if user.user_id != inputData["user_id"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
     # 서브옵션 삭제
-    ProductSuboption.remove(uid=inputData["suboption_uid"])
+    suboption.disable_date = datetime.now()
 
     # 버전 업데이트
-    Version.setProductSuboption(uid=store["unique_store_info"])
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(store.unique_store_info)
+    version.product_suboption = now_lnt
+
+    DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
 
