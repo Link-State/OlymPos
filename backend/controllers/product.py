@@ -612,6 +612,10 @@ def get_product_list(inputData={}) :
     for rec in records :
         dictRec = dict(rec.__dict__)
         dictRec.pop('_sa_instance_state', None)
+
+        relations = ProductOptionRelations.query.filter_by(unique_product=dictRec["unique_product"]).all()
+
+        dictRec["options"] = [rel.unique_product_option for rel in relations]
         products.append(dictRec)
 
     return {"result" : "Success", "code" : Code.Success, "products" : products}
