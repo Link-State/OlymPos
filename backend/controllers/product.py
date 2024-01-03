@@ -519,19 +519,20 @@ def modify_product_option_relation(inputData={}) :
     if user.user_id != inputData["user_id"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
-    relations = ProductOptionRelations.query.filter_by(unique_product=inputData["product_uid"]).all()
-    # -> 없는 경우는?
+    # 상품-옵션 관계 집합 생성
+    relations = ProductOptionRelations.query.filter_by(unique_product=inputData["product_uid"])
+    option_uids = [rel.unique_product_option for rel in relations.all()]
 
-    create = list(set(inputData["option_uid"]).difference(set(relations))) # 집합 A - B
-    delete = list(set(relations).difference(set(inputData["option_uid"]))) # 집합 B - A
+    create = list(set(inputData["option_uid"]).difference(set(option_uids))) # 집합 A - B
+    delete = list(set(option_uids).difference(set(inputData["option_uid"]))) # 집합 B - A
     
     not_exist_options = []
 
-    # 존재하지 않는 옵션이 하나라도 있을 때,
+    # 생성하려는 상품-옵션 관계 중, 존재하지 않는 옵션이 하나라도 있을 때,
     for uid in create :
-        option = ProductOption.getOption(uid=uid)
+        option = ProductOption.query.get(uid)
 
-        if len(option) <= 0 :
+        if option == None:
             not_exist_options.append(uid)
 
     if len(not_exist_options) > 0 :
@@ -540,14 +541,20 @@ def modify_product_option_relation(inputData={}) :
     # 상품-옵션 관계 수정
     # 1. 삭제
     for option_uid in delete :
-        ProductOptionRelations.remove(product_uid=inputData["product_uid"], option_uid=option_uid)
+        relation = relations.filter_by(unique_product_option=option_uid).first()
+        DB.session.delete(relation)
     
     # 2. 생성
     for option_uid in create :
-        ProductOptionRelations.add(product_uid=inputData["product_uid"], option_uid=option_uid)
+        relation = ProductOptionRelations(product=inputData["product_uid"], option=option_uid)
+        DB.session.add(relation)
 
     # 버전 업데이트
-    Version.setProductOptionRelations(uid=store["unique_store_info"])
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(store.unique_store_info)
+    version.product_option_relations = now_lnt
+
+    DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
 
