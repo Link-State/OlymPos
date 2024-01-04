@@ -18,6 +18,7 @@ from models.ProductOptionRelations import ProductOptionRelations
 from models.ProductSuboption import ProductSuboption
 from models.OrderList import OrderList
 from models.SelectedOption import SelectedOption
+from models.Version import Version
 
 def product_order(inputData={}) :
     fields = ["SSAID", "store_uid", "product_uid", "table", "amount"]
@@ -49,6 +50,10 @@ def product_order(inputData={}) :
     if table.isLogin == "" or table.isLogin != inputData["SSAID"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
+    option = None
+    suboption = None
+    suboption_uid = None
+
     # 선택한 옵션이 있을 경우,
     if "options" in inputData and len(inputData["options"]) > 0 :
         options = inputData["options"]
@@ -78,6 +83,7 @@ def product_order(inputData={}) :
                 suboption = ProductSuboption.query.get(elem["suboption"])
                 if suboption == None :
                     return {"result" : "Invalid", "code" : Code.NotExistProductSuboption}
+                suboption_uid = suboption.unique_product_suboption
 
     # 주문서 생성
     order = OrderList(
@@ -88,8 +94,25 @@ def product_order(inputData={}) :
         state=OrderState.Receipt,
         date=datetime.now()
     )
-
+    
     DB.session.add(order)
+    DB.session.commit()
+
+    # 주문 상품-옵션 관계 생성
+    if "options" in inputData :
+        selected_order = SelectedOption(
+            order=order.unique_order,
+            option=option.unique_product_option,
+            suboption=suboption_uid
+        )
+        
+        DB.session.add(selected_order)
+
+    # 버전 업데이트
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(store.unique_store_info)
+    version.order_list = now_lnt
+
     DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success, "uid" : order.unique_order}
@@ -114,6 +137,8 @@ def change_order_state(inputData={}) :
     
     # 주문 상태 수정
     order.order_state = inputData["state"]
+
+    # 버전 업데이트
     
     DB.session.commit()
 
@@ -145,6 +170,8 @@ def change_table_state(inputData={}) :
     
     # 테이블 상태 변경
     table.table_state = inputData["state"]
+
+    # 버전 업데이트
 
     DB.session.commit()
 

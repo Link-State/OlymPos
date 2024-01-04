@@ -79,6 +79,7 @@ command.execute("""CREATE TABLE Version (
                 product_option_relations DECIMAL(17),
                 product_option DECIMAL(17),
                 product_suboption DECIMAL(17),
+                order_list DECIMAL(17),
                 disable_date DATETIME
                 );""")
 
@@ -466,10 +467,12 @@ command.execute("""INSERT INTO Version VALUES(
                 20230925112700000,
                 20230925112700000,
                 20230925112700000,
+                20230925112700000,
                 NULL
                 );""")
 command.execute("""INSERT INTO Version VALUES(
                 2,
+                20230926123159999,
                 20230926123159999,
                 20230926123159999,
                 20230926123159999,

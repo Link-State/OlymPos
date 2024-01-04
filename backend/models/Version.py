@@ -20,9 +20,10 @@ class Version(DB.Model) :
     product_option_relations = Column(BigInteger, nullable=False)
     product_option = Column(BigInteger, nullable=False)
     product_suboption = Column(BigInteger, nullable=False)
+    order_list = Column(BigInteger, nullable=False)
     disable_date = Column(DateTime, nullable=True, default=None)
 
-    def __init__(self, store, table=None, group=None, product=None, relations=None, option=None, suboption=None, disable=None) :
+    def __init__(self, store, table=None, group=None, product=None, relations=None, option=None, suboption=None, order=None, disable=None) :
         now = int(dt.now().strftime('%Y%m%d%H%M%S%f')[:-3])
 
         if table == None :
@@ -37,6 +38,8 @@ class Version(DB.Model) :
             option = now
         if suboption == None :
             suboption = now
+        if order == None :
+            order = now
         
         self.unique_store_info = store
         self.table_list = table
@@ -45,6 +48,7 @@ class Version(DB.Model) :
         self.product_option_relations = relations
         self.product_option = option
         self.product_suboption = suboption
+        self.order_list = order
         self.disable_date = disable
 
 def getVersion(uid=-1) :
