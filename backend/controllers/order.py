@@ -127,16 +127,16 @@ def change_table_state(inputData={}) :
         if field not in inputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    store = StoreInfo.getStore(uid=inputData["store_uid"])
+    store = StoreInfo.query.get(inputData["store_uid"])
 
     # 해당 매장이 존재하지 않을 때,
-    if len(store) <= 0 :
+    if store == None :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
-    table = TableList.getTable(store_uid=inputData["store_uid"], tableNum=inputData["table"])
+    table = TableList.query.get({"unique_store_info" : inputData["store_uid"], "table_number" : inputData["table"]})
 
     # 해당 테이블 번호가 존재하지 않을때,
-    if len(table) <= 0 :
+    if table == None :
         return {"result" : "Invalid", "code" : Code.NotExistTable}
     
     # 해당 상태가 존재하지 않을 때,
@@ -144,7 +144,9 @@ def change_table_state(inputData={}) :
         return {"result" : "Invalid", "code" : Code.NotExistState}
     
     # 테이블 상태 변경
-    TableList.setState(store_uid=inputData["store_uid"], tableNum=inputData["table"], state=inputData["state"])
+    table.table_state = inputData["state"]
+
+    DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
 
