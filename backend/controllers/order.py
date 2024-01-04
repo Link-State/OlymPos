@@ -102,10 +102,10 @@ def change_order_state(inputData={}) :
         if field not in inputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    order = OrderList.getOrder(uid=inputData["order_uid"])
+    order = OrderList.query.get(inputData["order_uid"])
 
-    # 해당 주문 번호가 존재하지 않을 때,
-    if len(order) <= 0 :
+    # 해당 주문이 존재하지 않을 때,
+    if order == None :
         return {"result" : "Invalid", "code" : Code.NotExistOrder}
     
     # 주문 상태 번호가 존재하지 않을 때,
@@ -113,7 +113,9 @@ def change_order_state(inputData={}) :
         return {"result" : "Invalid", "code" : Code.NotExistState}
     
     # 주문 상태 수정
-    OrderList.setState(uid=inputData["order_uid"], state=inputData["state"])
+    order.order_state = inputData["state"]
+    
+    DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
 
