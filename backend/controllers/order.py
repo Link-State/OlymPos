@@ -175,6 +175,9 @@ def change_table_state(inputData={}) :
     table.table_state = inputData["state"]
 
     # 버전 업데이트
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(store.unique_store_info)
+    version.table_list = now_lnt
 
     DB.session.commit()
 
