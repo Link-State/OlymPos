@@ -196,11 +196,15 @@ def add_product(userData={}) :
     if store == None :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
-    # 상품그룹이 존재하지 않는 경우
+    # 상품 그룹이 존재하지 않는 경우
     group = ProductGroup.query.get(userData["group_uid"])
 
     if group == None :
         return {"result" : "Invalid", "code" : Code.NotExistGroup}
+    
+    # 상품 그룹이 소유자의 매장이 아닌 경우,
+    if group.unique_store_info != store.unique_store_info :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
     
     user = Admins.query.get(store.unique_admin)
     
