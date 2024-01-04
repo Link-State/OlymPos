@@ -4,12 +4,11 @@ import json
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from utils import *
-from statusCode import *
-from flask import request, jsonify, session, render_template
+from flask import request, jsonify
 from flask_jwt_extended import *
 from flask_restful import Resource
-from werkzeug.utils import secure_filename
+from utils import *
+from statusCode import *
 from controllers import product
 
 class Add_group(Resource) :
@@ -81,7 +80,22 @@ class Add_product(Resource) :
 class Modify_product(Resource) :
     @jwt_required()
     def post(self) :
-        return
+        identity = get_jwt_identity()
+
+        # 토큰이 없을 경우
+        if identity is None :
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
+        
+        # JSON
+        user_data = json.loads(request.form["data"])
+
+        # Image
+        if "image" in request.files :
+            user_data["image"] = request.files["image"]
+
+        user_data["user_id"] = identity
+        
+        return jsonify(product.modify_product(userData=user_data))
     
 class Delete_product(Resource) :
     @jwt_required()

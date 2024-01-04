@@ -219,8 +219,7 @@ def add_product(userData={}) :
     product = Product.query.filter_by(
         unique_store_info=store.unique_store_info,
         unique_product_group=group.unique_product_group,
-        product_name=userData["product_name"],
-        price=userData["price"]
+        product_name=userData["product_name"]
     )
 
     if product.count() > 0 :
@@ -264,8 +263,98 @@ def add_product(userData={}) :
 
     return {"result" : "Success", "code" : Code.Success, "uid" : product.unique_product}
 
-def modify_product() :
-    return
+def modify_product(userData={}) :
+    fields = ["product_uid"]
+
+    # 필수 필드가 누락됐을 때,
+    for field in fields :
+        if field not in userData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    product = Product.query.get(userData["product_uid"])
+
+    # 해당 상품이 존재하지 않을 경우,
+    if product == None :
+        return {"result" : "Invalid", "code" : Code.NotExistStore}
+    
+    store = StoreInfo.query.get(product.unique_store_info)
+    user = Admins.query.get(store.unique_admin)
+
+    # 요청자와 소유자가 일치하지 않는 경우,
+    if user.user_id != userData["user_id"] :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+
+    # (key가 있는 경우) 그룹이 존재하지 않는 경우,
+    group = None
+    if "group_uid" in userData :
+        group = ProductGroup.query.get(userData["group_uid"])
+
+        if group == None :
+            return {"result" : "Invalid", "code" : Code.NotExistGroup}
+    
+    # 수정하려는 그룹이 소유자의 매장이 아닌 경우,
+    if group.unique_store_info != store.unique_store_info :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+
+    # 데이터 양식 검사
+    keywords = checkField(userData)
+
+    if len(keywords) > 0 :
+        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keywords" : keywords}
+    
+    # 기존 상품 정보
+    unique_product_group = product.unique_product_group
+    product_name = product.product_name
+    price = product.price
+    image = product.image
+    description = product.description
+    amount = product.amount
+
+    # 기존 상품 정보에 수정하고자 하는 정보 덮어씌우기
+    if "group_uid" in userData :
+        unique_product_group = userData["group_uid"]
+    if "product_name" in userData :
+        product_name = userData["product_name"]
+    if "price" in userData :
+        price = userData["price"]
+    if "description" in userData :
+        description = userData["description"]
+    if "amount" in userData :
+        amount = userData["amount"]
+
+    # 상품 중복 검사
+    modify_product = Product.query.filter_by(
+        unique_store_info=store.unique_store_info,
+        unique_product_group=unique_product_group,
+        product_name=product_name
+    )
+
+    if modify_product.count() > 0 :
+        return {"result" : "Invalid", "code" : Code.AlreadtExistProduct}
+    
+    # 이미지의 경우 덮어씌우기
+    if "image" in userData :
+        # 기존 이미지 삭제
+        if os.path.isfile(product.image) :
+            os.remove(product.image)
+
+        # 새 이미지 저장
+        image_f = userData["image"]
+        ext = os.path.splitext(image_f.filename)[1]
+        image = Path.ADMIN + "/" + str(user.unique_admin) + "/store/" + str(store.unique_store_info) + "/product/" + str(product.unique_product) + ext
+        image_f.save(image)
+
+    # 수정된 정보 적용
+    product.unique_product_group = unique_product_group
+    product.product_name = product_name
+    product.price = price
+    product.image = image
+    product.description = description
+    product.amount = amount
+    
+    DB.session.commit()
+
+    return {"result" : "Success", "code" : Code.Success}
 
 def delete_product() :
     return
