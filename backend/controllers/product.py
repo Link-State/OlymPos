@@ -35,8 +35,11 @@ def checkField(data) :
     if "amount" in data :
         if data["amount"] < -1 :
             keyword.append("amount")
-    if "images" in data :
-        pass
+    if "image" in data :
+        exts = [".jpg", ".png"]
+        ext =  str(os.path.splitext(data["image"].filename)[1]).lower()
+        if ext not in exts :
+            keyword.append("image")
     if "option_name" in data :
         if len(data["option_name"]) < MinLength.option_name or len(data["option_name"]) > MaxLength.option_name :
             keyword.append("option_name")
@@ -199,23 +202,67 @@ def add_product(userData={}) :
     if group == None :
         return {"result" : "Invalid", "code" : Code.NotExistGroup}
     
-    user = Admins.query.filter_by(unique_admin=store.unique_admin)
+    user = Admins.query.get(store.unique_admin)
     
     # 해당 매장이 요청자의 소유가 아닐 경우
     if user.user_id != userData["user_id"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
-    # 데이터 형식 검사    
+    # 데이터 형식 검사
     keywords = checkField(userData)
 
-    # 데이터 형식이 맞지 않을 때,
+    ## 데이터 형식이 맞지 않을 때,
     if len(keywords) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keywords" : keywords}
     
+    # 해당 상품이 이미 존재할 경우,
+    product = Product.query.filter_by(
+        unique_store_info=store.unique_store_info,
+        unique_product_group=group.unique_product_group,
+        product_name=userData["product_name"],
+        price=userData["price"]
+    )
 
+    if product.count() > 0 :
+        return {"result" : "Invalid", "code" : Code.AlreadtExistProduct}
     
+    # 상품 생성
+    product = Product(
+        store=store.unique_store_info,
+        group=group.unique_product_group,
+        name=userData["product_name"],
+        price=userData["price"],
+        amount=userData["amount"]
+    )
 
-    return
+    DB.session.add(product)
+    DB.session.commit()
+
+    # 상품 사진 불러오기 및 저장
+    image = ""
+    if "image" in userData :
+        image_f = userData["image"]
+        ext = os.path.splitext(image_f.filename)[1]
+        image = Path.ADMIN + "/" + str(user.unique_admin) + "/store/product/" + str(product.unique_product) + ext
+        image_f.save(image)
+    
+    # 설명 불러오기
+    description = ""
+    if "description" in userData :
+        description = userData["description"]
+
+    # 사진 및 설명 적용
+    product.image = image
+    product.description = description
+    
+    # 버전 업데이트
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(store.unique_store_info)
+    version.product = now_lnt
+
+    DB.session.commit()
+
+    return {"result" : "Success", "code" : Code.Success, "uid" : product.unique_product}
 
 def modify_product() :
     return

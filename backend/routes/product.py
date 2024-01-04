@@ -1,8 +1,10 @@
 import sys
 import os
+import json
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
+from config import *
 from statusCode import *
 from flask import request, jsonify, session, render_template
 from flask_jwt_extended import *
@@ -57,25 +59,24 @@ class Delete_group(Resource) :
 # https://celdan.tistory.com/42
 
 class Add_product(Resource) :
-    # @jwt_required()
+    @jwt_required()
     def post(self) :
-        # identity = get_jwt_identity()
+        identity = get_jwt_identity()
 
         # 토큰이 없을 경우
-        # if identity is None :
-        #     return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
+        if identity is None :
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
 
-        user_data = request.data
-        # files = request.files
+        # JSON
+        user_data = json.loads(request.form["data"])
 
-        # user_data["user_id"] = identity
-        # user_data["img"] = files
+        # Image
+        image = request.files["image"]
 
-        print(user_data)
-        # print(files, files['image'])
+        user_data["user_id"] = identity
+        user_data["image"] = image
 
-        # return jsonify(product.add_product(userData=user_data))
-        return render_template('test.html')
+        return jsonify(product.add_product(userData=user_data))
     
 class Modify_product(Resource) :
     @jwt_required()

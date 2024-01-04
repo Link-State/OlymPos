@@ -26,6 +26,7 @@ class Code() :
     AlreadyExistID = 400
     AlreadyExistStore = 401
     AlreadyExistGroup = 402
+    AlreadtExistProduct = 403
     AlreadyExistOption = 404
     AlreadyExistSubOption = 405
     AlreadyEmail = 406
