@@ -1,22 +1,17 @@
 import os
-import sys
 
 from flask import Flask, render_template, redirect, request
-from flask_restful import Api, Resource
+from flask_restful import Api
 from flask_jwt_extended import *
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 from config import API
 from utils import Path
-from utils import MaxLength
 from routes import account
 from routes import store
 from routes import product
 from routes import order
 from routes import version
 from models.mysql import DB
-from models.Admins import Admins
-from models.StoreInfo import StoreInfo
 
 # flask
 # flask_restful
