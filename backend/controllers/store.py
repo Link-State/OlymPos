@@ -149,53 +149,6 @@ def change_store_info(inputStoreInfo={}) :
     
     # 매장 정보 수정
     modify_store(store=store, inputStoreInfo=inputStoreInfo)
-
-    # if "name" in inputStoreInfo :
-    #     store.store_name = inputStoreInfo["name"]
-
-    # if "owner" in inputStoreInfo :
-    #     store.store_owner = inputStoreInfo["owner"]
-
-    # if "address" in inputStoreInfo :
-    #     store.store_address = inputStoreInfo["address"]
-
-    # if "tel_num" in inputStoreInfo :
-    #     store.store_tel_number = inputStoreInfo["tel_num"]
-    
-    # if "count" in inputStoreInfo :
-    #     tables = TableList.query.filter_by(unique_store_info=store.unique_store_info).order_by(TableList.table_number).all()
-
-    #     current = store.table_count # 현재 활성화된 테이블 갯수
-    #     maximum = len(tables) # DB에 생성된 테이블 갯수
-    #     request = inputStoreInfo["count"] # 활성화할 테이블 갯수
-    #     now = datetime.now()
-    #     now_lnt = int(now.strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
-
-    #     # 현재 활성화된 테이블 갯수와 활성화할 테이블 갯수가 같지 않을 때, DB상 기록된 테이블 갯수 수정
-    #     if request != current :
-    #         store.table_count = request
-    #         store.last_modify_date = now
-
-    #         version = Version.query.get(store.unique_store_info)
-    #         version.table_list = now_lnt
-        
-    #     # 활성화할 테이블 갯수가 현재 활성화된 테이블 갯수보다 클 경우,
-    #     if request > current :
-    #         for i in range(current + 1, maximum + 1) :
-    #             # 재활성화
-    #             tables[i-1].disable_date = None
-    #         for i in range(maximum + 1, request + 1) :
-    #             # 생성
-    #             table = TableList(store=store.unique_store_info, number=i, state=0)
-    #             DB.session.add(table)
-
-    #     # 활성화할 테이블 갯수가 현재 활성화된 테이블 갯수보다 작을 경우,
-    #     elif request < current :
-    #         # 비활성화
-    #         for i in range(request + 1, current + 1) :
-    #             tables[i-1].isLogin = ""
-    #             tables[i-1].table_state = 0
-    #             tables[i-1].disable_date = now
     
     DB.session.commit()
 
@@ -229,29 +182,54 @@ def delete_store(inputStoreInfo={}) :
 
     # 테이블 삭제
     modify_store(store=store, inputStoreInfo={"count" : 0})
-    
-    # 해당 모듈 추가 후, 알맞는 삭제함수 호출할 것
         
     # 상품 그룹 삭제
-    ## 매장 고유번호로 그룹 찾을 것.
+    groups = ProductGroup.query.filter_by(unique_store_info=store.unique_store_info).all()
+    for group in groups :
+        group.disable_date = now
 
     # 상품 삭제
-    ## 매장 고유번호로 상품 찾을 것.
+    products = Product.query.filter_by(unique_store_info=store.unique_store_info).all()
+    for product in products :
+        product.disable_date = now
+        
+        # 상품-옵션 관계 삭제
+        relations = ProductOptionRelations.query.filter_by().all()
+        for relation in relations :
+            DB.session.delete(relation)
 
     # 상품 옵션 삭제
-    ## 매장 고유번호로 옵션 찾을 것.
+    options = ProductOption.query.filter_by(unique_store_info=store.unique_store_info).all()
+    for option in options :
+        option.disable_date = now
 
-    # 상품-옵션 관계 삭제
-    ## 상품 고유번호로 관계 삭제할 것.
-
-    # 상품 서브옵션 삭제
-    ## 옵션 고유번호로 서브옵션 찾을 것.
+        # 상품 서브옵션 삭제
+        suboptions = ProductSuboption.query.filter_by(unique_product_option=option.unique_product_option).all()
+        for suboption in suboptions :
+            suboption.disable_date = now
 
     # 주문 삭제
-    ## 매장 고유번호로 주문서 찾을 것.
+    orders = OrderList.query.filter_by(unique_store_info=store.unique_store_info).all()
+    for order in orders :
+        order.order_state = OrderState.SellerCancel
+        order.last_modify_date = now
 
-    # 선택된 옵션 삭제
-    ## 주문서 고유번호로 선택된옵션 찾을 것.
+        # 선택된 옵션 삭제
+        selected_options = SelectedOption.query.filter_by(unique_order=order.unique_order).all()
+        for selected_option in selected_options :
+            selected_option.disable_date = now
+    
+    # 버전 삭제
+    now_lnt = int(now.strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(store.unique_store_info)
+    version.table_list = now_lnt
+    version.product_group = now_lnt
+    version.product = now_lnt
+    version.product_option = now_lnt
+    version.product_option_relations = now_lnt
+    version.product_suboption = now_lnt
+    version.order_list = now_lnt
+    version.disable_date = now
     
     DB.session.commit()
 

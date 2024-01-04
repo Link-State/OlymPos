@@ -147,7 +147,8 @@ command.execute("""CREATE TABLE Selected_option (
                 unique_selected_option INT,
                 unique_order INT NOT NULL,
                 unique_product_option INT NOT NULL,
-                unique_product_suboption INT
+                unique_product_suboption INT,
+                disable_date DATETIME
                 );""")
 
 
@@ -194,10 +195,10 @@ command.execute("""ALTER TABLE Table_list
                 ;""")
 
 ### 테이블 제약조건
-command.execute("""ALTER TABLE Table_list
-                ADD CONSTRAINT table_state__conflict__at__Table_list
-                CHECK (table_state IN (0, 1, 2, 3))
-                ;""")
+# command.execute("""ALTER TABLE Table_list
+#                 ADD CONSTRAINT table_state__conflict__at__Table_list
+#                 CHECK (table_state IN (0, 1, 2, 3))
+#                 ;""")
 
 ## 버전
 ### 버전 기본키
@@ -358,10 +359,10 @@ command.execute("""ALTER TABLE Order_list
                 ;""")
 
 ### 주문 내역 제약조건
-command.execute("""ALTER TABLE Order_list
-                ADD CONSTRAINT order_state__conflict__at__Order_list
-                CHECK (order_state IN (0, 1, 2))
-                ;""")
+# command.execute("""ALTER TABLE Order_list
+#                 ADD CONSTRAINT order_state__conflict__at__Order_list
+#                 CHECK (order_state IN (0, 1, 2))
+#                 ;""")
 
 ## 선택 옵션
 ### 선택 옵션 기본키
@@ -573,7 +574,8 @@ command.execute("""INSERT INTO Selected_option VALUES(
                 0,
                 1,
                 1,
-                2
+                2,
+                NULL
                 );""")
 
 ## 선택 옵션
@@ -581,6 +583,7 @@ command.execute("""INSERT INTO Selected_option VALUES(
                 0,
                 1,
                 2,
+                NULL,
                 NULL
                 );""")
 

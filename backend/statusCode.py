@@ -37,11 +37,12 @@ class Code() :
 class OrderState() :
     Receipt = 0
     Processing = 1
-    Cancel = 2
-    Complete = 3
+    Complete = 2
+    BuyerCancel = 3
+    SellerCancel = 4
 
     def isExist(code) :
-        if type(code) is type(1) and code >= 0 and code <= 3 :
+        if type(code) is type(1) and code >= 0 and code <= 4 :
             return True
         return False
     
