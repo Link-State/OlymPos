@@ -1,22 +1,23 @@
 import sys
 import os
-import datetime
+from datetime import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from config import *
 from statusCode import *
 from flask_jwt_extended import *
-from models import Admins
-from models import StoreInfo
-from models import TableList
-from models import ProductGroup
-from models import Product
-from models import ProductOption
-from models import ProductOptionRelations
-from models import ProductSuboption
-from models import OrderList
-from models import SelectedOption
+from models.mysql import DB
+from models.Admins import Admins
+from models.StoreInfo import StoreInfo
+from models.TableList import TableList
+from models.ProductGroup import ProductGroup
+from models.Product import Product
+from models.ProductOption import ProductOption
+from models.ProductOptionRelations import ProductOptionRelations
+from models.ProductSuboption import ProductSuboption
+from models.OrderList import OrderList
+from models.SelectedOption import SelectedOption
 
 def product_order(inputData={}) :
     fields = ["SSAID", "store_uid", "product_uid", "table", "amount"]
@@ -26,26 +27,26 @@ def product_order(inputData={}) :
         if field not in inputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
 
-    store = StoreInfo.getStore(uid=inputData["store_uid"])
+    store = StoreInfo.query.get(inputData["store_uid"])
 
     # 존재하지 않는 매장일 때,
-    if len(store) <= 0 :
+    if store == None :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
-    product = Product.getProduct(uid=inputData["product_uid"])
+    product = Product.query.get(inputData["product_uid"])
 
     # 존재하지 않는 상품일 때,
-    if len(product) <= 0 :
+    if product == None :
         return {"result" : "Invalid", "code" : Code.NotExistProduct}
 
-    table = TableList.getTable(store_uid=inputData["store_uid"], tableNum=inputData["table"])
+    table = TableList.query.get({"unique_store_info" : inputData["store_uid"], "table_number" : inputData["table"]})
 
     # 존재하지 않는 테이블 번호일 때,
-    if len(table) <= 0 :
+    if table == None :
         return {"result" : "Invalid", "code" : Code.NotExistTable}
 
     # 주문을 시도한 기기의 SSAID, 주문을 시도한 테이블의 isLogin DB값과 같은지 체크
-    if table["isLogin"] != inputData["SSAID"] :
+    if table.isLogin == "" or table.isLogin != inputData["SSAID"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
     # 선택한 옵션이 있을 경우,
@@ -62,23 +63,36 @@ def product_order(inputData={}) :
             if type(elem) is not type(dict()) :
                 return {"result" : "Invalid", "code" : Code.WrongDataForm}
             
-            option = ProductOption.getOption(uid=elem["option"])
-            suboption = ProductSuboption.getSubOption(uid=elem["suboption"])
+            # 3. List의 원소에 옵션 필드가 누락됐을 때,
+            if "option" not in elem :
+                return {"result" : "Invalid", "code" : Code.MissingRequireField}
 
-            # 3. 선택한 옵션의 List의 원소(=옵션 및 서브옵션)가 존재하지 않는 옵션, 서브옵션일 때,
-            if len(option) <= 0 :
+            option = ProductOption.query.get(elem["option"])
+            
+            # 해당 옵션이 존재하지 않을 때,
+            if option == None :
                 return {"result" : "Invalid", "code" : Code.NotExistProductOption}
-            if len(suboption) <= 0 :
-                return {"result" : "Invalid", "code" : Code.NotExistProductSuboption}
-    
-    inputData["order_date"] = datetime.datetime.now().replace(microsecond=0)
+            
+            # 4. 해당 서브옵션이 존재하지 않을 때,
+            if "suboption" in elem :
+                suboption = ProductSuboption.query.get(elem["suboption"])
+                if suboption == None :
+                    return {"result" : "Invalid", "code" : Code.NotExistProductSuboption}
 
     # 주문서 생성
-    OrderList.add(inputData)
+    order = OrderList(
+        store=store.unique_store_info,
+        product=product.unique_product,
+        number=table.table_number,
+        amount=inputData["amount"],
+        state=OrderState.Receipt,
+        date=datetime.now()
+    )
 
-    order_uid = OrderList.findOrder(store_uid=inputData["store_uid"], date=inputData["order_date"])
+    DB.session.add(order)
+    DB.session.commit()
 
-    return {"result" : "Success", "code" : Code.Success, "uid" : order_uid}
+    return {"result" : "Success", "code" : Code.Success, "uid" : order.unique_order}
 
 def change_order_state(inputData={}) :
     fields = ["order_uid", "state"]
