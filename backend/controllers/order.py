@@ -158,14 +158,20 @@ def get_order_list(inputData={}) :
         if field not in inputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    store = StoreInfo.getStore(uid=inputData["store_uid"])
+    store = StoreInfo.query.get(inputData["store_uid"])
 
     # 해당 매장이 존재하지 않을 때,
-    if len(store) <= 0 :
+    if store == None :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
 
     # 주문 목록 불러옴
-    orders = OrderList.getOrders(store_uid=inputData["store_uid"])
+    records = OrderList.query.filter_by(unique_store_info=inputData["store_uid"]).all() # 주문 목록
+
+    orders = []
+    for rec in records :
+        dictRec = dict(rec.__dict__)
+        dictRec.pop('_sa_instance_state', None)
+        orders.append(dictRec)
 
     return {"result" : "Success", "code" : Code.Success, "orders" : orders}
 
