@@ -3,8 +3,7 @@ import os
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from backend.utils import *
-from models import mysql
+from utils import *
 from models.mysql import DB
 from sqlalchemy import Column, Integer, DateTime, ForeignKey
 
@@ -22,23 +21,3 @@ class SelectedOption(DB.Model) :
         self.unique_product_option = option
         self.unique_product_suboption = suboption
         self.disable_date = disable
-
-# 해당 주문의 모든 옵션 목록을 반환
-def getOptions(order_id=-1) :
-    return
-
-def getOption(uid=-1) :
-    return
-
-def setOption(uid=-1, option_id=-1) :
-    return
-
-def setSubOption(uid=-1, suboption_id=-1) :
-    return
-
-def add(**kwargs) :
-    # require : order id, option id, suboption id
-    return
-
-def remove(uid=-1) :
-    return

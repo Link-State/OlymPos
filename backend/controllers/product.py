@@ -3,7 +3,7 @@ import os
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from backend.utils import *
+from utils import *
 from statusCode import *
 from flask_jwt_extended import *
 from datetime import datetime

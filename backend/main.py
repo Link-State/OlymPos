@@ -6,9 +6,9 @@ from flask_restful import Api, Resource
 from flask_jwt_extended import *
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from backend.config import API
-from backend.utils import Path
-from backend.utils import MaxLength
+from config import API
+from utils import Path
+from utils import MaxLength
 from routes import account
 from routes import store
 from routes import product
@@ -30,10 +30,6 @@ from models.StoreInfo import StoreInfo
 # 이미지 폴더 생성
 if not os.path.exists(Path.ADMIN) :
     os.makedirs(Path.ADMIN)
-
-# 안쓰는 변수(삭제할 것)
-connection = None
-command = None
 
 app = Flask(import_name=__name__)
 
