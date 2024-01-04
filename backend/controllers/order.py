@@ -92,7 +92,8 @@ def product_order(inputData={}) :
         number=table.table_number,
         amount=inputData["amount"],
         state=OrderState.Receipt,
-        date=datetime.now()
+        date=datetime.now(),
+        last=datetime.now()
     )
     
     DB.session.add(order)
@@ -137,6 +138,7 @@ def change_order_state(inputData={}) :
     
     # 주문 상태 수정
     order.order_state = inputData["state"]
+    order.last_modify_date = datetime.now()
 
     # 버전 업데이트
     now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간

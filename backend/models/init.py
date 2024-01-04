@@ -138,7 +138,8 @@ command.execute("""CREATE TABLE Order_list (
                 table_number INT NOT NULL,
                 amount INT NOT NULL,
                 order_state INT NOT NULL,
-                order_date DATETIME NOT NULL
+                order_date DATETIME NOT NULL,
+                last_modify_date DATETIME NOT NULL
                 );""")
 
 ## 선택 옵션 스키마
@@ -563,6 +564,7 @@ command.execute("""INSERT INTO Order_list VALUES(
                 1,
                 2,
                 0,
+                '2023-07-28 20:22:12',
                 '2023-07-28 20:22:12'
                 );""")
 
