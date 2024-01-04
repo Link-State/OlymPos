@@ -5,3 +5,4 @@ test.html
 *.py[cod]
 __pycache__/
 venv/
+images/admin/

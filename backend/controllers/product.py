@@ -3,7 +3,7 @@ import os
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from config import *
+from backend.utils import *
 from statusCode import *
 from flask_jwt_extended import *
 from datetime import datetime
@@ -243,7 +243,7 @@ def add_product(userData={}) :
     if "image" in userData :
         image_f = userData["image"]
         ext = os.path.splitext(image_f.filename)[1]
-        image = Path.ADMIN + "/" + str(user.unique_admin) + "/store/product/" + str(product.unique_product) + ext
+        image = Path.ADMIN + "/" + str(user.unique_admin) + "/store/" + str(store.unique_store_info) + "/product/" + str(product.unique_product) + ext
         image_f.save(image)
     
     # 설명 불러오기

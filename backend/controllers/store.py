@@ -6,7 +6,7 @@ from datetime import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from config import *
+from backend.utils import *
 from statusCode import *
 from flask_jwt_extended import *
 from models.mysql import DB
@@ -89,12 +89,6 @@ def addStore(inputStoreInfo={}) :
     DB.session.add(store)
     DB.session.commit()
 
-    # 폴더 추가
-    store_image_path = Path.STORE + "/" + str(store.unique_store_info)
-    if os.path.exists(store_image_path) :
-        shutil.rmtree(store_image_path)
-    os.mkdir(store_image_path)
-
     # 추가한 매장 가져오기
     store = StoreInfo.query.filter_by(
         unique_admin=user.unique_admin,
@@ -112,9 +106,15 @@ def addStore(inputStoreInfo={}) :
     
     # 버전 추가
     ver = Version(store=store.unique_store_info)
-    DB.session.add(ver)
 
+    DB.session.add(ver)
     DB.session.commit()
+    
+    # 폴더 추가
+    store_image_path = Path.ADMIN + "/" + str(user.unique_admin) + "/store/" + str(store.unique_store_info) + "/product"
+    if os.path.exists(store_image_path) :
+        shutil.rmtree(store_image_path)
+    os.makedirs(store_image_path)
 
     return {"result" : "Success", "code" : Code.Success, "uid" : store.unique_store_info}
 

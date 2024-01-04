@@ -4,7 +4,7 @@ import json
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from config import *
+from backend.utils import *
 from statusCode import *
 from flask import request, jsonify, session, render_template
 from flask_jwt_extended import *

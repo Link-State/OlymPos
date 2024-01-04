@@ -4,7 +4,7 @@ import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from config import *
+from backend.utils import *
 from models import mysql
 from models.mysql import DB
 from sqlalchemy import Column, Integer, String, DateTime

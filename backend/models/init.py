@@ -4,7 +4,7 @@ import pymysql
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from config import API
+from backend.config import API
 
 connection = pymysql.connect(
         host=API.host,
