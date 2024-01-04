@@ -29,6 +29,14 @@ def checkField(data) :
     if "product_name" in data :
         if len(data["product_name"]) < MinLength.product_name or len(data["product_name"]) > MaxLength.product_name :
             keyword.append("product_name")
+    if "price" in data :
+        if data["price"] < 0 :
+            keyword.append("price")
+    if "amount" in data :
+        if data["amount"] < -1 :
+            keyword.append("amount")
+    if "images" in data :
+        pass
     if "option_name" in data :
         if len(data["option_name"]) < MinLength.option_name or len(data["option_name"]) > MaxLength.option_name :
             keyword.append("option_name")
@@ -172,7 +180,41 @@ def delete_group(inputData={}) :
 
     return {"result" : "Success", "code" : Code.Success}
 
-def add_product() :
+def add_product(userData={}) :
+    # 필수 필드가 누락됐을 때,
+    fields = ["store_uid", "group_uid", "product_name", "price", "amount"]
+    for field in fields :
+        if field not in userData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+        
+    # 매장이 존재하지 않는 경우,
+    store = StoreInfo.query.get(userData["store_uid"])
+
+    if store == None :
+        return {"result" : "Invalid", "code" : Code.NotExistStore}
+    
+    # 상품그룹이 존재하지 않는 경우
+    group = ProductGroup.query.get(userData["group_uid"])
+
+    if group == None :
+        return {"result" : "Invalid", "code" : Code.NotExistGroup}
+    
+    user = Admins.query.filter_by(unique_admin=store.unique_admin)
+    
+    # 해당 매장이 요청자의 소유가 아닐 경우
+    if user.user_id != userData["user_id"] :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+    
+    # 데이터 형식 검사    
+    keywords = checkField(userData)
+
+    # 데이터 형식이 맞지 않을 때,
+    if len(keywords) > 0 :
+        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keywords" : keywords}
+    
+
+    
+
     return
 
 def modify_product() :
