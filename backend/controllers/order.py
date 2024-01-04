@@ -139,6 +139,9 @@ def change_order_state(inputData={}) :
     order.order_state = inputData["state"]
 
     # 버전 업데이트
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(order.unique_store_info)
+    version.order_list = now_lnt
     
     DB.session.commit()
 
