@@ -60,6 +60,7 @@ api.add_resource(account.Change_account_info, '/change-account-info')
 api.add_resource(account.Get_exist_user, '/get-exist-user')
 api.add_resource(account.Get_account_info, '/get-account-info')
 api.add_resource(account.Find_account, '/find-account')
+api.add_resource(account.Find_password, '/find-password')
 
 api.add_resource(store.Add_store, '/add-store')
 api.add_resource(store.Change_store_info, '/change-store-info')

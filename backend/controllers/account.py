@@ -1,13 +1,18 @@
 import sys
 import os
+import random
 from datetime import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+from flask_jwt_extended import *
 from utils import *
 from statusCode import *
-from flask_jwt_extended import *
-from models import mysql
+from config import *
 from models.mysql import DB
 from models.Admins import Admins
 from models.StoreInfo import StoreInfo
@@ -358,7 +363,8 @@ def find_account(inputData={}) :
     user = Admins.query.filter_by(
         name=inputData["name"],
         phone_number=inputData["tel_num"],
-        email=inputData["email"]
+        email=inputData["email"],
+        disable_date=None
     ).first()
 
     # 해당 조건으로 아이디를 찾을 수 없을 때,
@@ -374,4 +380,81 @@ def find_account(inputData={}) :
     return {"result" : "Success", "code" : Code.Success, "user" : user}
 
 def find_password(inputData={}) :
-    return
+    fields = ["user_id"]
+
+    # 필수 필드가 누락됐을 때,
+    for field in fields :
+        if field not in inputData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+
+    # 해당 유저가 존재하지 않을 때,
+    user = Admins.query.filter_by(user_id=inputData["user_id"]).first()
+
+    if user == None :
+        return {"result" : "Invalid", "code" : Code.NotExistID}
+    
+    # 랜덤 비밀번호 생성 (대문자 + 소문자 + 숫자 + 특수문자)
+    reset_pwd = ""
+    alpha = list(set("abcdefghijklmnopqrstuvwxyz") | set("abcdefghijklmnopqrstuvwxyz".upper()) | set("1234567890") | set("~!@#$%^&*()_-+="))
+    length = random.randint(12, 20)
+
+    for _ in range(length) :
+        reset_pwd += random.choice(alpha)
+    
+    # 랜덤 비밀번호로 변경
+    user.user_pwd = reset_pwd
+    DB.session.commit()
+
+    # SMTP 서버와 연결
+    smtp = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+
+    # 로그인
+    smtp.login(API.smtp_account, API.smtp_password)
+
+    # 메일 기본 정보
+    msg = MIMEMultipart()
+    msg["Subject"] = f"K-올림포스 계정 암호 재설정"
+    msg["From"] = "K-올림포스"
+    msg["To"] = user.email
+
+    # 메일 HTML 내용
+    html_message = f"""
+    <!doctype html>
+        <html lang=ko>
+            <head>
+                <meta charset=utf-8>
+                <title>mail<title>
+            </head>
+            <body>
+                <p style="color: #707070;">K-올림포스 계정</p>
+                <p style="color: #2672ec; font-size: 41px;">암호 재설정 코드</p>
+                <p style="color: #707070;">이 코드를 사용하여 K-올림포스 계정의 암호를 재설정하세요.</p>
+                <p style="color: #707070;">코드는 <span style="color: #2a2a2a; font-weight: bold;">{reset_pwd}</span>입니다.</p>
+                <p style="color: #707070;">감사합니다.</p>
+            </body>
+        </html>
+    """
+    html_body = MIMEText(html_message, 'html')
+    msg.attach(html_body)
+
+    # 메일 본문 내용
+    content = "비밀번호 : " + reset_pwd
+    content_part = MIMEText(content, "plain")
+    msg.attach(content_part)
+
+    # 이미지 파일 첨부
+    # image_path = Path.IMAGE + "/thumnail.png"
+    # ext = os.path.splitext(image_path)[1]
+    
+    # with open(image_path, 'rb') as file :
+    #     img = MIMEImage(file.read())
+    #     img.add_header('Content-Disposition', 'attachment', filename="title" + ext)
+    #     msg.attach(img)
+
+    # 메일 전송
+    smtp.sendmail(API.smtp_account, user.email, msg.as_string())
+
+    # SMTP 서버와 연결 해제
+    smtp.quit()
+
+    return {"result" : "Success", "code" : Code.Success}
