@@ -21,6 +21,7 @@ from models.mysql import DB
 # pyJWT
 # pymysql
 # cryptography
+# pillow
 
 # 이미지 폴더 생성
 if not os.path.exists(Path.ADMIN) :

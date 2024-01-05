@@ -66,14 +66,9 @@ class Add_product(Resource) :
         if identity is None :
             return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
 
-        # JSON
-        user_data = json.loads(request.form["data"])
-
-        # Image
-        image = request.files["image"]
+        user_data = request.get_json()
 
         user_data["user_id"] = identity
-        user_data["image"] = image
 
         return jsonify(product.add_product(userData=user_data))
     
@@ -86,12 +81,7 @@ class Modify_product(Resource) :
         if identity is None :
             return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
         
-        # JSON
-        user_data = json.loads(request.form["data"])
-
-        # Image
-        if "image" in request.files :
-            user_data["image"] = request.files["image"]
+        user_data = request.get_json()
 
         user_data["user_id"] = identity
         

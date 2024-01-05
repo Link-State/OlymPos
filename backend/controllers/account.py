@@ -1,6 +1,7 @@
 import sys
 import os
 import random
+import base64
 from datetime import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
@@ -157,7 +158,19 @@ def tableLogin(ssaid="", store_uid=-1, tableNum = -1) :
     for rec in records :
         dictRec = dict(rec.__dict__)
         dictRec.pop('_sa_instance_state', None)
+
+        # Image -> base64로 변환
+        if os.path.exists(dictRec["image"]) :
+            img = open(dictRec["image"], "rb")
+            encoded_img_str = base64.b64encode(img.read())
+            dictRec["image"] = str(encoded_img_str)[2:-1]
+            img.close()
+        else :
+            dictRec["image"] = ""
+
         products.append(dictRec)
+
+    # 이미지들 base64로 넘기기
 
     return {"result" : "Success", "code" : Code.Success, "products" : products}
 

@@ -1,5 +1,8 @@
 import sys
 import os
+import base64
+from io import BytesIO
+from PIL import Image
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
@@ -35,11 +38,6 @@ def checkField(data) :
     if "amount" in data :
         if data["amount"] < -1 :
             keyword.append("amount")
-    if "image" in data :
-        exts = [".jpg", ".png"]
-        ext =  str(os.path.splitext(data["image"].filename)[1]).lower()
-        if ext not in exts :
-            keyword.append("image")
     if "option_name" in data :
         if len(data["option_name"]) < MinLength.option_name or len(data["option_name"]) > MaxLength.option_name :
             keyword.append("option_name")
@@ -244,10 +242,13 @@ def add_product(userData={}) :
     # 상품 사진 불러오기 및 저장
     image = ""
     if "image" in userData :
-        image_f = userData["image"]
-        ext = os.path.splitext(image_f.filename)[1]
-        image = Path.ADMIN + "/" + str(user.unique_admin) + "/store/" + str(store.unique_store_info) + "/product/" + str(product.unique_product) + ext
-        image_f.save(image)
+        # Base64 -> Image 변환 후 서버 내 저장
+        decoded_img_str = base64.b64decode(userData["image"])
+        image_file = Image.open(BytesIO(decoded_img_str))
+        # 색표현 스킵
+
+        image = Path.ADMIN + "/" + str(user.unique_admin) + "/store/" + str(store.unique_store_info) + "/product/" + str(product.unique_product) + ".png"
+        image_file.save(image, "PNG")
     
     # 설명 불러오기
     description = ""
@@ -297,7 +298,7 @@ def modify_product(userData={}) :
             return {"result" : "Invalid", "code" : Code.NotExistGroup}
     
     # 수정하려는 그룹이 소유자의 매장이 아닌 경우,
-    if group.unique_store_info != store.unique_store_info :
+    if group != None and group.unique_store_info != store.unique_store_info :
         return {"result" : "Invalid", "code" : Code.NotEquals}
 
     # 데이터 양식 검사
@@ -327,26 +328,30 @@ def modify_product(userData={}) :
         amount = userData["amount"]
 
     # 상품 중복 검사
-    modify_product = Product.query.filter_by(
-        unique_store_info=store.unique_store_info,
-        unique_product_group=unique_product_group,
-        product_name=product_name
+    modify_product = Product.query.filter(
+        Product.unique_product!=product.unique_product,
+        Product.unique_store_info==store.unique_store_info,
+        Product.unique_product_group==unique_product_group,
+        Product.product_name==product_name
     )
 
     if modify_product.count() > 0 :
         return {"result" : "Invalid", "code" : Code.AlreadtExistProduct}
-    
+
     # 이미지의 경우 덮어씌우기
     if "image" in userData :
+        # Base64 -> Image 변환 후
+        decoded_img_str = base64.b64decode(userData["image"])
+        image_file = Image.open(BytesIO(decoded_img_str))
+        # 색표현 스킵
+
         # 기존 이미지 삭제
         if os.path.isfile(product.image) :
             os.remove(product.image)
 
-        # 새 이미지 저장
-        image_f = userData["image"]
-        ext = os.path.splitext(image_f.filename)[1]
-        image = Path.ADMIN + "/" + str(user.unique_admin) + "/store/" + str(store.unique_store_info) + "/product/" + str(product.unique_product) + ext
-        image_f.save(image)
+        # 변환된 새 이미지 저장
+        image = Path.ADMIN + "/" + str(user.unique_admin) + "/store/" + str(store.unique_store_info) + "/product/" + str(product.unique_product) + ".png"
+        image_file.save(image, "PNG")
 
     # 수정된 정보 적용
     product.unique_product_group = unique_product_group
@@ -833,6 +838,16 @@ def get_product_list(inputData={}) :
         relations = ProductOptionRelations.query.filter_by(unique_product=dictRec["unique_product"]).all()
 
         dictRec["options"] = [rel.unique_product_option for rel in relations]
+
+        # Image -> base64로 변환
+        if os.path.exists(dictRec["image"]) :
+            img = open(dictRec["image"], "rb")
+            encoded_img_str = base64.b64encode(img.read())
+            dictRec["image"] = str(encoded_img_str)[2:-1]
+            img.close()
+        else :
+            dictRec["image"] = ""
+
         products.append(dictRec)
 
     return {"result" : "Success", "code" : Code.Success, "products" : products}
