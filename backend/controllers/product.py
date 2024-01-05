@@ -355,6 +355,11 @@ def modify_product(userData={}) :
     product.image = image
     product.description = description
     product.amount = amount
+
+    # 버전 업데이트
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(store.unique_store_info)
+    version.product = now_lnt
     
     DB.session.commit()
 
