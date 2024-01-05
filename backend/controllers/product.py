@@ -360,8 +360,38 @@ def modify_product(userData={}) :
 
     return {"result" : "Success", "code" : Code.Success}
 
-def delete_product() :
-    return
+def delete_product(userData={}) :
+    fields = ["product_uid"]
+
+    # 필수 필드가 누락됐을 때,
+    for field in fields :
+        if field not in userData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+
+    # 해당 상품이 존재하지 않을 때,
+    product = Product.query.get(userData["product_uid"])
+    
+    if product == None :
+        return {"result" : "Invalid", "code" : Code.NotExistProduct}
+
+    # 요청자와 상품의 소유자가 일치하지 않을 때,
+    store = StoreInfo.query.get(product.unique_store_info)
+    user = Admins.query.get(store.unique_admin)
+
+    if user.user_id != userData["user_id"] :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
+    
+    # 해당 상품 삭제
+    product.disable_date = datetime.now()
+
+    # 버전 업데이트
+    now_lnt = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) # 현재 시간
+    version = Version.query.get(store.unique_store_info)
+    version.product = now_lnt
+
+    DB.session.commit()
+
+    return {"result" : "Success", "code" : Code.Success}
 
 def add_option(inputData={}) :
     fields = ["store_uid", "option_name", "price", "isoffer"]
