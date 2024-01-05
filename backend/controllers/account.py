@@ -393,7 +393,7 @@ def find_account(inputData={}) :
     return {"result" : "Success", "code" : Code.Success, "user" : user}
 
 def find_password(inputData={}) :
-    fields = ["user_id"]
+    fields = ["user_id", "email"]
 
     # 필수 필드가 누락됐을 때,
     for field in fields :
@@ -405,6 +405,10 @@ def find_password(inputData={}) :
 
     if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
+    
+    # 등록된 이메일과 일치하지 않을 때,
+    if user.email != inputData["email"] :
+        return {"result" : "Invalid", "code" : Code.NotEquals}
     
     # 랜덤 비밀번호 생성 (대문자 + 소문자 + 숫자 + 특수문자)
     reset_pwd = ""
@@ -430,6 +434,11 @@ def find_password(inputData={}) :
     msg["From"] = "K-올림포스"
     msg["To"] = user.email
 
+    email_id, email_domain = str(user.email).split("@")
+    masking_email = str(email_id)
+    if len(email_id) > 3 :
+        masking_email = email_id[:2] + "*******" + email_id[-1] + "@" + email_domain
+
     # 메일 HTML 내용
     html_message = f"""
     <!doctype html>
@@ -441,8 +450,11 @@ def find_password(inputData={}) :
             <body>
                 <p style="color: #707070;">K-올림포스 계정</p>
                 <p style="color: #2672ec; font-size: 41px;">암호 재설정 코드</p>
-                <p style="color: #707070;">이 코드를 사용하여 K-올림포스 계정의 암호를 재설정하세요.</p>
+                <br>
+                <p style="color: #707070;">이 코드를 사용하여 K-올림포스 계정 {masking_email}의 암호를 재설정하세요.</p>
+                <br>
                 <p style="color: #707070;">코드는 <span style="color: #2a2a2a; font-weight: bold;">{reset_pwd}</span>입니다.</p>
+                <br>
                 <p style="color: #707070;">감사합니다.</p>
             </body>
         </html>
@@ -470,4 +482,4 @@ def find_password(inputData={}) :
     # SMTP 서버와 연결 해제
     smtp.quit()
 
-    return {"result" : "Success", "code" : Code.Success}
+    return {"result" : "Success", "code" : Code.Success, "email" : masking_email}

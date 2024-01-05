@@ -53,6 +53,8 @@ def checkField(data) :
 
     return keyword
 
+
+
 def addStore(inputStoreInfo={}) :
     # 필수 값이 누락됐을 때,
     fields = ["user_id", "name", "owner", "address", "tel_num", "count"]
@@ -119,16 +121,12 @@ def addStore(inputStoreInfo={}) :
 
     return {"result" : "Success", "code" : Code.Success, "uid" : store.unique_store_info}
 
+
+
 def change_store_info(inputStoreInfo={}) :
     # 필수 값이 누락됐을 때,
     if "store_uid" not in inputStoreInfo :
         return {"result" : "Invalid", "code" : Code.MissingRequireField}
-    
-    keyword = checkField(inputStoreInfo)
-    
-    # 데이터 형식이 잘못 된 경우,
-    if len(keyword) > 0 :
-        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
 
     store = StoreInfo.query.get(inputStoreInfo["store_uid"])
 
@@ -148,13 +146,36 @@ def change_store_info(inputStoreInfo={}) :
     if user["unique_admin"] != store.unique_admin :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
+    keyword = checkField(inputStoreInfo)
+    
+    # 데이터 형식이 잘못 된 경우,
+    if len(keyword) > 0 :
+        return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
+    
+    # 수정된 정보 임시 적용
+    store_name = store.store
+    if "name" in inputStoreInfo :
+        store_name = inputStoreInfo["name"]
+    
+    # 수정된이름 검색
+    modify_store = StoreInfo.query.filter(
+        StoreInfo.unique_store_info!=store.unique_store_info,
+        StoreInfo.store_name==store_name
+    )
+
+    # 매장이름 중복 확인
+    if modify_store.count() > 0 :
+        return {"result" : "Invalid", "code" : Code.AlreadyExistStore}
+    
     # 매장 정보 수정
     modify_store(store=store, inputStoreInfo=inputStoreInfo)
     
     DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
-    
+
+
+
 def delete_store(inputStoreInfo={}) :
     # 필수 값이 누락됐을 때,
     if "store_uid" not in inputStoreInfo :
@@ -236,6 +257,8 @@ def delete_store(inputStoreInfo={}) :
 
     return {"result" : "Success", "code" : Code.Success}
 
+
+
 def get_my_stores(user_id='') :
     user = Admins.query.filter_by(user_id=user_id).first()
 
@@ -254,6 +277,8 @@ def get_my_stores(user_id='') :
         stores.append(dictRec)
     
     return {"result" : "Success", "code" : Code.Success, "stores" : stores}
+
+
 
 def get_store_info(inputStoreInfo={}) :
     # 필수 값이 누락됐을 때,

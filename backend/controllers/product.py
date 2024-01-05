@@ -47,6 +47,8 @@ def checkField(data) :
 
     return keyword
 
+
+
 def add_group(userInputData={}) :
 
     fields = ["store_uid", "group_name"]
@@ -104,6 +106,8 @@ def add_group(userInputData={}) :
     
     return {"result" : "Success", "code" : Code.Success, "uid" : product_group.unique_product_group}
 
+
+
 def modify_group(userInputData) :
     fields = ["group_uid", "group_name"]
 
@@ -148,6 +152,8 @@ def modify_group(userInputData) :
 
     return {"result" : "Success", "code" : Code.Success}
 
+
+
 def delete_group(inputData={}) :
     fields = ["group_uid"]
 
@@ -180,6 +186,8 @@ def delete_group(inputData={}) :
     DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
+
+
 
 def add_product(userData={}) :
     # 필수 필드가 누락됐을 때,
@@ -268,6 +276,8 @@ def add_product(userData={}) :
 
     return {"result" : "Success", "code" : Code.Success, "uid" : product.unique_product}
 
+
+
 def modify_product(userData={}) :
     fields = ["product_uid"]
 
@@ -335,6 +345,7 @@ def modify_product(userData={}) :
         Product.product_name==product_name
     )
 
+    # 매장+그룹+이름 중복이 있는 경우,
     if modify_product.count() > 0 :
         return {"result" : "Invalid", "code" : Code.AlreadtExistProduct}
 
@@ -370,6 +381,8 @@ def modify_product(userData={}) :
 
     return {"result" : "Success", "code" : Code.Success}
 
+
+
 def delete_product(userData={}) :
     fields = ["product_uid"]
 
@@ -402,6 +415,8 @@ def delete_product(userData={}) :
     DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
+
+
 
 def add_option(inputData={}) :
     fields = ["store_uid", "option_name", "price", "isoffer"]
@@ -458,6 +473,8 @@ def add_option(inputData={}) :
 
     return {"result" : "Success", "code" : Code.Success, "uid" : option.unique_product_option}
 
+
+
 def modify_option(inputData={}) :
     fields = ["option_uid"]
 
@@ -497,14 +514,14 @@ def modify_option(inputData={}) :
     if "isoffer" in inputData :
         suboption_offer = inputData["isoffer"]
 
-    modify_option = ProductOption.query.filter_by(
-        unique_store_info=store.unique_store_info,
-        option_name=option_name,
-        price=price,
-        suboption_offer=suboption_offer
+    modify_option = ProductOption.query.filter(
+        ProductOption.unique_product_option!=option.unique_product_option,
+        ProductOption.unique_store_info==store.unique_store_info,
+        ProductOption.option_name==option_name,
+        ProductOption.suboption_offer==suboption_offer
     )
 
-    # 해당 이름+가격+서브옵션유무의 옵션이 이미 존재할 때,
+    # 해당 이름+서브옵션유무의 옵션이 이미 존재할 때,
     if modify_option.count() > 0 :
         return {"result" : "Invalid", "code" : Code.AlreadyExistOption}
 
@@ -520,6 +537,8 @@ def modify_option(inputData={}) :
     DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
+
+
 
 def delete_option(inputData={}) :
     fields = ["option_uid"]
@@ -552,6 +571,8 @@ def delete_option(inputData={}) :
 
     DB.session.commit()
     return {"result" : "Success", "code" : Code.Success}
+
+
 
 def add_suboption(inputData={}) :
     fields = ["option_uid", "suboption_name", "price", "amount"]
@@ -608,6 +629,8 @@ def add_suboption(inputData={}) :
 
     return {"result" : "Success", "code" : Code.Success, "uid" : suboption.unique_product_suboption}
 
+
+
 def modify_suboption(inputData={}) :
     fields = ["suboption_uid"]
 
@@ -655,15 +678,16 @@ def modify_suboption(inputData={}) :
     
     if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
-    
+
     # 수정된 옵션이 이미 존재하는지 검사
-    modify_suboption = ProductSuboption.query.filter_by(
-        unique_product_option=option_uid,
-        suboption_name=suboption_name,
-        price=price,
-        amount=amount
+    modify_suboption = ProductSuboption.query.filter(
+        ProductSuboption.unique_product_suboption!=suboption.unique_product_suboption,
+        ProductSuboption.unique_product_option==option_uid,
+        ProductSuboption.suboption_name==suboption_name,
+        ProductSuboption.price==price
     )
 
+    # 옵션+이름+가격이 중복되는 경우,
     if modify_suboption.count() > 0 :
         return {"result" : "Invalid", "code" : Code.AlreadyExistSubOption}
     
@@ -681,6 +705,8 @@ def modify_suboption(inputData={}) :
     DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
+
+
 
 def delete_suboption(inputData={}) :
     fields = ["suboption_uid"]
@@ -715,6 +741,8 @@ def delete_suboption(inputData={}) :
     DB.session.commit()
 
     return {"result" : "Success", "code" : Code.Success}
+
+
 
 def modify_product_option_relation(inputData={}) :
     fields = ["product_uid", "option_uid"]
@@ -780,6 +808,8 @@ def modify_product_option_relation(inputData={}) :
 
     return {"result" : "Success", "code" : Code.Success}
 
+
+
 def get_group_list(inputData={}) :
     # 필수 필드가 누락됐을 때,
     fields = ["store_uid"]
@@ -808,6 +838,8 @@ def get_group_list(inputData={}) :
         groups.append(dictRec)
 
     return {"result" : "Success", "code" : Code.Success, "groups" : groups}
+
+
 
 def get_product_list(inputData={}) :
     # 필수 필드가 누락됐을 때,
@@ -851,6 +883,8 @@ def get_product_list(inputData={}) :
         products.append(dictRec)
 
     return {"result" : "Success", "code" : Code.Success, "products" : products}
+
+
 
 def get_option_list(inputData={}) :
     # 필수 필드가 누락됐을 때,
