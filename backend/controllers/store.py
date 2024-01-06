@@ -230,8 +230,12 @@ def delete_store(inputStoreInfo={}) :
         for suboption in suboptions :
             suboption.disable_date = now
 
-    # 주문 삭제
-    orders = OrderList.query.filter_by(unique_store_info=store.unique_store_info).all()
+    # 접수 된, 진행 중인 주문 삭제
+    orders = OrderList.query.filter(
+        OrderList.unique_store_info==store.unique_store_info,
+        OrderList.order_state <= 1
+    ).all()
+    
     for order in orders :
         order.order_state = OrderState.SellerCancel
         order.last_modify_date = now
