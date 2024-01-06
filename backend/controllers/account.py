@@ -44,18 +44,15 @@ def checkField(data) :
             keyword.append("phone")
 
     if "email" in data :
-        # 유효성 검사
-        email = Admins.query.filter_by(email=data["email"]).first()
-
-        if email != None :
-            keyword.append("email:already_exist")
-
-        # 길이 검사
         memberLength = len(data["email"])
         alphaIdx = data["email"].find('@')
-        dotIdx = data["email"].find('.')
-        if memberLength < MinLength.email or memberLength > MaxLength.email or alphaIdx <= 1 or dotIdx <= 3 or dotIdx - alphaIdx <= 1 or dotIdx+1 == memberLength :
-            keyword.append("email:wrong_length")
+
+        # 문자 . 이 여러 개 있을 때, 문자열 가장 뒤에 . 의 위치
+        dotIdx = [idx for idx in range(len(data["email"])-1, -1, -1) if data["email"][idx] == '.'][0]
+
+        # 최소 길이 | 최대 길이 | @가 문자열 맨 앞에 위치 | .가 문자열 네번째 미만에 위치 | .이 @보다 앞에 위치 | .이 문자열 맨 뒤에 위치 | 하나라도 만족하면
+        if memberLength < MinLength.email or memberLength > MaxLength.email or alphaIdx <= 0 or dotIdx < 3 or dotIdx - alphaIdx <= 1 or dotIdx+1 == memberLength :
+            keyword.append("email")
         
     return keyword
 
@@ -250,15 +247,13 @@ def signup(inputUserData={}) :
 
     if user != None :
         return {"result" : "Invalid", "code" : Code.AlreadyEmail}
-
-    # 이메일 인증 기능
-
+    
     keyword = checkField(inputUserData)
 
     # 입력 필드 확인
     if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
-
+    
     # DB에 회원 추가
     user = Admins(
         id=inputUserData["user_id"],
@@ -315,6 +310,10 @@ def change_account(inputUserData={}) :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
     
     # 정보 수정
+    ## 이메일 수정
+    if "email" in inputUserData :
+        user.email = inputUserData["email"]
+    
     ## 비밀번호 수정
     if "before_pwd" in inputUserData and "after_pwd" in inputUserData :
         user.user_pwd = inputUserData["after_pwd"]
@@ -326,10 +325,15 @@ def change_account(inputUserData={}) :
     ## 전화번호 수정
     if "phone" in inputUserData :
         user.phone_number = inputUserData["phone"]
+    
+    # 이메일 중복 검사
+    modify_user = Admins.query.filter(
+            Admins.unique_admin!=user.unique_admin,
+            Admins.email==user.email
+        )
 
-    ## 이메일 수정
-    if "email" in inputUserData :
-        user.email = inputUserData["email"]
+    if modify_user.count() > 0 :
+        return {"result" : "Invalid", "code" : Code.AlreadyEmail}
     
     DB.session.commit()
 
