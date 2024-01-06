@@ -56,8 +56,18 @@ def checkField(data) :
         
     return keyword
 
-def adminLogin(id="", pwd="") :
-    user = Admins.query.filter_by(user_id=id, user_pwd=pwd).first()
+def adminLogin(userData={}) :
+    fields = ["user_id", "user_pwd"]
+
+    # 필수 값이 누락 됐을 때,
+    for field in fields :
+        if field not in userData :
+            return {"result" : "Invalid", "code" : Code.MissingRequireField}
+    
+    user = Admins.query.filter_by(
+        user_id=userData["user_id"],
+        user_pwd=userData["user_pwd"]
+    ).first()
     
     # 해당 아이디/비밀번호의 계정이 검색되지 않을 때,
     if user == None :
@@ -68,10 +78,11 @@ def adminLogin(id="", pwd="") :
     # 탈퇴한 유저일 때,
     if user["disable_date"] != None :
         return {"result" : "Invalid", "code" : Code.DeletedData}
-
-    records = StoreInfo.query.filter_by(unique_admin=user["unique_admin"]).all() # 해당 유저 소유의 가게 리스트
     
-    # dict형으로 변환
+    # 해당 유저 소유의 가게 리스트
+    records = StoreInfo.query.filter_by(unique_admin=user["unique_admin"]).all()
+    
+    # 각 가게를 dict형으로 변환
     stores = []
     for rec in records :
         dictRec = dict(rec.__dict__)
@@ -279,6 +290,16 @@ def delete_account(id='') :
     # 이미 탈퇴한 유저일 때,
     if dictUser["disable_date"] != None :
         return {"result" : "Invalid", "code" : Code.DeletedData}
+    
+    # 삭제되지 않은 본인의 매장 목록 검색
+    store = StoreInfo.query.filter_by(
+        unique_admin=user.unique_admin,
+        disable_date=None
+    )
+    
+    # 삭제되지 않은 매장이 있는 경우,
+    if store.count() > 0 :
+        return {"result" : "Invalid", "code" : Code.AlreadyExistStore}
     
     # 탈퇴 처리
     user.disable_date = datetime.now()

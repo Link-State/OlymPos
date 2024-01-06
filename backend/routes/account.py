@@ -12,19 +12,8 @@ from controllers import account
 class AdminLogin(Resource) :
     def post(self) :
         user_data = request.get_json()
-        id = ""
-        pwd = ""
-
-        # 필수 값이 누락 됐을 때,
-        if "user_id" not in user_data or "user_pwd" not in user_data :
-            return jsonify({"result" : "Invalid", "code" : Code.MissingRequireField})
         
-        id = user_data["user_id"]
-        pwd = user_data["user_pwd"]
-        result = account.adminLogin(id=id, pwd=pwd)
-
-        # 세션에 토큰 저장
-        return jsonify(result)
+        return jsonify(account.adminLogin(user_data))
 
 
 class UserLogin(Resource) :
