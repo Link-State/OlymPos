@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.kmyth.olympos.view.login.UserLoginScreen
 import com.kmyth.olympos.ui.theme.OlymPosTheme
 import com.kmyth.olympos.view.login.LoginScreen
 
@@ -63,9 +64,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainPreview() {
     OlymPosTheme {
-        LoginScreen(
+        UserLoginScreen(
             navController = rememberNavController(),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            null
         )
     }
 }

@@ -20,23 +20,20 @@ fun OlymposNavHost(
         startDestination = startDestination,
         modifier = modifier
     ) {
-        composable(route = Login.route) {
-            LoginScreen(
-                navController = navController,
-                modifier = modifier
-            )
-        }
-        composable(route = Store.route) {
-            SelectStoreScreen(
-                navController = navController,
-                modifier = modifier
-            )
-        }
-        composable(route = Table.route) {
-            SelectTableScreen(
-                navController = navController,
-                modifier = modifier
-            )
-        }
+        loginNavGraph(navController = navController, modifier = modifier)
     }
 }
+
+@Composable
+fun getActivity() = LocalContext.current as ComponentActivity
+
+@Composable
+inline fun <reified VM : ViewModel> composableActivityViewModel(
+    key: String? = null,
+    factory: ViewModelProvider.Factory? = null
+): VM = viewModel(
+    VM::class.java,
+    getActivity(),
+    key,
+    factory
+)

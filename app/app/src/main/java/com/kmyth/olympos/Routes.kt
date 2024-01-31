@@ -1,20 +1,22 @@
 package com.kmyth.olympos
 
+const val LOGIN_GRAPH_ROUTE = "login"
+
 interface Routes {
     val route: String
 }
 
-object Login: Routes {
+object LoginNav: Routes {
     override val route: String
-        get() = "login"
+        get() = "login_screen"
 }
 
-object Store: Routes {
+object TableNav: Routes {
     override val route: String
-        get() = "store"
+        get() = "table_screen"
 }
 
-object Table: Routes {
+object ProductNav: Routes {
     override val route: String
-        get() = "table"
+        get() = "product_screen"
 }

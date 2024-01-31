@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.Button
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -30,11 +29,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.kmyth.olympos.R
-import com.kmyth.olympos.Store
+import com.kmyth.olympos.TableNav
+import com.kmyth.olympos.model.login.UserLoginRequestModel
+import com.kmyth.olympos.ui.theme.DefaultButton
 import com.kmyth.olympos.ui.theme.OlymPosTheme
+import timber.log.Timber
 
 @Composable
-fun LoginScreen(navController: NavHostController, modifier: Modifier) {
+fun UserLoginScreen(
+    navController: NavHostController,
+    modifier: Modifier,
+    onLoginClick: ((UserLoginRequestModel, (String) -> Unit) -> Unit)?
+) {
 
     var id by rememberSaveable { mutableStateOf("") }
     var pw by rememberSaveable { mutableStateOf("") }
@@ -75,6 +81,7 @@ fun LoginScreen(navController: NavHostController, modifier: Modifier) {
                 placeholder = { Text(stringResource(id = R.string.id)) })
 
             // Password
+            // TODO : 마스킹 기능
             TextField(
                 modifier = Modifier
                     .width(width = 480.dp)
@@ -86,19 +93,15 @@ fun LoginScreen(navController: NavHostController, modifier: Modifier) {
                 placeholder = { Text(stringResource(id = R.string.password)) })
 
             // Login btn
-            Button(
-                modifier = Modifier
-                    .width(width = 480.dp)
-                    .height(height = 96.dp),
-                onClick = {
-                    // TODO: 유효성 체크
-                    // TODO: 통신
-                    navController.navigate(Store.route)
-                }) {
-                Text(
-                    text = stringResource(id = R.string.login),
-                    fontSize = 32.sp
-                )
+            DefaultButton(title = stringResource(id = R.string.login), enabled = true) {
+                // TODO: 유효성 체크
+                // TODO : DataStore 저장
+                if (onLoginClick != null) {
+                    Timber.d("onClick $id, $pw")
+                    onLoginClick(
+                        UserLoginRequestModel(id, pw)
+                    ) { navController.navigate("${TableNav.route}/$it") }
+                }
             }
         }
     }
@@ -109,11 +112,12 @@ fun LoginScreen(navController: NavHostController, modifier: Modifier) {
     showSystemUi = true,
     device = Devices.TABLET)
 @Composable
-fun LoginScreenPreview() {
+fun UserLoginScreenPreview() {
     OlymPosTheme {
-        LoginScreen(
+        UserLoginScreen(
             navController = rememberNavController(),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            null
         )
     }
 }
