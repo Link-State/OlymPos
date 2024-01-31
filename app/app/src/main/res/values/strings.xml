@@ -2,9 +2,6 @@
     <string name="app_name">OlymPos</string>
 
     <!-- Login Screen -->
-    <string name="pref_login">PREF_LOGIN</string>
-    <string name="pref_store">PREF_STORE</string>
-    <string name="pref_table">PREF_TABLE</string>
     <string name="login">로그인</string>
     <string name="id">아이디</string>
     <string name="password">비밀번호</string>

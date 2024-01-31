@@ -9,51 +9,32 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.compose.rememberNavController
 import com.kmyth.olympos.view.login.UserLoginScreen
 import com.kmyth.olympos.ui.theme.OlymPosTheme
-import com.kmyth.olympos.view.login.LoginScreen
+import timber.log.Timber
+
+private const val USER_PREFERENCES = "user_preferences"
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_PREFERENCES)
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.plant(Timber.DebugTree())
         super.onCreate(savedInstanceState)
         setContent {
             OlymPosTheme {
 
                 val navController = rememberNavController()
-                val startDestination = getStartDestination()
                 val modifier = Modifier.fillMaxSize()
 
-                OlymposNavHost(navController, startDestination, modifier)
+                OlymposNavHost(navController, modifier, dataStore)
             }
         }
-    }
-
-    /**
-     * 시작 화면 가져오기
-     */
-    private fun getStartDestination(): String {
-        var startDestination = Login.route
-        val prefs = this.getPreferences(Context.MODE_PRIVATE)
-        val isLogin = prefs.getBoolean(getString(R.string.pref_login), false)
-
-        // 로그인 이력이 있으면 로그인 건너뛰기
-        if (isLogin) {
-            val isSelectStore = prefs.getInt(getString(R.string.pref_store), -1)
-            if (isSelectStore != -1) {
-                val isSelectTable = prefs.getInt(getString(R.string.pref_table), -1)
-                if (isSelectTable != -1) {
-                    // TODO: 메뉴 화면 연결
-                } else {
-                    startDestination = Table.route
-                }
-            } else {
-                startDestination = Store.route
-            }
-        }
-
-        return startDestination
     }
 }
 

@@ -3,9 +3,17 @@ package com.kmyth.olympos.viewmodel.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
+import com.kmyth.olympos.network.RetrofitClient
+import com.kmyth.olympos.network.ServerCallInterface
 import com.kmyth.olympos.model.login.UserLoginRequestModel
+import com.kmyth.olympos.model.login.UserLoginResponseModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Response
+import retrofit2.Retrofit
+import timber.log.Timber
 
 class LoginViewModel(
     private val repository: LoginRepository,
@@ -19,6 +27,7 @@ class LoginViewModel(
     }
 
     fun onUserLoginClick(userInfo: UserLoginRequestModel, navigate: (String) -> Unit) {
+        Timber.d("onUserLoginClick")
         repository.userLogin(userInfo, navigate)
     }
 }
@@ -43,6 +52,38 @@ interface LoginRepository {
 
 class LoginRepositoryImpl: LoginRepository {
     override fun userLogin(userInfo: UserLoginRequestModel, navigate: (String) -> Unit) {
-        // TODO
+        val service: Retrofit? = RetrofitClient.getClient()
+        service?.create(ServerCallInterface::class.java)
+            ?.userLogin(userInfo)
+            ?.enqueue(object: retrofit2.Callback<UserLoginResponseModel> {
+                override fun onResponse(
+                    call: Call<UserLoginResponseModel>,
+                    response: Response<UserLoginResponseModel>
+                ) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        if (body != null) {
+                            if (body.result == "Success") {
+                                val storeStr = Gson().toJson(body.stores)
+                                navigate(storeStr)
+                            } else {
+                                // TODO : fail 처리
+                                Timber.d("userLogin body.result = ${body.result}, body.code = ${body.code}")
+                            }
+                        } else {
+                            // TODO : fail 처리
+                            Timber.d("userLogin Response Error")
+                        }
+                    } else {
+                        // TODO : fail 처리
+                        Timber.d("userLogin Response Failed")
+                    }
+                }
+
+                override fun onFailure(call: Call<UserLoginResponseModel>, t: Throwable) {
+                    // TODO : fail 처리
+                    Timber.d("userLogin onFailure - ${t.message}")
+                }
+            })
     }
 }

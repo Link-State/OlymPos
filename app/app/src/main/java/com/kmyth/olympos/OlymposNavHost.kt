@@ -1,26 +1,30 @@
 package com.kmyth.olympos
 
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import com.kmyth.olympos.view.login.LoginScreen
-import com.kmyth.olympos.view.login.SelectStoreScreen
-import com.kmyth.olympos.view.login.SelectTableScreen
+import com.kmyth.olympos.view.login.navigation.loginNavGraph
 
 @Composable
 fun OlymposNavHost(
     navController: NavHostController,
-    startDestination: String,
-    modifier: Modifier
+    modifier: Modifier,
+    dataStore: DataStore<Preferences>
 ) {
     NavHost(
         navController = navController,
-        startDestination = startDestination,
+        startDestination = LOGIN_GRAPH_ROUTE,
         modifier = modifier
     ) {
-        loginNavGraph(navController = navController, modifier = modifier)
+        loginNavGraph(navController = navController, modifier = modifier, dataStore = dataStore)
     }
 }
 
