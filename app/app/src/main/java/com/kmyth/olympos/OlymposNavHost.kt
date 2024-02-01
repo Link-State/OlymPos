@@ -10,8 +10,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.kmyth.olympos.model.product.ProductModel
 import com.kmyth.olympos.view.login.navigation.loginNavGraph
+import com.kmyth.olympos.viewmodel.product.ProductRepositoryImpl
+import com.kmyth.olympos.viewmodel.product.ProductViewModel
+import com.kmyth.olympos.viewmodel.product.ProductViewModelFactory
+import timber.log.Timber
 
 @Composable
 fun OlymposNavHost(
@@ -25,6 +35,29 @@ fun OlymposNavHost(
         modifier = modifier
     ) {
         loginNavGraph(navController = navController, modifier = modifier, dataStore = dataStore)
+
+        composable(route = ProductNav.route+"/{productList}",
+            arguments = listOf(
+                navArgument("productList") {
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            if (it.arguments != null) {
+                val viewModel =
+                    composableActivityViewModel<ProductViewModel>(
+                        "Product",
+                        ProductViewModelFactory(ProductRepositoryImpl())
+                    )
+                val productStr = it.arguments!!.getString("productList", "")
+                Timber.d("productStr $productStr")
+                val storeList = Gson().fromJson<List<ProductModel>>(productStr, object: TypeToken<List<ProductModel>>(){}.type)
+
+
+            } else {
+                Timber.d("ProductNav it.arguments == null")
+            }
+        }
     }
 }
 
