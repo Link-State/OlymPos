@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.kmyth.olympos.network.RetrofitClient
 import com.kmyth.olympos.network.ServerCallInterface
+import com.kmyth.olympos.model.login.TableLoginRequestModel
+import com.kmyth.olympos.model.login.TableLoginResponseModel
 import com.kmyth.olympos.model.login.UserLoginRequestModel
 import com.kmyth.olympos.model.login.UserLoginResponseModel
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +32,11 @@ class LoginViewModel(
         Timber.d("onUserLoginClick")
         repository.userLogin(userInfo, navigate)
     }
+
+    fun onTableLoginClick(tableInfo: TableLoginRequestModel, navigate: (String) -> Unit) {
+        Timber.d("onStoreLoginClick")
+        repository.tableLogin(tableInfo, navigate)
+    }
 }
 
 class LoginViewModelFactory(
@@ -48,6 +55,7 @@ class LoginViewModelFactory(
 
 interface LoginRepository {
     fun userLogin(userInfo: UserLoginRequestModel, navigate: (String) -> Unit)
+    fun tableLogin(tableInfo: TableLoginRequestModel, navigate: (String) -> Unit)
 }
 
 class LoginRepositoryImpl: LoginRepository {
@@ -83,6 +91,42 @@ class LoginRepositoryImpl: LoginRepository {
                 override fun onFailure(call: Call<UserLoginResponseModel>, t: Throwable) {
                     // TODO : fail 처리
                     Timber.d("userLogin onFailure - ${t.message}")
+                }
+            })
+    }
+
+    override fun tableLogin(tableInfo: TableLoginRequestModel, navigate: (String) -> Unit) {
+        val service: Retrofit? = RetrofitClient.getClient()
+        service?.create(ServerCallInterface::class.java)
+            ?.tableLogin(tableInfo)
+            ?.enqueue(object: retrofit2.Callback<TableLoginResponseModel> {
+                override fun onResponse(
+                    call: Call<TableLoginResponseModel>,
+                    response: Response<TableLoginResponseModel>
+                ) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        if (body != null) {
+                            if (body.result == "Success") {
+                                val productStr = Gson().toJson(body.products)
+                                navigate(productStr)
+                            } else {
+                                // TODO : fail 처리
+                                Timber.d("tableLogin body.result = ${body.result}, body.code = ${body.code}")
+                            }
+                        } else {
+                            // TODO : fail 처리
+                            Timber.d("tableLogin Response Error")
+                        }
+                    } else {
+                        // TODO : fail 처리
+                        Timber.d("tableLogin Response Failed")
+                    }
+                }
+
+                override fun onFailure(call: Call<TableLoginResponseModel>, t: Throwable) {
+                    // TODO : fail 처리
+                    Timber.d("tableLogin onFailure - ${t.message}")
                 }
             })
     }

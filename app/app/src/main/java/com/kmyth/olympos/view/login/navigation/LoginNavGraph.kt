@@ -16,6 +16,7 @@ import com.kmyth.olympos.LoginNav
 import com.kmyth.olympos.TableNav
 import com.kmyth.olympos.composableActivityViewModel
 import com.kmyth.olympos.model.login.StoreModel
+import com.kmyth.olympos.view.login.TableLoginScreen
 import com.kmyth.olympos.view.login.UserLoginScreen
 import com.kmyth.olympos.viewmodel.login.LoginRepositoryImpl
 import com.kmyth.olympos.viewmodel.login.LoginViewModel
@@ -65,6 +66,12 @@ fun NavGraphBuilder.loginNavGraph(
                 val storeStr = it.arguments!!.getString("storeList", "")
                 Timber.d("storeStr $storeStr")
                 val storeList = Gson().fromJson<List<StoreModel>>(storeStr, object: TypeToken<List<StoreModel>>(){}.type)
+
+                TableLoginScreen(
+                    navController = navController,
+                    modifier = modifier,
+                    storeList = storeList,
+                    onLoginClick = viewModel::onTableLoginClick)
             } else {
                 Timber.d("it.arguments == null")
             }
