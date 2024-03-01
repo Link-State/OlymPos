@@ -91,7 +91,7 @@ def adminLogin(userData={}) :
 
     return {
         "result" : "Success",
-        "access_token" : create_access_token(identity=id, expires_delta=False),
+        "access_token" : create_access_token(identity=user["user_id"], expires_delta=False),
         "code" : Code.Success,
         "stores" : stores
     }
