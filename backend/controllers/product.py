@@ -824,8 +824,23 @@ def get_group_list(inputData={}) :
     
     user = Admins.query.get(store.unique_admin)
 
-    # 요청자와 소유자가 일치하지 않을 때,
-    if user.user_id != inputData["user_id"] :
+    # (사용자) 요청자와 소유자가 일치하지 않을 때,
+    if "SSAID" in inputData :
+        # SSAID로 store_uid 찾기
+        table = TableList.query.filter_by(isLogin=inputData["SSAID"]).all()
+
+        # SSAID로 로그인 정보를 찾을 수 없을 때,
+        if len(table) <= 0 :
+            return {"result" : "Invalid", "code" : Code.NotLoginState}
+        
+        table = dict(table[0].__dict__)
+        table.pop('_sa_instance_state', None)
+        
+        if str(table["unique_store_info"]) != inputData["store_uid"] :
+            return {"result" : "Invalid", "code" : Code.NotEquals}
+
+    # (관리자) 요청자와 소유자가 일치하지 않을 때,
+    elif user.user_id != inputData["user_id"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
     records = ProductGroup.query.filter_by(unique_store_info=inputData["store_uid"], disable_date=None).all() # 카테고리 목록

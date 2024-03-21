@@ -200,16 +200,16 @@ class Modify_product_option_relation(Resource) :
         return jsonify(product.modify_product_option_relation(inputData=user_data))
 
 class Get_group_list(Resource) :
-    @jwt_required()
+    @jwt_required(optional=True)
     def get(self) :
         identity = get_jwt_identity()
 
-        # 토큰이 없을 경우
-        if identity is None :
-            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
-        
         user_data = request.args.to_dict()
-        user_data["user_id"] = identity
+
+        if identity is not None :
+            user_data["user_id"] = identity
+        elif "SSAID" not in user_data :
+            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
 
         return jsonify(product.get_group_list(inputData=user_data))
 

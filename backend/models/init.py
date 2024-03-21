@@ -16,7 +16,7 @@ connection = pymysql.connect(
         charset="utf8",
         cursorclass=pymysql.cursors.DictCursor
     )
-print("connect mysql")
+print("Connected MySQL.")
 
 command = connection.cursor()
 
@@ -32,7 +32,7 @@ command.execute("DROP TABLE IF EXISTS Table_list;")
 command.execute("DROP TABLE IF EXISTS Version;")
 command.execute("DROP TABLE IF EXISTS Store_info;")
 command.execute("DROP TABLE IF EXISTS Admins;")
-print("Clear Table")
+print("Clear Table.")
 
 
 
@@ -491,6 +491,18 @@ command.execute("""INSERT INTO Product_group VALUES(
                 '순살',
                 NULL
                 );""")
+command.execute("""INSERT INTO Product_group VALUES(
+                0,
+                1,
+                '뼈',
+                NULL
+                );""")
+command.execute("""INSERT INTO Product_group VALUES(
+                0,
+                1,
+                '순살 + 뼈',
+                NULL
+                );""")
 
 ## 상품
 command.execute("""INSERT INTO Product VALUES(
@@ -501,6 +513,39 @@ command.execute("""INSERT INTO Product VALUES(
                 10000,
                 '',
                 '',
+                -1,
+                NULL
+                );""")
+command.execute("""INSERT INTO Product VALUES(
+                0,
+                1,
+                2,
+                '샤프란삼계탕',
+                25000,
+                '',
+                '샤프란을 넣은 삼계탕 입니다.',
+                -1,
+                NULL
+                );""")
+command.execute("""INSERT INTO Product VALUES(
+                0,
+                1,
+                2,
+                '루꼴라백숙',
+                8000,
+                '',
+                '루꼴라를 넣은 백숙 입니다. 10개만 판매합니다.',
+                10,
+                NULL
+                );""")
+command.execute("""INSERT INTO Product VALUES(
+                0,
+                1,
+                3,
+                '라벤더잔치국수',
+                12500,
+                '',
+                '라벤더와 약간의 후추를 넣은 잔치국수 입니다. 맛나용',
                 -1,
                 NULL
                 );""")
@@ -590,3 +635,5 @@ command.execute("""INSERT INTO Selected_option VALUES(
 
 connection.commit()
 connection.close()
+
+print("Initialized DB.")
