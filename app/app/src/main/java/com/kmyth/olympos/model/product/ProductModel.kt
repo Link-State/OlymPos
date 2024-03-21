@@ -8,5 +8,6 @@ data class ProductModel(
     val price: Int,
     val image: String,
     val description: String,
-    val amount: Int
+    val amount: Int,
+    val options: List<Int>
 )
