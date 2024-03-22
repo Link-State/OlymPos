@@ -1,6 +1,7 @@
 package com.kmyth.olympos.model.login
 
 data class StoreModel(
+    val unique_store_info: Int,
     val unique_admin: Int,
     val store_name: String,
     val store_owner: String,

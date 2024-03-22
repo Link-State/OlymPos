@@ -33,7 +33,7 @@ class LoginViewModel(
         repository.userLogin(userInfo, navigate)
     }
 
-    fun onTableLoginClick(tableInfo: TableLoginRequestModel, navigate: (String) -> Unit) {
+    fun onTableLoginClick(tableInfo: TableLoginRequestModel, navigate: (Int) -> Unit) {
         Timber.d("onStoreLoginClick")
         repository.tableLogin(tableInfo, navigate)
     }
@@ -55,7 +55,7 @@ class LoginViewModelFactory(
 
 interface LoginRepository {
     fun userLogin(userInfo: UserLoginRequestModel, navigate: (String) -> Unit)
-    fun tableLogin(tableInfo: TableLoginRequestModel, navigate: (String) -> Unit)
+    fun tableLogin(tableInfo: TableLoginRequestModel, navigate: (Int) -> Unit)
 }
 
 class LoginRepositoryImpl: LoginRepository {
@@ -95,7 +95,7 @@ class LoginRepositoryImpl: LoginRepository {
             })
     }
 
-    override fun tableLogin(tableInfo: TableLoginRequestModel, navigate: (String) -> Unit) {
+    override fun tableLogin(tableInfo: TableLoginRequestModel, navigate: (Int) -> Unit) {
         val service: Retrofit? = RetrofitClient.getClient()
         service?.create(ServerCallInterface::class.java)
             ?.tableLogin(tableInfo)
@@ -108,8 +108,7 @@ class LoginRepositoryImpl: LoginRepository {
                         val body = response.body()
                         if (body != null) {
                             if (body.result == "Success") {
-                                val productStr = Gson().toJson(body.products)
-                                navigate(productStr)
+                                navigate(tableInfo.store_uid)
                             } else {
                                 // TODO : fail 처리
                                 Timber.d("tableLogin body.result = ${body.result}, body.code = ${body.code}")

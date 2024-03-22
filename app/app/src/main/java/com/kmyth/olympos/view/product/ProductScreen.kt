@@ -6,19 +6,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.google.gson.Gson
-import com.kmyth.olympos.model.product.ProductModel
 import com.kmyth.olympos.ui.theme.OlymPosTheme
 
 @Composable
 fun ProductScreen(
     navController: NavHostController,
     modifier: Modifier,
-    productList: List<ProductModel>
+    storeId: Int
 ) {
-    Text(text = Gson().toJson(productList))
+    Text(
+        text = storeId.toString(),
+        fontSize = 32.sp
+    )
 }
 
 @Preview(
@@ -31,7 +33,7 @@ fun ProductScreenPreview() {
         ProductScreen(
             navController = rememberNavController(),
             modifier = Modifier.fillMaxSize(),
-            listOf()
+            -1
         )
     }
 }

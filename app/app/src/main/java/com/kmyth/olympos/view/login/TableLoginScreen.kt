@@ -43,7 +43,7 @@ fun TableLoginScreen(
     navController: NavHostController,
     modifier: Modifier,
     storeList: List<StoreModel>,
-    onLoginClick: ((TableLoginRequestModel, (String) -> Unit) -> Unit)?
+    onLoginClick: ((TableLoginRequestModel, (Int) -> Unit) -> Unit)?
 ) {
     Box(
         modifier = modifier,
@@ -107,9 +107,9 @@ fun TableLoginScreen(
                     enabled = enabledButton,
                     onClick = {
                         if (onLoginClick != null) {
-                            Timber.d("selectedStore ${storeList[selectedStore].unique_admin}, selectedTable $selectedTable")
+                            Timber.d("selectedStore ${storeList[selectedStore].unique_store_info}, selectedTable $selectedTable")
                             onLoginClick(
-                                TableLoginRequestModel(getSSAID(context), storeList[selectedStore].unique_admin, selectedTable)
+                                TableLoginRequestModel(getSSAID(context), storeList[selectedStore].unique_store_info, selectedTable)
                             ) {
                                 navController.navigate("${ProductNav.route}/$it")
                             }
