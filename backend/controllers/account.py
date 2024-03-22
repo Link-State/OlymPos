@@ -151,36 +151,36 @@ def tableLogin(ssaid="", store_uid=-1, tableNum = -1) :
         return {"result" : "Invalid", "code" : Code.DeletedData}
 
     # 해당 테이블 번호가 이미 로그인 상태인지 확인할 것.
-    if "isLogin" in dictTable and dictTable["isLogin"] != '' :
+    if "isLogin" in dictTable and dictTable["isLogin"] != '' and dictTable["isLogin"] != ssaid :
         return {"result" : "Invalid", "code" : Code.AlreadyLogin, "SSAID" : dictTable["isLogin"]}
     
     # 테이블 로그인 상태로 변경
     table.isLogin = ssaid
     DB.session.commit()
 
-    # 상품 검색
-    records = Product.query.filter_by(unique_store_info=store_uid).all() # 상품 리스트
+    # # 상품 검색
+    # records = Product.query.filter_by(unique_store_info=store_uid).all() # 상품 리스트
 
-    # dict형으로 변환
-    products = []
-    for rec in records :
-        dictRec = dict(rec.__dict__)
-        dictRec.pop('_sa_instance_state', None)
+    # # dict형으로 변환
+    # products = []
+    # for rec in records :
+    #     dictRec = dict(rec.__dict__)
+    #     dictRec.pop('_sa_instance_state', None)
 
-        # Image -> base64로 변환
-        if os.path.exists(dictRec["image"]) :
-            img = open(dictRec["image"], "rb")
-            encoded_img_str = base64.b64encode(img.read())
-            dictRec["image"] = str(encoded_img_str)[2:-1]
-            img.close()
-        else :
-            dictRec["image"] = ""
+    #     # Image -> base64로 변환
+    #     if os.path.exists(dictRec["image"]) :
+    #         img = open(dictRec["image"], "rb")
+    #         encoded_img_str = base64.b64encode(img.read())
+    #         dictRec["image"] = str(encoded_img_str)[2:-1]
+    #         img.close()
+    #     else :
+    #         dictRec["image"] = ""
 
-        products.append(dictRec)
+    #     products.append(dictRec)
 
-    # 이미지들 base64로 넘기기
+    # # 이미지들 base64로 넘기기
 
-    return {"result" : "Success", "code" : Code.Success, "products" : products}
+    return {"result" : "Success", "code" : Code.Success}
 
 def adminLogout(id="") :
     user = Admins.query.filter_by(user_id=id).first()
