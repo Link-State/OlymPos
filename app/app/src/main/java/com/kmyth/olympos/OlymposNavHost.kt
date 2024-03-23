@@ -10,16 +10,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.kmyth.olympos.view.login.navigation.loginNavGraph
 import com.kmyth.olympos.view.product.ProductScreen
+import com.kmyth.olympos.viewmodel.login.UserPreferencesRepository
 import com.kmyth.olympos.viewmodel.product.ProductRepositoryImpl
 import com.kmyth.olympos.viewmodel.product.ProductViewModel
 import com.kmyth.olympos.viewmodel.product.ProductViewModelFactory
-import timber.log.Timber
 
 @Composable
 fun OlymposNavHost(
@@ -34,28 +32,19 @@ fun OlymposNavHost(
     ) {
         loginNavGraph(navController = navController, modifier = modifier, dataStore = dataStore)
 
-        composable(route = ProductNav.route+"/{storeId}",
-            arguments = listOf(
-                navArgument("storeId") {
-                    type = NavType.IntType
-                }
-            )
-        ) {
-            if (it.arguments != null) {
-                val viewModel =
-                    composableActivityViewModel<ProductViewModel>(
-                        "Product",
-                        ProductViewModelFactory(ProductRepositoryImpl())
+        composable(route = ProductNav.route) {
+            val viewModel =
+                composableActivityViewModel<ProductViewModel>(
+                    "Product",
+                    ProductViewModelFactory(
+                        ProductRepositoryImpl(),
+                        UserPreferencesRepository(dataStore)
                     )
-                val storeId = it.arguments!!.getInt("storeId", -1)
-                Timber.d("storeId $storeId")
-                ProductScreen(
-                    navController = navController,
-                    modifier = modifier,
-                    storeId = storeId,)
-            } else {
-                Timber.d("ProductNav it.arguments == null")
-            }
+                )
+            ProductScreen(
+                navController = navController,
+                modifier = modifier,
+            )
         }
     }
 }

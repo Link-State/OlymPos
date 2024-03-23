@@ -14,11 +14,10 @@ import com.kmyth.olympos.ui.theme.OlymPosTheme
 @Composable
 fun ProductScreen(
     navController: NavHostController,
-    modifier: Modifier,
-    storeId: Int
+    modifier: Modifier
 ) {
     Text(
-        text = storeId.toString(),
+        text = "To be continued... Groups, Products, Options",
         fontSize = 32.sp
     )
 }
@@ -32,8 +31,7 @@ fun ProductScreenPreview() {
     OlymPosTheme {
         ProductScreen(
             navController = rememberNavController(),
-            modifier = Modifier.fillMaxSize(),
-            -1
+            modifier = Modifier.fillMaxSize()
         )
     }
 }

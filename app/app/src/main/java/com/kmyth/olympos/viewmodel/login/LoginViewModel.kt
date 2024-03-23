@@ -30,12 +30,22 @@ class LoginViewModel(
 
     fun onUserLoginClick(userInfo: UserLoginRequestModel, navigate: (String) -> Unit) {
         Timber.d("onUserLoginClick")
-        repository.userLogin(userInfo, navigate)
+        repository.userLogin(userInfo, navigate) { id, pw ->
+            viewModelScope.launch(Dispatchers.Default) {
+                userPreferencesRepository.updateUserId(id)
+                userPreferencesRepository.updateUserPw(pw)
+            }
+        }
     }
 
-    fun onTableLoginClick(tableInfo: TableLoginRequestModel, navigate: (Int) -> Unit) {
+    fun onTableLoginClick(tableInfo: TableLoginRequestModel, navigate: () -> Unit) {
         Timber.d("onStoreLoginClick")
-        repository.tableLogin(tableInfo, navigate)
+        repository.tableLogin(tableInfo, navigate) { store, table ->
+            viewModelScope.launch(Dispatchers.Default) {
+                userPreferencesRepository.updateStoreId(store)
+                userPreferencesRepository.updateTableId(table)
+            }
+        }
     }
 }
 
@@ -54,12 +64,12 @@ class LoginViewModelFactory(
 }
 
 interface LoginRepository {
-    fun userLogin(userInfo: UserLoginRequestModel, navigate: (String) -> Unit)
-    fun tableLogin(tableInfo: TableLoginRequestModel, navigate: (Int) -> Unit)
+    fun userLogin(userInfo: UserLoginRequestModel, navigate: (String) -> Unit, saveUserInfo: (String, String) -> Unit)
+    fun tableLogin(tableInfo: TableLoginRequestModel, navigate: () -> Unit, saveTableInfo: (Int, Int) -> Unit)
 }
 
 class LoginRepositoryImpl: LoginRepository {
-    override fun userLogin(userInfo: UserLoginRequestModel, navigate: (String) -> Unit) {
+    override fun userLogin(userInfo: UserLoginRequestModel, navigate: (String) -> Unit, saveUserInfo: (String, String) -> Unit) {
         val service: Retrofit? = RetrofitClient.getClient()
         service?.create(ServerCallInterface::class.java)
             ?.userLogin(userInfo)
@@ -72,6 +82,7 @@ class LoginRepositoryImpl: LoginRepository {
                         val body = response.body()
                         if (body != null) {
                             if (body.result == "Success") {
+                                saveUserInfo(userInfo.user_id, userInfo.user_pwd)
                                 val storeStr = Gson().toJson(body.stores)
                                 navigate(storeStr)
                             } else {
@@ -95,7 +106,7 @@ class LoginRepositoryImpl: LoginRepository {
             })
     }
 
-    override fun tableLogin(tableInfo: TableLoginRequestModel, navigate: (Int) -> Unit) {
+    override fun tableLogin(tableInfo: TableLoginRequestModel, navigate: () -> Unit, saveTableInfo: (Int, Int) -> Unit) {
         val service: Retrofit? = RetrofitClient.getClient()
         service?.create(ServerCallInterface::class.java)
             ?.tableLogin(tableInfo)
@@ -108,7 +119,8 @@ class LoginRepositoryImpl: LoginRepository {
                         val body = response.body()
                         if (body != null) {
                             if (body.result == "Success") {
-                                navigate(tableInfo.store_uid)
+                                saveTableInfo(tableInfo.store_uid, tableInfo.table)
+                                navigate()
                             } else {
                                 // TODO : fail 처리
                                 Timber.d("tableLogin body.result = ${body.result}, body.code = ${body.code}")

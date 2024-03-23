@@ -43,7 +43,7 @@ fun TableLoginScreen(
     navController: NavHostController,
     modifier: Modifier,
     storeList: List<StoreModel>,
-    onLoginClick: ((TableLoginRequestModel, (Int) -> Unit) -> Unit)?
+    onLoginClick: ((TableLoginRequestModel, () -> Unit) -> Unit)?
 ) {
     Box(
         modifier = modifier,
@@ -111,7 +111,7 @@ fun TableLoginScreen(
                             onLoginClick(
                                 TableLoginRequestModel(getSSAID(context), storeList[selectedStore].unique_store_info, selectedTable)
                             ) {
-                                navController.navigate("${ProductNav.route}/$it")
+                                navController.navigate(ProductNav.route)
                             }
                         }
                     }
