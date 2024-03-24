@@ -35,6 +35,7 @@ interface ServerCallInterface {
      */
     @Headers("Content-Type: application/json")
     @GET("get-group-list")
+    @JvmSuppressWildcards
     fun getGroupList(@QueryMap storeInfo: Map<String, Any>): Call<GroupListResponseModel>
 
     /**
@@ -42,6 +43,7 @@ interface ServerCallInterface {
      */
     @Headers("Content-Type: application/json")
     @GET("get-product-list")
+    @JvmSuppressWildcards
     fun getProductList(@QueryMap storeInfo: Map<String, Any>): Call<ProductListResponseModel>
 
     /**
@@ -49,6 +51,7 @@ interface ServerCallInterface {
      */
     @Headers("Content-Type: application/json")
     @GET("get-option-list")
+    @JvmSuppressWildcards
     fun getOptionList(@QueryMap storeInfo: Map<String, Any>): Call<OptionListResponseModel>
 
 }

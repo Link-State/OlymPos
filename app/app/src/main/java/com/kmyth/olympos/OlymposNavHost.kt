@@ -44,6 +44,8 @@ fun OlymposNavHost(
             ProductScreen(
                 navController = navController,
                 modifier = modifier,
+                getGroupList = viewModel::getGroupList,
+                groupListStateFlow = viewModel.groupListState
             )
         }
     }
