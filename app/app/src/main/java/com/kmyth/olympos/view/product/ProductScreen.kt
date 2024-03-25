@@ -3,16 +3,18 @@ package com.kmyth.olympos.view.product
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.kmyth.olympos.getSSAID
 import com.kmyth.olympos.model.product.GroupModel
+import com.kmyth.olympos.model.product.OptionModel
+import com.kmyth.olympos.model.product.ProductModel
 import com.kmyth.olympos.ui.theme.OlymPosTheme
 import kotlinx.coroutines.flow.StateFlow
 
@@ -20,13 +22,17 @@ import kotlinx.coroutines.flow.StateFlow
 fun ProductScreen(
     navController: NavHostController,
     modifier: Modifier,
-    getGroupList: ((String) -> Unit)?,
-    groupListStateFlow: StateFlow<List<GroupModel>>?
+    updateProduct: ((String) -> Unit)?,
+    groupListStateFlow: StateFlow<List<GroupModel>>?,
+    productListStateFlow: StateFlow<List<ProductModel>>?,
+    optionListStateFlow: StateFlow<List<OptionModel>>?
 ) {
     val context = LocalContext.current
-    val groupListState = groupListStateFlow?.collectAsState()
-    if (getGroupList != null) {
-        getGroupList(getSSAID(context))
+    val groupListState = groupListStateFlow?.collectAsStateWithLifecycle()
+    val productListState = groupListStateFlow?.collectAsStateWithLifecycle()
+    val optionListState = groupListStateFlow?.collectAsStateWithLifecycle()
+    if (updateProduct != null) {
+        updateProduct(getSSAID(context))
     }
 
     Text(
@@ -45,8 +51,10 @@ fun ProductScreenPreview() {
         ProductScreen(
             navController = rememberNavController(),
             modifier = Modifier.fillMaxSize(),
-            getGroupList = null,
-            groupListStateFlow = null
+            updateProduct = null,
+            groupListStateFlow = null,
+            productListStateFlow = null,
+            optionListStateFlow = null
         )
     }
 }

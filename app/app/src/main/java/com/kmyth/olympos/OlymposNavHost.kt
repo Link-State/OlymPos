@@ -41,11 +41,14 @@ fun OlymposNavHost(
                         UserPreferencesRepository(dataStore)
                     )
                 )
+
             ProductScreen(
                 navController = navController,
                 modifier = modifier,
-                getGroupList = viewModel::getGroupList,
-                groupListStateFlow = viewModel.groupListState
+                updateProduct = viewModel::updateProduct,
+                groupListStateFlow = viewModel.groupListState,
+                productListStateFlow = viewModel.productListState,
+                optionListStateFlow = viewModel.optionListState
             )
         }
     }
