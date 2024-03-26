@@ -53,6 +53,7 @@ class ProductViewModel(
     val optionListState: StateFlow<List<OptionModel>> = _optionListState.asStateFlow()
 
     fun updateProduct(SSAID: String) {
+        Timber.d("updateProduct")
         this.SSAID = SSAID
 
         getGroupList()
