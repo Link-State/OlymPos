@@ -503,6 +503,24 @@ command.execute("""INSERT INTO Product_group VALUES(
                 '순살 + 뼈',
                 NULL
                 );""")
+command.execute("""INSERT INTO Product_group VALUES(
+                0,
+                1,
+                '사이드',
+                NULL
+                );""")
+command.execute("""INSERT INTO Product_group VALUES(
+                0,
+                1,
+                '소스',
+                NULL
+                );""")
+command.execute("""INSERT INTO Product_group VALUES(
+                0,
+                1,
+                '리뷰이벤트',
+                NULL
+                );""")
 
 ## 상품
 command.execute("""INSERT INTO Product VALUES(
