@@ -66,12 +66,12 @@ class ProductViewModel(
     }
 
     private fun getProductList() {
-        val model = ProductListRequestModel(storeId)
+        val model = ProductListRequestModel(SSAID, storeId)
         repository.getProductList(model, _productListState)
     }
 
     private fun getOptionList() {
-        val model = OptionListRequestModel(storeId)
+        val model = OptionListRequestModel(SSAID, storeId)
         repository.getOptionList(model, _optionListState)
     }
 }
