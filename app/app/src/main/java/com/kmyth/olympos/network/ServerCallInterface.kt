@@ -53,5 +53,4 @@ interface ServerCallInterface {
     @GET("get-option-list")
     @JvmSuppressWildcards
     fun getOptionList(@QueryMap storeInfo: Map<String, Any>): Call<OptionListResponseModel>
-
 }

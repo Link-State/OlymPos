@@ -14,17 +14,23 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,6 +62,7 @@ import com.kmyth.olympos.getSSAID
 import com.kmyth.olympos.model.product.GroupModel
 import com.kmyth.olympos.model.product.OptionModel
 import com.kmyth.olympos.model.product.ProductModel
+import com.kmyth.olympos.model.product.SuboptionModel
 import com.kmyth.olympos.ui.theme.OlymPosTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -128,7 +135,11 @@ fun ProductScreen(
     }
 
     if (showProductDetail) {
-        ProductDetailDialog(product, onDialogDismiss)
+        ProductDetailDialog(
+            product,
+            optionListState.value,
+            onDialogDismiss
+        )
     }
 }
 
@@ -257,6 +268,7 @@ fun ProductImage(
 @Composable
 fun ProductDetailDialog(
     product: ProductModel,
+    optionList: List<OptionModel>,
     onDialogDismiss: () -> Unit
 ) {
     Dialog(
@@ -269,6 +281,7 @@ fun ProductDetailDialog(
         content = {
             ProductDetailDialogContent(
                 product,
+                optionList,
                 onDialogDismiss
             )
         }
@@ -278,6 +291,7 @@ fun ProductDetailDialog(
 @Composable
 fun ProductDetailDialogContent(
     product: ProductModel,
+    optionList: List<OptionModel>,
     onDialogDismiss: () -> Unit
 ) {
     val decodedString = Base64.decode(product.image, Base64.DEFAULT) ?: ByteArray(0)
@@ -292,6 +306,7 @@ fun ProductDetailDialogContent(
         Row(
             modifier = Modifier.padding(44.dp)
         ) {
+            // Menu Info
             Column(
                 modifier = Modifier.width(548.dp)
             ) {
@@ -313,10 +328,13 @@ fun ProductDetailDialogContent(
                 )
             }
             Spacer(modifier = Modifier.width(76.dp))
+
+            // Exit, Options, Price, Add Cart
             Column(
                 modifier = Modifier.width(400.dp),
                 horizontalAlignment = Alignment.End
             ) {
+                // Exit
                 Button( // TODO : Change to Image Button
                     modifier = Modifier
                         .width(28.dp)
@@ -326,6 +344,8 @@ fun ProductDetailDialogContent(
                     Text(text = "X")
                 }
                 Spacer(modifier = Modifier.height(40.dp))
+
+                // Options, Price, Add Cart
                 Box {
                     Box(
                         modifier = Modifier
@@ -335,10 +355,62 @@ fun ProductDetailDialogContent(
                             .background(Color.LightGray)
                             .border(2.dp, Color.Gray)
                     )
+
+                    // Options
+                    val options = optionList.filter {
+                        it.unique_product_option in product.options
+                    }
+                    val scrollState = rememberScrollState()
+                    Column(
+                        modifier = Modifier
+                            .background(Color.White)
+                            .verticalScroll(scrollState)
+                            .border(2.dp, Color.Gray)
+                    ) {
+                        options.forEach { option ->
+                            if (option.suboptions.isEmpty()) {
+                                OptionCheckBox(
+                                    name = option.option_name,
+                                    price = option.price,
+                                    padding = 20,
+                                    fontSize = 32
+                                )
+                            } else {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color.White)
+                                        .padding(20.dp)
+                                ) {
+                                    Text(
+                                        text = option.option_name,
+                                        fontSize = 32.sp
+                                    )
+                                    Spacer(modifier = Modifier.height(14.dp))
+                                    option.suboptions.forEach { suboption ->
+                                        OptionCheckBox(
+                                            name = suboption.suboption_name,
+                                            price = suboption.price,
+                                            padding = 0,
+                                            fontSize = 24
+                                        )
+                                    }
+                                }
+                            }
+                            Divider(
+                                thickness = 2.dp,
+                                color = Color.Gray
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(128.dp))
+                    }
+
+                    // Price, Add Cart
                     Column(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                     ) {
+                        // Price
                         Box(
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
@@ -369,6 +441,8 @@ fun ProductDetailDialogContent(
                                 fontSize = 28.sp
                             )
                         }
+
+                        // Add Cart
                         Button(
                             modifier = Modifier
                                 .width(400.dp)
@@ -385,6 +459,41 @@ fun ProductDetailDialogContent(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun OptionCheckBox(
+    name: String,
+    price: Int,
+    padding: Int,
+    fontSize: Int
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(padding.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Checkbox(
+            checked = false,
+            onCheckedChange = {},
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Row(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = name,
+                fontSize = fontSize.sp
+            )
+        }
+        Text(
+            text = "${price}원",
+            fontSize = fontSize.sp
+        )
     }
 }
 
@@ -418,7 +527,8 @@ fun ProductDetailDialogPreview() {
                 0, 0, 0,
                 "메뉴명", 10000, "",
                 "메뉴 설명", 1, emptyList()
-            )
+            ),
+            emptyList()
         ) {}
     }
 }

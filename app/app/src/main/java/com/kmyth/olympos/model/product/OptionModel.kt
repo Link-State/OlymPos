@@ -5,5 +5,5 @@ data class OptionModel(
     val unique_store_info: Int,
     val option_name: String,
     val price: Int,
-    val suboption_offer: Int
+    val suboptions: List<SuboptionModel>
 )
