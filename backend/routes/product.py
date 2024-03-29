@@ -246,20 +246,3 @@ class Get_option_list(Resource) :
         user_data["user_id"] = identity
 
         return jsonify(product.get_option_list(inputData=user_data))
-    
-class Get_suboptions(Resource) :
-    @jwt_required(optional=True)
-    def get(self) :
-        identity = get_jwt_identity()
-
-        user_data = request.args.to_dict()
-        
-        # 토큰이 없을 경우
-        if identity is not None :
-            user_data["user_id"] = identity
-        elif "SSAID" not in user_data :
-            return jsonify({"result" : "Invalid", "code" : Code.MissingToken})
-        
-        user_data["user_id"] = identity
-
-        return jsonify(product.get_suboptions(inputData=user_data))

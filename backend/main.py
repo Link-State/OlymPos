@@ -85,7 +85,6 @@ api.add_resource(product.Modify_product_option_relation, '/modify-product-option
 api.add_resource(product.Get_group_list, '/get-group-list')
 api.add_resource(product.Get_product_list, '/get-product-list')
 api.add_resource(product.Get_option_list, '/get-option-list')
-api.add_resource(product.Get_suboptions, '/get-suboptions')
 
 api.add_resource(order.Product_order, '/product-order')
 api.add_resource(order.Change_order_state, '/change-order-state')

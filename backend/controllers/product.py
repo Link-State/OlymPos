@@ -956,53 +956,17 @@ def get_option_list(inputData={}) :
     for rec in records :
         dictRec = dict(rec.__dict__)
         dictRec.pop('_sa_instance_state', None)
+
+        # 서브옵션 포함
+        suboptions = list()
+        subopt_recs = ProductSuboption.query.filter_by(unique_product_option=dictRec["unique_product_option"], disable_date=None).all()
+
+        for sub_rec in subopt_recs :
+            dictSubRec = dict(sub_rec.__dict__)
+            dictSubRec.pop('_sa_instance_state', None)
+            suboptions.append(dictSubRec)
+
+        dictRec["suboptions"] = suboptions
         options.append(dictRec)
 
     return {"result" : "Success", "code" : Code.Success, "options" : options}
-
-
-
-def get_suboptions(inputData={}) :
-    # 필수 필드가 누락됐을 때,
-    fields = ["option_uid"]
-    for field in fields :
-        if field not in inputData :
-            return {"result" : "Invalid", "code" : Code.MissingRequireField}
-
-    # 존재하지 않는 옵션일 때,
-    option = ProductOption.query.get(inputData["option_uid"])
-    if option == None :
-        return {"result" : "Invalid", "code" : Code.NotExistProductOption}
-    
-    store = StoreInfo.query.get(option.unique_store_info)
-    user = Admins.query.get(store.unique_admin)
-
-    # (사용자) 요청자와 소유자가 일치하지 않을 때,
-    if "SSAID" in inputData :
-        # SSAID로 store_uid 찾기
-        table = TableList.query.filter_by(isLogin=inputData["SSAID"]).all()
-
-        # SSAID로 로그인 정보를 찾을 수 없을 때,
-        if len(table) <= 0 :
-            return {"result" : "Invalid", "code" : Code.NotLoginState}
-        
-        table = dict(table[0].__dict__)
-        table.pop('_sa_instance_state', None)
-        
-        if table["unique_store_info"] != store.unique_store_info :
-            return {"result" : "Invalid", "code" : Code.NotEquals}
-    
-    # (관리자) 요청자와 소유자가 일치하지 않을 때,
-    elif user.user_id != inputData["user_id"] :
-        return {"result" : "Invalid", "code" : Code.NotEquals}
-    
-    records = ProductSuboption.query.filter_by(unique_product_option=inputData["option_uid"], disable_date=None).all() # 서브옵션 목록
-
-    # dict형으로 변환
-    suboptions = []
-    for rec in records :
-        dictRec = dict(rec.__dict__)
-        dictRec.pop('_sa_instance_state', None)
-        suboptions.append(dictRec)
-
-    return {"result" : "Success", "code" : Code.Success, "suboptions" : suboptions}

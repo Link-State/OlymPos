@@ -216,11 +216,13 @@ def delete_store(inputStoreInfo={}) :
         product.disable_date = now
         
         # 상품-옵션 관계 삭제
+        # !--- 수정 ---!
         relations = ProductOptionRelations.query.filter_by().all()
         for relation in relations :
             DB.session.delete(relation)
 
     # 상품 옵션 삭제
+    # !--- 수정 ---!
     options = ProductOption.query.filter_by(unique_store_info=store.unique_store_info).all()
     for option in options :
         option.disable_date = now
