@@ -195,16 +195,17 @@ fun ProductListBox(
                 shape = RoundedCornerShape(8.dp),
                 onClick = { onProductClick(product) }
             ) {
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(0.dp)
+                        .padding(0.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     val decodedString = Base64.decode(product.image, Base64.DEFAULT) ?: ByteArray(0)
                     val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size) ?: createBitmap(224, 224)
 
                     Text(
-                        modifier = Modifier.align(Alignment.TopStart),
+                        modifier = Modifier.align(Alignment.Start),
                         text = product.product_name,
                         fontSize = 24.sp
                     )
@@ -215,7 +216,7 @@ fun ProductListBox(
                         name = product.product_name
                     )
                     Text(
-                        modifier = Modifier.align(Alignment.BottomEnd),
+                        modifier = Modifier.align(Alignment.End),
                         text = "${product.price}",
                         fontSize = 24.sp
                     )
