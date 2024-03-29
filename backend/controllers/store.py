@@ -187,6 +187,10 @@ def delete_store(inputStoreInfo={}) :
     if store == None :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
+    # 매장이 이미 삭제된 경우,
+    if store.disable_date != None :
+        return {"result" : "Invalid", "code" : Code.DeletedData}
+    
     user = Admins.query.filter_by(user_id=inputStoreInfo["user_id"]).first()
 
     # 해당 유저가 존재하지 않을 경우,
@@ -204,7 +208,7 @@ def delete_store(inputStoreInfo={}) :
 
     # 테이블 삭제
     modify_store(store=store, inputStoreInfo={"count" : 0})
-        
+
     # 상품 그룹 삭제
     groups = ProductGroup.query.filter_by(unique_store_info=store.unique_store_info).all()
     for group in groups :
@@ -217,7 +221,7 @@ def delete_store(inputStoreInfo={}) :
         
         # 상품-옵션 관계 삭제
         # !--- 수정 ---!
-        relations = ProductOptionRelations.query.filter_by().all()
+        relations = ProductOptionRelations.query.filter_by(unique_product=product.unique_product).all()
         for relation in relations :
             DB.session.delete(relation)
 

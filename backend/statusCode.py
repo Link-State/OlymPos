@@ -6,7 +6,7 @@ class Code() :
     MissingToken = 200
     MissingRequireField = 201
     DeletedData = 202
-    WrongPWD = 203
+    IncorrectAccount = 203
     WrongDataForm = 204
     NotEquals = 205
 

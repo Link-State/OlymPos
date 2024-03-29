@@ -68,10 +68,10 @@ def adminLogin(userData={}) :
         user_id=userData["user_id"],
         user_pwd=userData["user_pwd"]
     ).first()
-    
+
     # 해당 아이디/비밀번호의 계정이 검색되지 않을 때,
     if user == None :
-        return {"result" : "Invalid", "code" : Code.NotExistID}
+        return {"result" : "Invalid", "code" : Code.IncorrectAccount}
     
     user = user.__dict__
 
