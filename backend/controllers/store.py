@@ -68,13 +68,13 @@ def addStore(inputStoreInfo={}) :
     if len(keyword) > 0 :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
 
-    user = Admins.query.filter_by(user_id=inputStoreInfo["user_id"]).first()
+    user = Admins.query.filter_by(user_id=inputStoreInfo["user_id"], disable_date=None).first()
 
     # 아이디로 유저가 검색되지 않을 때,
     if user == None :
         return {"result" : "Invalid", "code" : Code.NotExistID}
     
-    store = StoreInfo.query.filter_by(store_name=inputStoreInfo["name"]).first()
+    store = StoreInfo.query.filter_by(store_name=inputStoreInfo["name"], disable_date=None).first()
 
     # 해당 매장이름을 가진 매장이 존재할 때,
     if store != None :
@@ -99,7 +99,8 @@ def addStore(inputStoreInfo={}) :
         store_owner=inputStoreInfo["owner"],
         store_address=inputStoreInfo["address"],
         store_tel_number=inputStoreInfo["tel_num"],
-        table_count=inputStoreInfo["count"]
+        table_count=inputStoreInfo["count"],
+        disable_date=None
     ).first()
 
     # 테이블을 1부터 순차적으로 추가
@@ -134,7 +135,11 @@ def change_store_info(inputStoreInfo={}) :
     if store == None :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
-    user = Admins.query.filter_by(user_id=inputStoreInfo["user_id"]).first()
+    # 삭제된 매장일 경우,
+    if store.disable_date != None :
+        return {"result" : "Invalid", "code" : Code.DeletedData}
+    
+    user = Admins.query.filter_by(user_id=inputStoreInfo["user_id"], disable_date=None).first()
 
     # 해당 유저가 존재하지 않을 경우,
     if user == None :
@@ -153,18 +158,19 @@ def change_store_info(inputStoreInfo={}) :
         return {"result" : "Invalid", "code" : Code.WrongDataForm, "keyword" : keyword}
     
     # 수정된 정보 임시 적용
-    store_name = store.store
+    store_name = store.store_name
     if "name" in inputStoreInfo :
         store_name = inputStoreInfo["name"]
     
     # 수정된이름 검색
-    modify_store = StoreInfo.query.filter(
+    modified_store = StoreInfo.query.filter(
         StoreInfo.unique_store_info!=store.unique_store_info,
-        StoreInfo.store_name==store_name
+        StoreInfo.store_name==store_name,
+        StoreInfo.disable_date==None
     )
 
     # 매장이름 중복 확인
-    if modify_store.count() > 0 :
+    if modified_store.count() > 0 :
         return {"result" : "Invalid", "code" : Code.AlreadyExistStore}
     
     # 매장 정보 수정
@@ -191,7 +197,7 @@ def delete_store(inputStoreInfo={}) :
     if store.disable_date != None :
         return {"result" : "Invalid", "code" : Code.DeletedData}
     
-    user = Admins.query.filter_by(user_id=inputStoreInfo["user_id"]).first()
+    user = Admins.query.filter_by(user_id=inputStoreInfo["user_id"], disable_date=None).first()
 
     # 해당 유저가 존재하지 않을 경우,
     if user == None :
@@ -210,29 +216,27 @@ def delete_store(inputStoreInfo={}) :
     modify_store(store=store, inputStoreInfo={"count" : 0})
 
     # 상품 그룹 삭제
-    groups = ProductGroup.query.filter_by(unique_store_info=store.unique_store_info).all()
+    groups = ProductGroup.query.filter_by(unique_store_info=store.unique_store_info, disable_date=None).all()
     for group in groups :
         group.disable_date = now
 
     # 상품 삭제
-    products = Product.query.filter_by(unique_store_info=store.unique_store_info).all()
+    products = Product.query.filter_by(unique_store_info=store.unique_store_info, disable_date=None).all()
     for product in products :
         product.disable_date = now
         
         # 상품-옵션 관계 삭제
-        # !--- 수정 ---!
         relations = ProductOptionRelations.query.filter_by(unique_product=product.unique_product).all()
         for relation in relations :
             DB.session.delete(relation)
 
     # 상품 옵션 삭제
-    # !--- 수정 ---!
-    options = ProductOption.query.filter_by(unique_store_info=store.unique_store_info).all()
+    options = ProductOption.query.filter_by(unique_store_info=store.unique_store_info, disable_date=None).all()
     for option in options :
         option.disable_date = now
 
         # 상품 서브옵션 삭제
-        suboptions = ProductSuboption.query.filter_by(unique_product_option=option.unique_product_option).all()
+        suboptions = ProductSuboption.query.filter_by(unique_product_option=option.unique_product_option, disable_date=None).all()
         for suboption in suboptions :
             suboption.disable_date = now
 
@@ -247,7 +251,7 @@ def delete_store(inputStoreInfo={}) :
         order.last_modify_date = now
 
         # 선택된 옵션 삭제
-        selected_options = SelectedOption.query.filter_by(unique_order=order.unique_order).all()
+        selected_options = SelectedOption.query.filter_by(unique_order=order.unique_order, disable_date=None).all()
         for selected_option in selected_options :
             selected_option.disable_date = now
     
@@ -270,7 +274,7 @@ def delete_store(inputStoreInfo={}) :
 
 
 def get_my_stores(user_id='') :
-    user = Admins.query.filter_by(user_id=user_id).first()
+    user = Admins.query.filter_by(user_id=user_id, disable_date=None).first()
 
     # 해당 유저가 존재하지 않을 경우,
     if user == None :
@@ -295,7 +299,7 @@ def get_store_info(inputStoreInfo={}) :
     if "store_uid" not in inputStoreInfo :
         return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
-    user = Admins.query.filter_by(user_id=inputStoreInfo["user_id"]).first()
+    user = Admins.query.filter_by(user_id=inputStoreInfo["user_id"], disable_date=None).first()
 
     # 해당 유저가 존재하지 않을 경우,
     if user == None :

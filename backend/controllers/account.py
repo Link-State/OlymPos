@@ -79,21 +79,20 @@ def adminLogin(userData={}) :
     if user["disable_date"] != None :
         return {"result" : "Invalid", "code" : Code.DeletedData}
     
-    # 해당 유저 소유의 가게 리스트
-    records = StoreInfo.query.filter_by(unique_admin=user["unique_admin"]).all()
+    # # 해당 유저 소유의 가게 리스트
+    # records = StoreInfo.query.filter_by(unique_admin=user["unique_admin"]).all()
     
-    # 각 가게를 dict형으로 변환
-    stores = []
-    for rec in records :
-        dictRec = dict(rec.__dict__)
-        dictRec.pop('_sa_instance_state', None)
-        stores.append(dictRec)
+    # # 각 가게를 dict형으로 변환
+    # stores = []
+    # for rec in records :
+    #     dictRec = dict(rec.__dict__)
+    #     dictRec.pop('_sa_instance_state', None)
+    #     stores.append(dictRec)
 
     return {
         "result" : "Success",
         "access_token" : create_access_token(identity=user["user_id"], expires_delta=False),
-        "code" : Code.Success,
-        "stores" : stores
+        "code" : Code.Success
     }
 
 def userLogin(id="", pwd="") :

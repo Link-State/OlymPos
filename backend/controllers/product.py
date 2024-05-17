@@ -64,7 +64,7 @@ def add_group(userInputData={}) :
     if store == None :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
-    user = Admins.query.filter_by(user_id=userInputData["user_id"]).first()
+    user = Admins.query.filter_by(user_id=userInputData["user_id"], disable_date=None).first()
 
     # 유저가 존재하지 않을 때,
     if user == None :
