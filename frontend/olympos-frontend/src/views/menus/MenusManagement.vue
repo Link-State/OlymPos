@@ -20,7 +20,7 @@
                         </template>
                     </SelectWithTitle>
 
-                    <ButtonRectangle>메뉴 그룹 관리</ButtonRectangle>
+                    <ButtonRectangle @click="goMenuGroup">메뉴 그룹 관리</ButtonRectangle>
                     <ButtonRectangle>메뉴 추가</ButtonRectangle>
                     <ButtonRectangle>옵션 관리</ButtonRectangle>
                 </template>
@@ -62,6 +62,7 @@ import type { ResponseStores } from '@/types/StoreTypes';
 import StoreApi from '@/apis/StoreApi';
 import MenuApi from '@/apis/MenuApi';
 import { type ResponseMenus } from '@/types/MenuTypes';
+import router from '@/router';
 
 
 
@@ -154,6 +155,11 @@ const getProductList = ()=>{
             message: err.message || 'server error',
         });
     });
+}
+
+
+const goMenuGroup = ()=>{
+    router.push('/menu/group');
 }
 </script>
 

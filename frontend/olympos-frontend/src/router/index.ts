@@ -55,7 +55,12 @@ const router = createRouter({
                 {
                     path: '/menu',
                     name: 'menu',
-                    component: ()=>import('@/views/menus/MenusManagement.vue')
+                    component: ()=>import('@/views/menus/MenusManagement.vue'),
+                },
+                {
+                    path: '/menu/group/:storeId?',
+                    name: 'menuGroup',
+                    component: ()=>import('@/views/menus/MenuGroupManagement.vue'),
                 },
                 {
                     path: '/order',
