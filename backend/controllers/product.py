@@ -858,13 +858,18 @@ def get_group_list(inputData={}) :
 
 def get_product_list(inputData={}) :
     # 필수 필드가 누락됐을 때,
-    fields = ["store_uid"]
+    fields = ["group_uid"]
     for field in fields :
         if field not in inputData :
             return {"result" : "Invalid", "code" : Code.MissingRequireField}
     
+    # 존재하지 않는 카테고리일 때,
+    group = ProductGroup.query.get(inputData["group_uid"])
+    if group == None :
+        return {"result" : "Invalid", "code" : Code.NotExistGroup}
+
     # 존재하지 않는 매장일 때,
-    store = StoreInfo.query.get(inputData["store_uid"])
+    store = StoreInfo.query.get(group.unique_store_info)
     if store == None :
         return {"result" : "Invalid", "code" : Code.NotExistStore}
     
@@ -882,14 +887,14 @@ def get_product_list(inputData={}) :
         table = dict(table[0].__dict__)
         table.pop('_sa_instance_state', None)
         
-        if str(table["unique_store_info"]) != inputData["store_uid"] :
+        if str(table["unique_store_info"]) != str(group.unique_store_info) :
             return {"result" : "Invalid", "code" : Code.NotEquals}
     
     # (관리자) 요청자와 소유자가 일치하지 않을 때,
     elif user.user_id != inputData["user_id"] :
         return {"result" : "Invalid", "code" : Code.NotEquals}
     
-    records = Product.query.filter_by(unique_store_info=inputData["store_uid"], disable_date=None).all() # 상품 목록
+    records = Product.query.filter_by(unique_product_group=inputData["group_uid"], disable_date=None).all() # 상품 목록
 
     # dict형으로 변환
     products = []
@@ -897,6 +902,7 @@ def get_product_list(inputData={}) :
         dictRec = dict(rec.__dict__)
         dictRec.pop('_sa_instance_state', None)
 
+        # 옵션 번호 가져오기
         relations = ProductOptionRelations.query.filter_by(unique_product=dictRec["unique_product"]).all()
 
         dictRec["options"] = [rel.unique_product_option for rel in relations]
