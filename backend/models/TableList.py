@@ -3,46 +3,21 @@ import os
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from models import mysql
+from models.mysql import DB
+from sqlalchemy import Column, Integer, Text, DateTime, ForeignKey
 
-def getTables(store_uid=-1) :
-    # store uid, table num, state, isLogin
-    return
+class TableList(DB.Model) :
+    __tablename__ = "Table_list"
 
-def getTable(store_uid=-1, tableNum=-1) :
-    sql = f"""
-    SELECT unique_store_info, table_number, table_state, isLogin
-    FROM Table_list
-    WHERE unique_store_info = {store_uid} and table_number = {tableNum};
-    """
+    unique_store_info = Column(Integer, ForeignKey('Store_info.unique_store_info'), primary_key=True, nullable=False)
+    table_number = Column(Integer, primary_key=True, nullable=False)
+    table_state = Column(Integer, nullable=False)
+    isLogin = Column(Text, nullable=False, default="")
+    disable_date = Column(DateTime, nullable=True, default=None)
 
-    result = mysql.execute(SQL=sql, fetch=True)
-    
-    if len(result) != 1 :
-        return dict()
-
-    return result[0]
-
-def setTableNum(store_uid=-1, tableNum=-1) :
-    return
-
-def setState(store_uid=-1, tableNum=-1, state=-1) :
-    return
-
-def setIsLogin(store_uid=-1, tableNum=-1, islogin=0) :
-    sql = f"""
-    UPDATE Table_list
-    SET isLogin = {islogin}
-    WHERE unique_store_info = {store_uid} and table_number = {tableNum};
-    """
-
-    mysql.execute(SQL=sql)
-    
-    return
-
-def add(**kwargs) :
-    # require : store uid, table num
-    return
-
-def remove(store_uid=-1, tableNum=-1) :
-    return
+    def __init__(self, store, number, state, login="", disable=None) :
+        self.unique_store_info = store
+        self.table_number = number
+        self.table_state = state
+        self.isLogin = login
+        self.disable_date = disable

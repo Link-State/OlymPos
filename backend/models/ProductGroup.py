@@ -3,19 +3,19 @@ import os
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from main import connection, command
+from utils import *
+from models.mysql import DB
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 
-# 해당 매장의 카테고리 목록 반환
-def getGroups(store_id=-1) :
-    # uid, name
-    return
+class ProductGroup(DB.Model) :
+    __tablename__ = "Product_group"
 
-def setGroup(uid=-1, name="") :
-    return
+    unique_product_group = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    unique_store_info = Column(Integer, ForeignKey('Store_info.unique_store_info'), nullable=False)
+    group_name = Column(String(MaxLength.group_name), nullable=False)
+    disable_date = Column(DateTime, nullable=True, default=None)
 
-def add(**kwargs) :
-    # require : store uid, group name
-    return
-
-def remove(uid=-1) :
-    return
+    def __init__(self, store, name, disable=None) :
+        self.unique_store_info = store
+        self.group_name = name
+        self.disable_date = disable

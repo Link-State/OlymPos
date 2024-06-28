@@ -1,36 +1,29 @@
 import sys
 import os
-import datetime
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from main import connection, command
+from utils import *
+from models.mysql import DB
+from sqlalchemy import Column, Integer, DateTime, ForeignKey
 
-# 해당 매장의 주문 목록 반환
-def getOrders(store_id=-1) :
-    return
+class OrderList(DB.Model) :
+    __tablename__ = "Order_list"
 
-def getOrder(uid=-1) :
-    return
+    unique_order = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    unique_store_info = Column(Integer, ForeignKey('Store_info.unique_store_info'), nullable=False)
+    unique_product = Column(Integer, ForeignKey('Product.unique_product'), nullable=False)
+    table_number = Column(Integer, ForeignKey('Table_list.table_number'), nullable=True)
+    amount = Column(Integer, nullable=False)
+    order_state = Column(Integer, nullable=False)
+    order_date = Column(DateTime, nullable=False)
+    last_modify_date = Column(DateTime, nullable=False)
 
-def setProduct(uid=-1, product_id=-1) :
-    return
-
-def setTableNum(uid=-1, num=-1) :
-    return
-
-def setAmount(uid=-1, amount=-1) :
-    return
-
-def setState(uid=-1, state=0) :
-    return
-
-def setDate(uid=-1, date=datetime.datetime.today()) :
-    return
-
-def add(**kwargs) :
-    # require : store id, product id, table num, amount
-    return
-
-def remove(uid=-1) :
-    return
+    def __init__(self, store, product, amount, state, date, last, number=None) :
+        self.unique_store_info = store
+        self.unique_product = product
+        self.table_number = number
+        self.amount = amount
+        self.order_state = state
+        self.order_date = date
+        self.last_modify_date = last

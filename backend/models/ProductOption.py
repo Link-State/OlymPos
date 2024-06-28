@@ -3,33 +3,23 @@ import os
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from main import connection, command
+from utils import *
+from models.mysql import DB
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 
-# 해당 제품의 옵션 목록 반환
-def getOptions(product_uid=-1) :
-    return
+class ProductOption(DB.Model) :
+    __tablename__ = "Product_option"
 
-def getOption(uid=-1) :
-    return
+    unique_product_option = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    unique_store_info = Column(Integer, ForeignKey('Store_info.unique_store_info'), nullable=False)
+    option_name = Column(String(MaxLength.option_name), nullable=False)
+    price = Column(Integer, nullable=False)
+    suboption_offer = Column(Integer, nullable=False)
+    disable_date = Column(DateTime, nullable=True, default=None)
 
-def setStore(uid=-1, id=-1) :
-    return
-
-def setProduct(uid=-1, product_id=-1) :
-    return
-
-def setName(uid=-1, name="") :
-    return
-
-def setPrice(uid=-1, price=0) :
-    return
-
-def setIsOffer(uid=-1, isoffer=0) :
-    return
-
-def add(**kwargs) :
-    # require : product id, name, price, isOffer
-    return
-
-def remove(uid=-1) :
-    return
+    def __init__(self, store, name, price, offer, disable=None) :
+        self.unique_store_info = store
+        self.option_name = name
+        self.price = price
+        self.suboption_offer = offer
+        self.disable_date = disable

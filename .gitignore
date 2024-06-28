@@ -1,5 +1,8 @@
 config.py
+test.html
 
 # Byte-compiled / optimized / DLL files
 *.py[cod]
 __pycache__/
+venv/
+images/admin/
